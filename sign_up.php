@@ -20,8 +20,8 @@
     <div class="container-fluid login ">
         <div class="row ">
             <div class="col-12 col-sm-4 text-center formLogin mt-5" data-aos="fade-down">
-                <p class="m-2 text-start fw-semibold">Welcome Back,</p>
-                <h1 class="m-2 display-2 text-start fw-semibold">Log In!</h1>
+                <p class="m-2 text-start fw-semibold">Hello,</p>
+                <h1 class="m-2 display-2 text-start fw-semibold">Sign Up!</h1>
 
                 <div class="form-floating m-3">
                     <input type="email" class="form-control" id="username" placeholder="name@example.com">
@@ -35,15 +35,42 @@
                     <label for="password">Password</label>
                 </div>
 
+                <div class="form-floating m-3">
+                    <input type="password" class="form-control" id="password" placeholder="Password">
+                    <label for="password">Umur</label>
+                </div>
 
-                <button type="button" class="btn btn-success buttonRide mb-4" onclick="login()">Ride</button>
+                <div class="form-floating m-3">
+                    <input type="password" class="form-control" id="password" placeholder="Password">
+                    <label for="password">Alamat</label>
+                </div>
+
+                <div class="form m-3">
+                    <select class="form-select" aria-label="Default select example">
+                        <option selected>Status</option>
+                        <option value="1">User</option>
+                        <option value="2">Driver</option>
+                    </select>
+                </div>
+
+                <div class="form m-3">
+                    <select class="form-select" aria-label="Default select example">
+                        <option selected>Tipe Kendaraan</option>
+                        <option value="1">Mobil</option>
+                        <option value="2">Motor</option>
+                    </select>
+
+                </div>
+
+
+                <button type="button" class="btn btn-success buttonRide mb-4" onclick="login()">Create Account</button>
 
                 <div class="mt-5" data-aos="flip-left">
                     <img src="assets/iconRideSharing.png" class="logo" alt="">
                 </div>
 
                 <div class="mt-3">
-                    <p>Don't have an account ? <a href="sign_up.php">Sign Up</a></p>                    
+                    <p>Already have an account ? <a href="login.php">Login</a></p>
                 </div>
 
             </div>

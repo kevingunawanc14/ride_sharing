@@ -17,6 +17,6 @@ try {
 	echo $e->getMessage();
 }
 
-
+session_start()
 
 ?>

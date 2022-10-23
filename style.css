@@ -19,9 +19,6 @@
     min-height: 100vh;
 } */
 
-.login .formLogin{
-    margin-top: 20vh;
-}
 
 .login{
     background-color: #ececf4;
@@ -32,7 +29,21 @@
 }
 
 #map{
-    height: 700px;
+    height: 385px;
     width: 100%;
 }
+
+.history{
+    margin-bottom: 100px;
+}
+
+.transaksi{
+    margin-bottom: 110px;
+}
+
+
+
+
+
+
 

@@ -14,28 +14,55 @@
 
 <body>
 
-  <nav class="navbar navbar-expand bg-light">
+
+
+
+
+  <div id="map"></div>
+
+  <div class="container formRide text-center mt-3">
+    <div class="row">
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-map-pin"></i></span>
+        <input type="text" class="form-control" placeholder="Lokasi Anda" aria-describedby="basic-addon1">
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-location-dot"></i></span>
+        <input type="text" class="form-control" placeholder="Lokasi Tujuan" aria-describedby="basic-addon1">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <button type="button" class="btn btn-success" onclick="">Go</button>
+      </div>
+    </div>
+  </div>
+
+
+  <nav class="navbar navbar-expand bg-light fixed-bottom">
     <div class="container-fluid">
       <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
         <div>
           <ul class="navbar-nav">
             <li class="nav-item mx-3">
-              <a class="nav-link text-center" href="ride.html"><i class="fa-solid fa-car-side"></i></a>
+              <a class="nav-link text-center" href="ride.php"><i class="fa-solid fa-car-side"></i></a>
               <p class="fs-6">Ride</p>
 
             </li>
             <li class="nav-item mx-3">
-              <a class="nav-link text-center" href="profile.html"><i class="fa-regular fa-id-card"></i></a>
+              <a class="nav-link text-center" href="profile.php"><i class="fa-regular fa-id-card"></i></a>
               <p class="fs-6">Profile</p>
 
             </li>
             <li class="nav-item mx-3">
-              <a class="nav-link text-center" href="money.html"><i class="fa-solid fa-wallet"></i></a>
+              <a class="nav-link text-center" href="money.php"><i class="fa-solid fa-wallet"></i></a>
               <p class="fs-6">Money</p>
 
             </li>
             <li class="nav-item mx-3">
-              <a class="nav-link text-center" href="history.html"><i class="fa-solid fa-receipt"></i></a>
+              <a class="nav-link text-center" href="history.php"><i class="fa-solid fa-receipt"></i></a>
               <p class="fs-6">History</p>
 
 
@@ -47,30 +74,6 @@
       </div>
     </div>
   </nav>
-
-
-
-  <div id="map"></div>
-
-  <div class="container text-center mt-3">
-    <div class="row">
-      <div class="input-group mb-3">
-        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-map-pin"></i></span>
-        <input type="text" class="form-control" placeholder="Lokasi anda" aria-label="Username" aria-describedby="basic-addon1">
-      </div>
-    </div>
-    <div class="row">
-      <div class="input-group mb-3">
-        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-location-dot"></i></span>
-        <input type="text" class="form-control" placeholder="Lokasi Tujuan" aria-label="Username" aria-describedby="basic-addon1">
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <button type="button" class="btn btn-success" onclick="">Konfirmasi Penjemputan</button>
-      </div>
-    </div>
-  </div>
 
 
 
