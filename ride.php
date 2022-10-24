@@ -1,26 +1,48 @@
+<?php
+require_once 'includes/connect.php';
+
+// echo $_SESSION['username'];
+
+if (!isset($_SESSION['username'])) {
+  echo '<script>window.location.href = "http://localhost/ride_sharing/login.php";</script>';
+}
+
+
+
+
+?>
+
 <!doctype html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ride</title>
+  <title>University Ride Sharing - Ride</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
   <!-- CSS -->
   <link rel="stylesheet" href="style.css">
+  <!-- Link CDN AOS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <!-- Link Icon -->
   <link rel="icon" type="image/x-icon" href="assets/iconRideSharing.png">
+  <!-- Link CDN CSS Slick Carousel -->
+  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+  <!-- Link Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@300;400;700&display=swap" rel="stylesheet">
+  <!-- Link Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
 
+  
 
+  <div id="map"  ></div>
 
-
-
-  <div id="map"></div>
-
-  <div class="container formRide text-center mt-3">
+  <div class="container formRide text-center mt-3" data-aos="fade-down">
     <div class="row">
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-map-pin"></i></span>
@@ -76,7 +98,10 @@
   </nav>
 
 
-
+  <!-- Link CDN Jquery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- Link CDN AOS -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
 
   <!-- Link API Google -->
@@ -149,6 +174,13 @@
       })
 
     }
+
+    $(function() {
+      AOS.init({
+        duration: 1200,
+        once: true
+      });
+    });
   </script>
 
   <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtqtqs7izeIE4pjxFrtUi-4ymAMStRilY&map_ids=93eb27799b5c0810&callback=initMap"></script> -->
@@ -156,8 +188,9 @@
   <!-- api key AIzaSyDtqtqs7izeIE4pjxFrtUi-4ymAMStRilY -->
   <!-- map id 93eb27799b5c0810  -->
 
-  <!-- Link CDN Fontawesome -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js" integrity="sha512-naukR7I+Nk6gp7p5TMA4ycgfxaZBJ7MO5iC3Fp6ySQyKFHOGfpkSZkYVWV5R7u7cfAicxanwYQ5D1e17EfJcMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <!-- Link CDN JS Slick Carousel -->
+  <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
   <!-- Link CDN Bootstrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>

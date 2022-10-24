@@ -1,6 +1,8 @@
 <?php
 require_once '../includes/connect.php';
 
+
+
 $password = $_POST['password'];
 $username = $_POST['username'];
 
@@ -16,7 +18,7 @@ $cekPassword= false;
 while ($row = $checksql->fetch()) {
 
     
-    if ($row['nama'] ==  $username) {
+    if ($row['username'] ==  $username) {
         $cekUsername =  true;
 
     }
