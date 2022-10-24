@@ -57,7 +57,7 @@
                 </div>
 
                 <div class="mt-3">
-                    <p>Already have an account ? <a href="login.php">Login</a></p>
+                    <p>Already have an account ? <a href="login.php" class="cool-link" >Login</a></p>
                 </div>
 
             </div>

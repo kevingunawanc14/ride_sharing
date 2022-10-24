@@ -51,7 +51,7 @@
                 </div>
 
                 <div class="mt-3">
-                    <p>Don't have an account ? <a href="sign_up.php">Sign Up</a></p>
+                    <p>Don't have an account ? <a class="cool-link" href="sign_up.php">Sign Up</a></p>
                 </div>
 
             </div>
