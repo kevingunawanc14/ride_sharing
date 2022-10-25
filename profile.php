@@ -1,17 +1,48 @@
+<?php
+require_once 'includes/connect.php';
+
+
+if (!isset($_SESSION['username'])) {
+    echo '<script>window.location.href = "http://localhost/ride_sharing/login.php";</script>';
+}
+
+$sql = 'SELECT * FROM USER WHERE username = ?';
+        $checksql = $pdo->prepare($sql);
+        $checksql->execute([$_SESSION['username']]);
+
+        $row = $checksql->fetch();                      
+
+        // echo $row['username'];
+        // echo $row['password'];
+
+
+
+
+
+?>
+
 <!doctype html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ride</title>
+    <title>University Ride Sharing - Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
-    <!-- Link Icon -->
-    <link rel="icon" type="image/x-icon" href="assets/iconRideSharing.png">
     <!-- Link CDN AOS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Link Icon -->
+    <link rel="icon" type="image/x-icon" href="assets/iconRideSharing.png">
+    <!-- Link CDN CSS Slick Carousel -->
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <!-- Link Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Link Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
@@ -29,9 +60,9 @@
 
 
     <!-- Profile -->
-    <div class="container text-center mt-3" data-aos="fade-down">
+    <div class="container profile text-center mt-3" data-aos="fade-down">
         <div class="row">
-            <h1 class="display-2 text-start">Profile</h1>
+            <h1 class="display-2 text-start fw-bolder cool-link">Profile</h1>
             <div class="col mt-4">
                 <div class="row">
                     <div class="col m-3">
@@ -40,22 +71,22 @@
                 </div>
                 <div class="row">
                     <div class="col m-3">
-                        <input type="text" class="form-control" placeholder="Username" aria-label="Username">
+                        <input type="text" class="form-control" placeholder="<?php echo $row['username']   ?>" aria-label="Username" readonly>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col m-3">
-                        <input type="text" class="form-control" placeholder="Umur" aria-label="Umur">
+                        <input type="text" class="form-control" placeholder="<?php echo $row['umur']   ?>" aria-label="Umur" readonly>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col m-3">
-                        <input type="text" class="form-control" placeholder="Alamat" aria-label="Alamat">
+                        <input type="text" class="form-control" placeholder="<?php echo $row['alamat']   ?>" aria-label="Alamat" readonly>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col m-3">
-                        <input type="text" class="form-control" placeholder="Status" aria-label="Status">
+                        <input type="text" class="form-control" placeholder="<?php echo $row['status']   ?>" aria-label="Status" readonly>
                     </div>
                 </div>
             </div>
@@ -74,7 +105,6 @@
             </div>
         </div>
     </div>
-
 
 
     <nav class="navbar navbar-expand bg-light fixed-bottom">
