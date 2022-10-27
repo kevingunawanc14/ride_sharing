@@ -38,15 +38,15 @@ if (!isset($_SESSION['username'])) {
 
 <body>
 
-  
 
-  <div id="map"  ></div>
+
+  <div id="map"></div>
 
   <div class="container formRide text-center mt-3" data-aos="fade-down">
     <div class="row">
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-map-pin"></i></span>
-        <input type="text" class="form-control" placeholder="Lokasi Anda" aria-describedby="basic-addon1">
+        <input type="text" class="form-control" placeholder="Lokasi Anda" aria-describedby="basic-addon1" readonly>
       </div>
     </div>
     <div class="row">
@@ -57,7 +57,7 @@ if (!isset($_SESSION['username'])) {
     </div>
     <div class="row">
       <div class="col">
-        <button type="button" class="btn btn-success" onclick="">Go</button>
+        <button type="button" class="btn btn-success">Go</button>
       </div>
     </div>
   </div>
@@ -100,6 +100,7 @@ if (!isset($_SESSION['username'])) {
 
   <!-- Link CDN Jquery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
   <!-- Link CDN AOS -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
@@ -108,10 +109,86 @@ if (!isset($_SESSION['username'])) {
   <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtqtqs7izeIE4pjxFrtUi-4ymAMStRilY&callback=initMap">
   </script>
 
-  <!-- -7.3399815207700065, 112.73688888681441 -->
+  <!-- Link CDN JS Slick Carousel -->
+  <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+  <!-- api key AIzaSyDtqtqs7izeIE4pjxFrtUi-4ymAMStRilY -->
+  <!-- map id 93eb27799b5c0810  -->
+
+
+
 
   <script>
+    window.onload = function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+
+
+    function showPosition(position) {
+      var lat = position.coords.latitude;
+      var lng = position.coords.longitude;
+      map.setCenter(new google.maps.LatLng(lat, lng));
+      console.log(lat, lng, "x")
+      console.log(typeof(lat))
+
+      $("input").eq(0).val(lat + "," + lng);
+
+      const geocoder = new google.maps.Geocoder()
+
+      const infoWindow = new google.maps.InfoWindow()
+
+      // geocodeLatLng(geocoder, map, infoWindow)
+
+      const marker = new google.maps.Marker({
+        position: {
+          lat: lat,
+          lng: lng
+        },
+        map: map
+      })
+
+
+    }
+
+    // function geocodeLatLng(geocoder, mao, infoWindow) {
+    //   const input = $("input").eq(0).attr("placeholder")
+
+    //   // split this commas
+
+    //   const latlngStr = input.split(",", 2)
+
+    //   // latitude and logitude object
+
+    //   const latlng = {
+    //     lat: parseFloat(latlngStr[0]),
+    //     lng: parseFloat(latlngStr[1])
+    //   }
+
+    //   geocoder.geocode({
+    //     location: latlng
+    //   }).then((response) => {
+    //     console.log(response)
+    //   })
+
+
+
+
+    // }
+
+
+
+
+
     function initMap() {
+
+      // Direction service
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+
       var options = {
         center: {
           lat: -7.3399815207700065,
@@ -123,55 +200,17 @@ if (!isset($_SESSION['username'])) {
 
       map = new google.maps.Map(document.getElementById('map'), options);
 
+      //Code direction  
+      // directionsRenderer.setMap(map);
 
-      // -7.338842024281197, 112.73508906488934
-      const marker = new google.maps.Marker({
-        position: {
-          lat: -7.338842024281197,
-          lng: 112.73508906488934
-        },
-        map: map
-      })
-
-      // -7.338656165590891, 112.73703446286774
-      const marker1 = new google.maps.Marker({
-        position: {
-          lat: -7.338656165590891,
-          lng: 112.73703446286774
-        },
-        map: map
-      })
-
-      // -7.340493497163957, 112.73477295388967
-      const marker2 = new google.maps.Marker({
-        position: {
-          lat: -7.340493497163957,
-          lng: 112.73477295388967
-        },
-        content: "test",
-        map: map
-      })
-
-      // -7.341459618489882, 112.73909444950196
-      const markerDriver = new google.maps.Marker({
-        position: {
-          lat: -7.341459618489882,
-          lng: 112.73909444950196
-        },
-        map: map,
-        icon: {
-          url: "https://cdn-icons-png.flaticon.com/512/5451/5451714.png",
-          scaledSize: new google.maps.Size(38, 31)
-        }
-      })
-
-      const detailWindow = new google.maps.InfoWindow({
-        content: `<p>Nama Driver</p>`
-      })
-
-      markerDriver.addListener("click", () => {
-        detailWindow.open(map, markerDriver);
-      })
+      // (document.getElementById("start") as HTMLElement).addEventListener(
+      //   "change",
+      //   onChangeHandler
+      // );
+      // (document.getElementById("end") as HTMLElement).addEventListener(
+      //   "change",
+      //   onChangeHandler
+      // );
 
     }
 
@@ -183,14 +222,9 @@ if (!isset($_SESSION['username'])) {
     });
   </script>
 
-  <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtqtqs7izeIE4pjxFrtUi-4ymAMStRilY&map_ids=93eb27799b5c0810&callback=initMap"></script> -->
-
-  <!-- api key AIzaSyDtqtqs7izeIE4pjxFrtUi-4ymAMStRilY -->
-  <!-- map id 93eb27799b5c0810  -->
 
 
-  <!-- Link CDN JS Slick Carousel -->
-  <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
 
   <!-- Link CDN Bootstrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
