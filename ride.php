@@ -46,18 +46,18 @@ require_once 'includes/connect.php';
     <div class="row">
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-map-pin"></i></span>
-        <input type="text" class="form-control" placeholder="Lokasi Anda" aria-describedby="basic-addon1" readonly>
+        <input id="start" type="text" class="form-control" placeholder="Lokasi Anda" aria-describedby="basic-addon1" readonly>
       </div>
     </div>
     <div class="row">
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-location-dot"></i></span>
-        <input type="text" class="form-control" placeholder="Lokasi Tujuan" aria-describedby="basic-addon1">
+        <input id="end" type="text" class="form-control" placeholder="Lokasi Tujuan" aria-describedby="basic-addon1">
       </div>
     </div>
     <div class="row">
       <div class="col">
-        <button type="button" class="btn btn-success">Go</button>
+        <!-- <button type="button" class="btn btn-success" onclick="searchDriver()">Go</button> -->
       </div>
     </div>
   </div>
@@ -106,19 +106,49 @@ require_once 'includes/connect.php';
 
 
   <!-- Link API Google -->
-  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtqtqs7izeIE4pjxFrtUi-4ymAMStRilY&callback=initMap">
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwBBeg0pfj-FAVt_Q298ElrXKz0MO1Gg8&callback=initMap">
   </script>
 
   <!-- Link CDN JS Slick Carousel -->
   <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
-  <!-- api key AIzaSyDtqtqs7izeIE4pjxFrtUi-4ymAMStRilY -->
+  <!-- api key AIzaSyCwBBeg0pfj-FAVt_Q298ElrXKz0MO1Gg8 -->
   <!-- map id 93eb27799b5c0810  -->
 
 
 
 
   <script>
+    function initMap() {
+
+      // Direction 
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+
+      var options = {
+        center: {
+          lat: -7.3399815207700065,
+          lng: 112.73688888681441
+        },
+        zoom: 15,
+        mapId: '93eb27799b5c0810'
+      }
+
+      map = new google.maps.Map(document.getElementById('map'), options);
+
+      //Direction  
+      directionsRenderer.setMap(map);
+
+      const onChangeHandler = function() {
+        calculateAndDisplayRoute(directionsService, directionsRenderer);
+      };
+
+      document.getElementById("start").addEventListener("change", onChangeHandler);
+      document.getElementById("end").addEventListener("change", onChangeHandler);
+
+    }
+
+    // script saat window di load ambil lokasi user
     window.onload = function getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition);
@@ -135,7 +165,7 @@ require_once 'includes/connect.php';
       console.log(lat, lng, "x")
       console.log(typeof(lat))
 
-      $("input").eq(0).val(lat + "," + lng);
+      $("input").eq(0).val(lat+","+lng,);
 
       const geocoder = new google.maps.Geocoder()
 
@@ -153,6 +183,31 @@ require_once 'includes/connect.php';
 
 
     }
+
+
+    function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+
+      directionsService
+        .route({
+          origin: {
+            query: $("input").eq(0).val(),
+          },
+          destination: {
+            query: $("input").eq(1).val(),
+          },
+          travelMode: google.maps.TravelMode.DRIVING,
+          unitSystem: google.maps.UnitSystem.METRIC
+        })
+        .then((response) => {
+          directionsRenderer.setDirections(response);
+          console.log(response.routes[0].legs[0].distance.text)
+
+          // console.log(response['request'])
+          // console.log(JSON.stringify(response.data));
+        })
+        .catch((e) => window.alert("Directions request failed due to " + status));
+    }
+
 
     // function geocodeLatLng(geocoder, mao, infoWindow) {
     //   const input = $("input").eq(0).attr("placeholder")
@@ -183,36 +238,13 @@ require_once 'includes/connect.php';
 
 
 
-    function initMap() {
 
-      // Direction service
-      const directionsService = new google.maps.DirectionsService();
-      const directionsRenderer = new google.maps.DirectionsRenderer();
 
-      var options = {
-        center: {
-          lat: -7.3399815207700065,
-          lng: 112.73688888681441
-        },
-        zoom: 15,
-        mapId: '93eb27799b5c0810'
-      }
 
-      map = new google.maps.Map(document.getElementById('map'), options);
 
-      //Code direction  
-      // directionsRenderer.setMap(map);
 
-      // (document.getElementById("start") as HTMLElement).addEventListener(
-      //   "change",
-      //   onChangeHandler
-      // );
-      // (document.getElementById("end") as HTMLElement).addEventListener(
-      //   "change",
-      //   onChangeHandler
-      // );
 
-    }
+
 
     $(function() {
       AOS.init({

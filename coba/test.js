@@ -10,9 +10,9 @@
 
     const map = new google.maps.Map(document.getElementById("map"), {
       zoom: 7,
-      center: { lat: 41.85, lng: -87.65 },
+      center: { lat: -7.336705911257631, lng: 109.83247477961967 },
     });
-  
+
     directionsRenderer.setMap(map);
   
     const onChangeHandler = function () {
@@ -33,7 +33,7 @@
           query: document.getElementById("end").value,
         },
         travelMode: google.maps.TravelMode.DRIVING,
-        unitSystem: google.maps.UnitSystem.IMPERIAL 
+        unitSystem: google.maps.UnitSystem.METRIC 
       })
       .then((response) => {
         directionsRenderer.setDirections(response);
