@@ -7,13 +7,13 @@ if (!isset($_SESSION['username'])) {
 }
 
 $sql = 'SELECT * FROM USER WHERE username = ?';
-        $checksql = $pdo->prepare($sql);
-        $checksql->execute([$_SESSION['username']]);
+$checksql = $pdo->prepare($sql);
+$checksql->execute([$_SESSION['username']]);
 
-        $row = $checksql->fetch();                      
+$row = $checksql->fetch();
 
-        // echo $row['username'];
-        // echo $row['password'];
+// echo $row['username'];
+// echo $row['password'];
 
 
 
@@ -92,14 +92,15 @@ $sql = 'SELECT * FROM USER WHERE username = ?';
             </div>
         </div>
         <div class="row mt-5">
-            <div class="col-6 mt-1">
+            <!-- <div class="col-6 mt-1">
                 <button type="button" class="btn btn-primary">Edit</button>
 
-            </div>
-            <div class="col-6">
+            </div> -->
+            <div class="col  text-center">
+                <!-- <button type="button" class="btn btn-success ">Log Out</button> -->
                 <i class="fa-solid fa-right-from-bracket"></i>
-                <a href="login.php">
-                    <p>Log Keluar</p>
+                <a class="cool-link" href="logout.php">
+                    Log Out
                 </a>
 
             </div>

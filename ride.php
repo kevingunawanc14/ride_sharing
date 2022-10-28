@@ -3,9 +3,9 @@ require_once 'includes/connect.php';
 
 // echo $_SESSION['username'];
 
-// if (!isset($_SESSION['username'])) {
-//   echo '<script>window.location.href = "http://localhost/ride_sharing/login.php";</script>';
-// }
+if (!isset($_SESSION['username'])) {
+  echo '<script>window.location.href = "http://localhost/ride_sharing/login.php";</script>';
+}
 
 
 
