@@ -1,3 +1,28 @@
+<?php
+require_once 'includes/connect.php';
+
+
+if (!isset($_SESSION['username'])) {
+    echo '<script>window.location.href = "http://localhost/ride_sharing/login.php";</script>';
+}
+
+$sql = 'SELECT * FROM USER WHERE username = ?';
+$checksql = $pdo->prepare($sql);
+$checksql->execute([$_SESSION['username']]);
+
+$row = $checksql->fetch();
+
+// echo $row['username'];
+// echo $row['password'];
+
+
+
+
+
+?>
+
+
+
 <!doctype html>
 <html lang="en">
 

@@ -44,10 +44,11 @@ $row = $checksql->fetch();
     <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@300;400;700&display=swap" rel="stylesheet">
     <!-- Link Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Link Animate Style -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 </head>
 
 <body>
-
 
     <div class="container text-center mt-3" data-aos="fade-down">
         <div class="row">
@@ -60,13 +61,35 @@ $row = $checksql->fetch();
                     <div class="card-body">
                         <h5 class="card-title"><sup> Rp </sup> <?php echo $row['saldo'];  ?></h5>
                         <!-- <p class="card-text">With supporting text below as a natural lead-in to additional content.</p> -->
-                        <button class="btn btn-primary" onclick="isiSaldoAjax()"> <i class="fa-solid fa-hand-holding-dollar"></i> Isi Ulang</a>
+                        <button class="btn btn-primary my-2 animate__animated animate__shakeY animate__slower animate__infinite	infinite" data-bs-toggle="modal" data-bs-target="#exampleModal"> <i class="fa-solid fa-hand-holding-dollar"></i> Isi Ulang</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Masukan Isi Saldo</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="form-saldo">
+                        <div class="">
+                            <input type="number" class="form-control" id="saldo">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="isiSaldoAjax()" data-bs-dismiss="modal">Isi</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="container transaksi" data-aos="fade-down">
         <?php
@@ -89,7 +112,7 @@ $row = $checksql->fetch();
                                     <div class='card-body'>
                                         <h5 class='card-title'>Perjalanan</h5>
                                         <p class='card-text'>Kode Pemesanan {$rowTransaksi['id']} </p>
-                                        <a href='#' class='btn btn-primary'>{$rowTransaksi['biaya']} </a>
+                                        <a href='#' class='btn btn-primary'>-Rp. {$rowTransaksi['biaya']} </a>
                                     </div>
                                 </div>
                             </div>
@@ -173,49 +196,103 @@ $row = $checksql->fetch();
 
     <script>
         function isiSaldoAjax() {
-            Swal.fire({
-                title: 'Masukan Jumlah Uang',
-                input: 'number',
-                inputAttributes: {
-                    autocapitalize: 'off'
-                },
-                showCancelButton: true,
-                cancelButtonText: 'Batal',
-                confirmButtonText: 'Isi',
-                showLoaderOnConfirm: true,
-                confirmButtonColor: "#0d6efd",
-                preConfirm: (login) => {
-                    return fetch(`//api.github.com/users/${login}`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(response.statusText)
-                            }
-                            console.log(response)
-                            return response.json()
-                            
-                        })
-                        .catch(error => {
-                            Swal.showValidationMessage(
-                                `Request failed: ${error}`
-                            )
-                        })
-                },
-                allowOutsideClick: () => !Swal.isLoading()
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Isi Saldo Berhasil',
-                        confirmButtonColor: "#0d6efd"
-                        // timer: 2000,
-                        // timerProgressBar: true
 
-                    });
+
+            let formData = new FormData();
+            formData.append("jumlahUang", $("#saldo").val());
+
+            // if($(".swal2-input").val() )
+
+            const xmlHttp = new XMLHttpRequest();
+            xmlHttp.onload = function() {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+                    let timerInterval
+                    Swal.fire({
+                        title: 'Dalam Proses',
+                        html: '',
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading()
+                            // const b = Swal.getHtmlContainer().querySelector('b')
+                            // timerInterval = setInterval(() => {
+                            //     b.textContent = Swal.getTimerLeft()
+                            // }, 100)
+                        },
+                        willClose: () => {
+                            clearInterval(timerInterval)
+                        }
+                    }).then((result) => {
+                        /* Read more about handling dismissals below */
+                        if (result.dismiss === Swal.DismissReason.timer) {
+                            console.log('I was closed by the timer')
+                        }
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            confirmButtonColor: "#0d6efd"
+                        });
+
+                        console.log(result)
+                        $(".card-title").eq(0).html("<sup> Rp </sup>" + this.responseText)
+                        $("#form-saldo").trigger("reset");
+
+                    })
+
+
+
+
+                } else {
+                    alert("Error!");
                 }
-            })
+            }
+
+
+            xmlHttp.open("POST", "request/isi_saldo_ajax.php");
+            xmlHttp.send(formData);
+
+
+
 
 
         }
+
+        // $("button").click(function() {
+        //     alert("The paragraph was clicked.");
+        // });
+
+
+
+        // $(document).ready(function() {
+        //     $(".swal2-confirm.swal2-styled.swal2-default-outline").click(function() {
+        //         alert("The paragraph was clicked 11.");
+
+
+        //         // let formData = new FormData();
+        //         // formData.append("jumlahUang", $(".swal2-input").val());
+
+
+        //         // const xmlHttp = new XMLHttpRequest();
+        //         // xmlHttp.onload = function() {
+        //         //     if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+
+        //         //         $(".card-title").text(this.responseText)
+
+        //         //     } else {
+        //         //         alert("Error!");
+        //         //     }
+        //         // }
+        //         // xmlHttp.open("POST", "request/isi_saldo_ajax.php");
+        //         // xmlHttp.send(formData);
+
+        //     });
+
+        // });
+
+
+
 
         $(function() {
             AOS.init({
