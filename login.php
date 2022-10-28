@@ -54,6 +54,9 @@
                     <p>Don't have an account ? <a class="cool-link" href="sign_up.php">Sign Up</a></p>
                 </div>
 
+                <!-- <span class="loader"></span> -->
+
+
             </div>
             <div class="col-12 col-sm-8 slide d-none d-sm-block">
                 <div class="bgLogin1"></div>
@@ -91,13 +94,21 @@
             const xmlHttp = new XMLHttpRequest();
             xmlHttp.onload = function() {
                 if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-                    alert(this.responseText)
 
-                    if (this.responseText == "Maaf Username / Password Anda Salah") {
-                        window.location.href = "http://localhost/ride_sharing/login.php";
-                    } else {
-                        window.location.href = "http://localhost/ride_sharing/ride.php";
-                    }
+
+                    $(".formLogin").attr('style', 'margin-top: 40vh !important');
+                    $(".formLogin").html("<span class='loader'></span>");
+
+
+                    setTimeout(() => {
+
+                        if (this.responseText == "Maaf Username / Password Anda Salah") {
+                            window.location.href = "http://localhost/ride_sharing/login.php";
+                        } else {
+                            window.location.href = "http://localhost/ride_sharing/ride.php";
+                        }
+
+                    }, 3000)
 
 
                 } else {
