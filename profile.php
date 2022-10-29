@@ -47,6 +47,7 @@ $row = $checksql->fetch();
 
 <body>
     <style>
+        /* css remove logout color */
         a {
             color: inherit;
             text-decoration: none;
@@ -54,6 +55,15 @@ $row = $checksql->fetch();
         }
 
         a:hover {
+            color: black;
+        }
+
+        /* css remove logout color */
+
+
+
+        /* warna icon font-awesome */
+        .fa-id-card {
             color: black;
         }
     </style>
@@ -66,7 +76,17 @@ $row = $checksql->fetch();
             <div class="col mt-4">
                 <div class="row">
                     <div class="col m-3">
-                        <img src="assets/profile.png" alt="" class="rounded-circle rounded-5" width="100px">
+                        <?php
+
+                        if ($row['status'] == 1) {
+
+                            echo "<img src='assets/profile.png' alt='' class='rounded-circle rounded-5' width='100px'>";
+                            
+                        } else {
+                            echo "<img src='assets/driver.png' alt='' class='rounded-circle rounded-5' width='100px'>";
+                        }
+
+                        ?>
                     </div>
                 </div>
                 <div class="row">

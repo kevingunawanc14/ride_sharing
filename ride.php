@@ -34,9 +34,19 @@ if (!isset($_SESSION['username'])) {
   <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@300;400;700&display=swap" rel="stylesheet">
   <!-- Link Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Link Animated Style -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 </head>
 
 <body>
+
+  <style>
+    /* warna icon font-awesome */
+    .fa-car-side {
+      color: black;
+    }
+  </style>
+
 
 
 
@@ -57,8 +67,30 @@ if (!isset($_SESSION['username'])) {
     </div>
     <div class="row">
       <div class="col">
-        <!-- <button type="button" class="btn btn-success" onclick="searchDriver()">Go</button> -->
+        <button type="button" class="btn btn-success animate__animated animate__pulse animate__infinite	infinite" onclick="liveMap()"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
       </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-12 col-sm-4 my-3">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          Lokasi Tujuan
+        </button>
+
+      </div>
+      <div class="col-12 col-sm-4 my-3">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          Lokasi User Lain
+        </button>
+      </div>
+      <div class="col-12 col-sm-4 my-3">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          Lokasi Driver
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -165,7 +197,7 @@ if (!isset($_SESSION['username'])) {
       console.log(lat, lng, "x")
       console.log(typeof(lat))
 
-      $("input").eq(0).val(lat+","+lng,);
+      $("input").eq(0).val(lat + "," + lng, );
 
       const geocoder = new google.maps.Geocoder()
 
@@ -209,40 +241,35 @@ if (!isset($_SESSION['username'])) {
     }
 
 
-    // function geocodeLatLng(geocoder, mao, infoWindow) {
-    //   const input = $("input").eq(0).attr("placeholder")
-
-    //   // split this commas
-
-    //   const latlngStr = input.split(",", 2)
-
-    //   // latitude and logitude object
-
-    //   const latlng = {
-    //     lat: parseFloat(latlngStr[0]),
-    //     lng: parseFloat(latlngStr[1])
-    //   }
-
-    //   geocoder.geocode({
-    //     location: latlng
-    //   }).then((response) => {
-    //     console.log(response)
-    //   })
+    function liveMap() {
 
 
 
 
-    // }
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
 
+          $("body").attr('style', 'margin-top: 40vh !important');
+          $("body").html("<span class='loader'></span>");
 
 
+          setTimeout(() => {
+
+            alert("berhasil")
+
+          }, 3000)
 
 
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/map_live_ajax.php");
+      xmlHttp.send(DataAkun);
 
-
-
-
+    }
 
 
 

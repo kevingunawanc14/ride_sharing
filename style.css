@@ -53,12 +53,12 @@ body {
     padding: 0;
 }
 
-a{
+a {
     text-decoration: none;
     color: black;
 }
 
-a:hover{
+a:hover {
     color: black;
 }
 
@@ -88,7 +88,7 @@ li {
 
 
 
-.profile{
+.profile {
     margin-bottom: 150px;
 }
 
@@ -112,9 +112,10 @@ li {
     position: relative;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
-  }
-  .loader::after {
-    content: '';  
+}
+
+.loader::after {
+    content: '';
     box-sizing: border-box;
     position: absolute;
     left: 50%;
@@ -125,17 +126,25 @@ li {
     border-radius: 50%;
     border: 3px solid;
     border-color: #198754 transparent;
-  }
-  
-  @keyframes rotation {
+}
+
+@keyframes rotation {
     0% {
-      transform: rotate(0deg);
+        transform: rotate(0deg);
     }
+
     100% {
-      transform: rotate(360deg);
+        transform: rotate(360deg);
     }
-  } 
+}
 /* loader */
 
 
+.formRide{
+    margin-bottom: 150px;
+}
 
+/* min width button map */
+.formRide button:nth-child(2),button:nth-child(3),button:nth-child(4){
+    min-width: 50%;
+}

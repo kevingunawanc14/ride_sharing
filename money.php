@@ -50,6 +50,17 @@ $row = $checksql->fetch();
 
 <body>
 
+    <style>
+
+
+        /* warna icon font-awesome */
+        .fa-wallet {
+            color: black;
+        }
+
+
+    </style>
+
     <div class="container text-center mt-3" data-aos="fade-down">
         <div class="row">
             <h1 class="display-2 text-start fw-bolder cool-link">Pembayaran</h1>
@@ -209,7 +220,7 @@ $row = $checksql->fetch();
 
                     let timerInterval
                     Swal.fire({
-                        title: 'Dalam Proses',
+                        title: 'Dalam Proses...',
                         html: '',
                         timer: 2000,
                         timerProgressBar: true,

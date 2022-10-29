@@ -3,7 +3,7 @@ require_once 'includes/connect.php';
 
 
 if (!isset($_SESSION['username'])) {
-    echo '<script>window.location.href = "http://localhost/ride_sharing/login.php";</script>';
+  echo '<script>window.location.href = "http://localhost/ride_sharing/login.php";</script>';
 }
 
 $sql = 'SELECT * FROM USER WHERE username = ?';
@@ -12,9 +12,8 @@ $checksql->execute([$_SESSION['username']]);
 
 $row = $checksql->fetch();
 
-// echo $row['username'];
+echo $row['id'];
 // echo $row['password'];
-
 
 
 
@@ -49,7 +48,12 @@ $row = $checksql->fetch();
 
 <body>
 
-
+  <style>
+    /* warna icon font-awesome */
+    .fa-receipt {
+      color: black;
+    }
+  </style>
 
   <div class="container text-center mt-3" data-aos="fade-down">
     <div class="row history">
@@ -69,16 +73,46 @@ $row = $checksql->fetch();
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th scope="row">1</th>
+            <?php
+            // echo $row['id'];
+
+            $sql = 'SELECT * FROM HISTORY WHERE id_user = ?';
+            $checksql = $pdo->prepare($sql);
+            $checksql->execute([$row['id']]);
+            
+            // $rowHistory = $checksql->fetch();
+            
+
+
+
+            while ($rowHistory = $checksql->fetch()) {
+
+              echo    "
+                            
+      
+                        <tr>
+                          <th scope='row'>1</th>
+                          <td>kolom tanggal masih x</td>
+                          <td>{$rowHistory['lokasi_berangkat']}</td>
+                          <td>{$rowHistory['lokasi_tujuan']}</td>
+                          <td>500 m</td>
+                          <td>{$rowHistory['biaya']}</td>
+          
+                        </tr>
+                    ";
+            }
+
+            ?>
+            <!-- <tr>
+              <th scope='row'>1</th>
               <td>30-Oct-22, 9.12 - 9.20</td>
               <td>Jalan x</td>
               <td>Jalan y</td>
               <td>500 m</td>
               <td>Rp. 9000</td>
 
-            </tr>
-            <tr>
+            </tr> -->
+            <!-- <tr>
               <th scope="row">2</th>
               <td>31-Oct-22, 9.12 - 9.20</td>
               <td>Jalan x</td>
@@ -187,7 +221,7 @@ $row = $checksql->fetch();
 
               <td>Rp. 700000000000000000000000000000000</td>
 
-            </tr>
+            </tr> -->
           </tbody>
         </table>
       </div>
