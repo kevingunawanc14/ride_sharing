@@ -47,10 +47,7 @@ if (!isset($_SESSION['username'])) {
     }
   </style>
 
-
-
-
-  <div id="map"></div>
+  <div id="map" class="mapLoading text-center"></div>
 
   <div class="container formRide text-center mt-3" data-aos="fade-down">
     <div class="row">
@@ -67,29 +64,29 @@ if (!isset($_SESSION['username'])) {
     </div>
     <div class="row">
       <div class="col">
-        <button type="button" class="btn btn-success animate__animated animate__pulse animate__infinite	infinite" onclick="liveMap()"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        <button type="button" class="btn btn-success animate__animated animate__pulse animate__infinite	infinite" onclick="viewUserSekitar()"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
       </div>
     </div>
     <div class="row mt-3">
-      <div class="col-12 col-sm-4 my-3">
+      <div class="col-12 col-sm-6 my-3">
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
           Lokasi Tujuan
         </button>
 
       </div>
-      <div class="col-12 col-sm-4 my-3">
+      <div class="col-12 col-sm-6 my-3">
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
           Lokasi User Lain
         </button>
       </div>
-      <div class="col-12 col-sm-4 my-3">
-        <!-- Button trigger modal -->
+      <!-- <div class="col-12 col-sm-4 my-3">
+        Button trigger modal
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
           Lokasi Driver
         </button>
-      </div>
+      </div> -->
 
     </div>
   </div>
@@ -245,19 +242,26 @@ if (!isset($_SESSION['username'])) {
 
 
 
+      let DataLokasiUser = new FormData();
+      DataLokasiUser.append("lokasi", $("#start").val());
+
+      console.log($("#start").val())
 
       const xmlHttp = new XMLHttpRequest();
       xmlHttp.onload = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
+          $(".mapLoading").html("<span class='loader'></span>");
 
-          $("body").attr('style', 'margin-top: 40vh !important');
-          $("body").html("<span class='loader'></span>");
+          $(".loader").css({
+            "margin-top": "50%",
+          });
+
 
 
           setTimeout(() => {
 
-            alert("berhasil")
+            console.log("aa")
 
           }, 3000)
 
@@ -267,11 +271,113 @@ if (!isset($_SESSION['username'])) {
         }
       }
       xmlHttp.open("POST", "request/map_live_ajax.php");
-      xmlHttp.send(DataAkun);
+      xmlHttp.send(DataLokasiUser);
 
     }
 
+    function viewUserSekitar() {
 
+
+      let lokasi_awal = $("input").eq(0).val();
+
+      let DataLokasi = new FormData();
+      DataLokasi.append("lokasi_awal", lokasi_awal);
+
+
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          data = JSON.parse(this.responseText);
+          // terima data lokasi
+          // misal 
+          // awal user = petra w
+          // awal driver = petra e
+          // awal driver = petra q
+          // ......
+          // if lokasi user dicompare dengan driver2 yang ada kurang dari 500m 
+          // jalano script api direction untuk cek 
+          // console.log(data)
+          // console.log(this.responseText)
+
+          const directionsService = new google.maps.DirectionsService();
+          const directionsRenderer = new google.maps.DirectionsRenderer();
+
+
+
+          for (let i = 1; i < data.length; i++) {
+            // console.log(data.length)
+            console.log(data[0]["lokasi_berangkat"], " ini isi datanya")
+
+            directionsService
+              .route({
+                origin: {
+                  query: data[0]["lokasi_berangkat"],
+                },
+                destination: {
+                  query: data[i]["lokasi_berangkat"],
+                },
+                travelMode: google.maps.TravelMode.DRIVING,
+              })
+              .then((response) => {
+                directionsRenderer.setDirections(response);
+                console.log(response.routes)
+
+                const myArray = response.routes[0].legs[0].distance.text.split(" ");
+
+                if (myArray[0] <= 1) {
+                  alert("kurang dari 1 kilo")
+                  console.log(response.routes[0].legs[0].distance.text)
+
+                }
+
+                  let data = `  
+                  <ol class='list-group list-group-numbered'>
+                  <li class='list-group-item d-flex justify-content-between align-items-start'>
+                    <div class='ms-2 me-auto'>
+                      <div class='fw-bold'>Subheading</div>
+                      Content for list item
+                    </div>
+                    <span class='badge bg-primary rounded-pill'>14</span>
+                  </li>
+                  <li class='list-group-item d-flex justify-content-between align-items-start'>
+                    <div class='ms-2 me-auto'>
+                      <div class='fw-bold'>Subheading</div>
+                      Content for list item
+                    </div>
+                    <span class='badge bg-primary rounded-pill'>14</span>
+                  </li>
+                  <li class='list-group-item d-flex justify-content-between align-items-start'>
+                    <div class='ms-2 me-auto'>
+                      <div class='fw-bold'>Subheading</div>
+                      Content for list item
+                    </div>
+                    <span class='badge bg-primary rounded-pill'>14</span>
+                  </li>
+                </ol>
+                `
+
+                  $(".formRide").html(data)
+
+              })
+              .catch((e) => window.alert("Directions request failed due to " + status + "maro"));
+          }
+
+
+
+
+
+
+
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/user_sekitar_ajax.php");
+      xmlHttp.send(DataLokasi);
+
+
+    }
 
     $(function() {
       AOS.init({
