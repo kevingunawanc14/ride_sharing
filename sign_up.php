@@ -24,7 +24,7 @@
 
 <body>
 
-    <!-- Login -->
+    <!-- Sign up -->
     <div class="container-fluid sign_up ">
         <div class="row ">
             <div class="col-12 col-sm-4 text-center formSignUp mt-5" data-aos="fade-down">
@@ -44,9 +44,13 @@
                     <label for="password">Password</label>
                 </div>
 
-       
-
-          
+                <!-- <div class="form m-3 mt-4" data-aos="fade-down">
+                    <select class="form-select pilihanStatus" aria-label="Default select example">
+                        <option selected>Status</option>
+                        <option value="1">User</option>
+                        <option value="2">Driver</option>
+                    </select>
+                </div> -->
 
 
                 <button type="button" class="btn btn-success rounded-circle btn-lg buttonRide" onclick="next1()"><i class="fa-solid fa-arrow-right"></i></button>
@@ -57,7 +61,7 @@
                 </div>
 
                 <div class="mt-3">
-                    <p>Already have an account ? <a href="login.php" class="cool-link" >Login</a></p>
+                    <p>Already have an account ? <a href="login.php" class="cool-link">Login</a></p>
                 </div>
 
             </div>
@@ -81,20 +85,67 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <script>
+        var counter = 0
+
+        var DataAkun = new FormData();
+
+
+        $('body').on('change', '.pilihanStatus', function() {
+            var pil = $(this).val();
+            alert(pil)
+            alert(counter)
+
+            if (pil == "1" && counter == 0) {
+                let formKapasitas =
+                    `
+                    <div class="form formKapasitas m-3 mt-4" data-aos="fade-down">
+                            <select class="form-select kapasitas" aria-label="Default select example">
+                                <option  selected>Kapasitas Kendaraan</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+
+                        </div> 
+
+                    `
+                $(".formStatus").after(formKapasitas);
+                counter += 1
+            } else {
+                $(".formKapasitas").remove();
+            }
+
+
+
+        });
+
+
         function next1() {
+
+
+            let username = document.getElementById("username").value
+            let password = document.getElementById("password").value
+
+            DataAkun.append("username", username);
+            DataAkun.append("password", password);
+
+
+
             let dataUmum =
                 `
                 <p class="m-2 text-start fw-semibold">Hello,</p>
                 <h1 class="m-2 display-2 text-start fw-semibold">Sign Up!</h1>
 
                 <div class="form-floating m-3" data-aos="fade-down">
-                    <input type="password" class="form-control" id="password" placeholder="Password">
-                    <label for="password">Umur</label>
+                    <input type="number" class="form-control" id="umur" placeholder="umur">
+                    <label for="umur">Umur</label>
                 </div>
 
                 <div class="form-floating m-3" data-aos="fade-down">
-                    <input type="password" class="form-control" id="password" placeholder="Password">
-                    <label for="password">Alamat</label>
+                    <input type="text" class="form-control" id="alamat" placeholder="alamat">
+                    <label for="alamat">Alamat</label>
                 </div>
 
                 <button type="button" class="btn btn-success rounded-circle btn-lg buttonRide" onclick="next2()"><i class="fa-solid fa-arrow-right"></i></button>
@@ -109,30 +160,37 @@
                 </div>
             `
             $(".formSignUp").html(dataUmum);
+
+            // Display the values
+            for (const value of DataAkun.values()) {
+                console.log(value);
+            }
+
         }
 
         function next2() {
+
+            let umur = document.getElementById("umur").value
+            let alamat = document.getElementById("alamat").value
+
+            DataAkun.append("umur", umur);
+            DataAkun.append("alamat", alamat);
+
             let dataDetail =
-            `
+                `
                 <p class="m-2 text-start fw-semibold">Hello,</p>
                 <h1 class="m-2 display-2 text-start fw-semibold">Sign Up!</h1>
 
-                <div class="form m-3 mt-4" data-aos="fade-down">
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Status</option>
-                        <option value="1">User</option>
-                        <option value="2">Driver</option>
+                <div class="form m-3 mt-4 formStatus" data-aos="fade-down">
+                    <select class="form-select pilihanStatus" aria-label="Default select example">
+                        <option  selected>Status</option>
+                        <option value="0" >User</option>
+                        <option value="1" >Driver</option>
                     </select>
                 </div>
 
-                <div class="form m-3 mt-4" data-aos="fade-down">
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Tipe Kendaraan</option>
-                        <option value="1">Mobil</option>
-                        <option value="2">Motor</option>
-                    </select>
+                
 
-                </div> 
 
                 <button type="button" class="btn btn-success rounded-circle btn-lg buttonRide mt-4" onclick="createAccount()"><i class="fa-solid fa-arrow-right"></i></button>
 
@@ -146,7 +204,79 @@
                 </div>
             `
             $(".formSignUp").html(dataDetail);
+
+
+            // Display the values
+            for (const value of DataAkun.values()) {
+                console.log(value);
+            }
+
         }
+
+        function createAccount() {
+
+            let status = $('.pilihanStatus').find(":selected").val();
+
+            alert(status)
+
+            if (status == "1") {
+                alert("aa")
+                let kapasitas = $('.kapasitas').find(":selected").val();
+                DataAkun.append("status", status);
+                DataAkun.append("kapasitas", kapasitas);
+            }else{
+                alert("bb")
+                DataAkun.append("status", status);
+                DataAkun.append("kapasitas", 0);    
+            }
+
+            // console.log(DataAkun)
+
+            // Display the values
+            // for (const value of DataAkun.values()) {
+            //     console.log(value);
+            // }
+
+            const xmlHttp = new XMLHttpRequest();
+            xmlHttp.onload = function() {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'Pembuatan Akun Berhasil',
+                        showConfirmButton: false,
+                        timer: 3000
+                    })
+
+                
+                    setTimeout(() => {
+                        if (this.responseText == "Pembuatan Akun Berhasil") {
+                            window.location.href = "http://localhost/ride_sharing/login.php";
+                        } 
+
+
+                    }, 3000)
+
+
+
+                } else {
+                    alert("Error!");
+                }
+            }
+            xmlHttp.open("POST", "request/sign_up_ajax.php");
+            xmlHttp.send(DataAkun);
+
+
+
+
+
+        }
+
+
+
+
+
 
 
         $(function() {
@@ -177,6 +307,8 @@
     <!-- Link CDN Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
 
+    <!-- Link CDN sweetalert  -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 

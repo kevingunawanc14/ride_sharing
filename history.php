@@ -12,7 +12,7 @@ $checksql->execute([$_SESSION['username']]);
 
 $row = $checksql->fetch();
 
-echo $row['id'];
+// echo $row['id'];
 // echo $row['password'];
 
 
