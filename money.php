@@ -70,7 +70,7 @@ $row = $checksql->fetch();
                         OVO CASH
                     </div>
                     <div class="card-body">
-                        <h5 class="card-title"><sup> Rp </sup> <?php echo $row['saldo'];  ?></h5>
+                        <h5  class="card-title"><sup> Rp </sup> <span id="saldoSekarang"> <?php echo $row['saldo'];  ?></span></h5>
                         <!-- <p class="card-text">With supporting text below as a natural lead-in to additional content.</p> -->
                         <button class="btn btn-primary my-2 animate__animated animate__shakeY animate__slower animate__infinite	infinite" data-bs-toggle="modal" data-bs-target="#exampleModal"> <i class="fa-solid fa-hand-holding-dollar"></i> Isi Ulang</a>
                     </div>
@@ -210,9 +210,12 @@ $row = $checksql->fetch();
 
 
             let formData = new FormData();
-            formData.append("jumlahUang", $("#saldo").val());
+            formData.append("saldo", $("#saldo").val());
+            formData.append("saldoSekarang", $("#saldoSekarang").html());
 
-            // if($(".swal2-input").val() )
+
+
+            
 
             const xmlHttp = new XMLHttpRequest();
             xmlHttp.onload = function() {
@@ -245,9 +248,11 @@ $row = $checksql->fetch();
                             confirmButtonColor: "#0d6efd"
                         });
 
-                        console.log(result)
+                        // console.log(result)
+                        console.log(this.responseText)
+
                         $(".card-title").eq(0).html("<sup> Rp </sup>" + this.responseText)
-                        $("#form-saldo").trigger("reset");
+                        $(".form-saldo").trigger("reset");
 
                     })
 
