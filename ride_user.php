@@ -77,8 +77,8 @@ if (!isset($_SESSION['username'])) {
       </div>
       <div class="col-12 col-sm-6 my-3">
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          Lokasi Driver
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+          List Driver
         </button>
       </div>
       <!-- <div class="col-12 col-sm-4 my-3">
@@ -127,6 +127,74 @@ if (!isset($_SESSION['username'])) {
   </nav>
 
 
+
+  <!-- Modal Lokasi Tujuan -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Lokasi Tujuan</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="map2" class="modal-body">
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal List Driver -->
+  <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">List Driver</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="card mt-3">
+            <h5 class="card-header">Featured</h5>
+            <div class="card-body">
+              <h5 class="card-title">Special title treatment</h5>
+              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+              <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+          </div>
+          <div class="card mt-3">
+            <h5 class="card-header">Featured</h5>
+            <div class="card-body">
+              <h5 class="card-title">Special title treatment</h5>
+              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+              <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+          </div>
+          <div class="card mt-3">
+            <h5 class="card-header">Featured</h5>
+            <div class="card-body">
+              <h5 class="card-title">Special title treatment</h5>
+              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+              <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
   <!-- Link CDN Jquery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -148,6 +216,9 @@ if (!isset($_SESSION['username'])) {
 
 
   <script>
+    var map, map2
+
+
     function initMap() {
 
       // Direction 
@@ -161,17 +232,32 @@ if (!isset($_SESSION['username'])) {
           lat: -7.3399815207700065,
           lng: 112.73688888681441
         },
-        zoom: 15,
+        zoom: 10,
+        mapId: '93eb27799b5c0810'
+      }
+
+      var options2 = {
+        center: {
+          lat: -7.3399815207700065,
+          lng: 112.73688888681441
+        },
+        zoom: 18,
+        disableDefaultUI: true,
+        preserveViewport: true,
         mapId: '93eb27799b5c0810'
       }
 
       map = new google.maps.Map(document.getElementById('map'), options);
 
+      map2 = new google.maps.Map(document.getElementById("map2"), options2);
+
       //Direction  
-      directionsRenderer.setMap(map);
+      directionsRenderer.setMap(map2);
 
       const onChangeHandler = function() {
         calculateAndDisplayRoute(directionsService, directionsRenderer);
+
+
       };
 
       document.getElementById("start").addEventListener("change", onChangeHandler);
@@ -192,7 +278,7 @@ if (!isset($_SESSION['username'])) {
     function showPosition(position) {
       var lat = position.coords.latitude;
       var lng = position.coords.longitude;
-     
+
 
       console.log(lat, lng, "x")
       console.log(typeof(lat))
@@ -245,10 +331,10 @@ if (!isset($_SESSION['username'])) {
             $("input").eq(0).val(response.results[1].address_components[0].short_name + "," + response.results[1].address_components[1].short_name);
 
             const dataLokasi = document.querySelector("#start");
-            dataLokasi.dataset.lokasi = lat+""+lng; 
+            dataLokasi.dataset.lokasi = lat + "" + lng;
 
 
-             map.setCenter(new google.maps.LatLng(lat, lng));
+            map.setCenter(new google.maps.LatLng(lat, lng));
           } else {
             window.alert("No results found");
           }
@@ -260,7 +346,7 @@ if (!isset($_SESSION['username'])) {
 
 
     function calculateAndDisplayRoute(directionsService, directionsRenderer) {
-      
+
       const dataLokasi = document.querySelector("#start");
 
 
@@ -278,6 +364,8 @@ if (!isset($_SESSION['username'])) {
         .then((response) => {
           directionsRenderer.setDirections(response);
           console.log(response.routes[0].legs[0].distance.text)
+
+
 
           // console.log(response['request'])
           // console.log(JSON.stringify(response.data));

@@ -38,6 +38,11 @@ body {
     background-color: whitesmoke;
 }
 
+#map2 {
+   width: 100%;
+   height: 300px;
+}
+
 .history {
     margin-bottom: 100px;
 }
