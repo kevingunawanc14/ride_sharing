@@ -237,7 +237,7 @@ $row = $checksql->fetch();
         <div>
           <ul class="navbar-nav">
             <li class="nav-item mx-3">
-              <a class="nav-link text-center" href="ride.php"><i class="fa-solid fa-car-side"></i></a>
+              <a class="nav-link text-center" href="ride_user.php"><i class="fa-solid fa-car-side"></i></a>
               <p class="fs-6">Ride</p>
 
             </li>

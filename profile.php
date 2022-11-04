@@ -78,10 +78,9 @@ $row = $checksql->fetch();
                     <div class="col m-3">
                         <?php
 
-                        if ($row['status'] == 1) {
+                        if ($row['status'] == 0) {
 
                             echo "<img src='assets/profile.png' alt='' class='rounded-circle rounded-5' width='100px'>";
-                            
                         } else {
                             echo "<img src='assets/driver.png' alt='' class='rounded-circle rounded-5' width='100px'>";
                         }
@@ -90,25 +89,59 @@ $row = $checksql->fetch();
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col m-3">
-                        <input type="text" class="form-control" placeholder="<?php echo $row['username']   ?>" aria-label="Username" readonly>
+                    <div class="col m-3 text-start">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" placeholder="<?php echo $row['username']   ?>" aria-label="Username" readonly>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col m-3">
-                        <input type="text" class="form-control" placeholder="<?php echo $row['umur']   ?>" aria-label="Umur" readonly>
+                    <div class="col m-3 text-start">
+                        <label for="umur" class="form-label">Umur</label>
+                        <input type="text" class="form-control" id="umur" placeholder="<?php echo $row['umur']   ?>" aria-label="Umur" readonly>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col m-3">
-                        <input type="text" class="form-control" placeholder="<?php echo $row['alamat']   ?>" aria-label="Alamat" readonly>
+                    <div class="col m-3 text-start">
+                        <label for="alamat" class="form-label">Alamat</label>
+                        <input type="text" class="form-control" id="alamat" placeholder="<?php echo $row['alamat']   ?>" aria-label="Alamat" readonly>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col m-3">
-                        <input type="text" class="form-control" placeholder="<?php echo $row['status']   ?>" aria-label="Status" readonly>
+                    <div class="col m-3 text-start">
+                        <label for="status" class="form-label">Status</label>
+                        <input type="text" class="form-control" id="status" placeholder="<?php
+
+
+                        if ($row['status'] == 0) {
+
+                            echo "User";
+                        } else {
+                            echo "Driver";
+                        }
+
+
+
+
+                                                                                            ?>" aria-label="Status" readonly>
                     </div>
                 </div>
+
+                <?php
+                if ($row['status'] == 1) {
+
+                    echo '<div class="row">
+                           <div class="col m-3 text-start">
+                             <label for="alamat" class="form-label">Kapasitas</label>
+                              <input type="text" class="form-control" id="kapasitas" placeholder="'.$row['kapasitas'].'" aria-label="Status" readonly>
+                            </div>
+                         </div>';
+                } else {
+                }
+
+
+
+                ?>
+
             </div>
         </div>
         <div class="row mt-5">
@@ -134,7 +167,7 @@ $row = $checksql->fetch();
                 <div>
                     <ul class="navbar-nav">
                         <li class="nav-item mx-3">
-                            <a class="nav-link text-center" href="ride.php"><i class="fa-solid fa-car-side"></i></a>
+                            <a class="nav-link text-center" href="ride_user.php"><i class="fa-solid fa-car-side"></i></a>
                             <p class="fs-6">Ride</p>
 
                         </li>

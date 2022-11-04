@@ -51,14 +51,10 @@ $row = $checksql->fetch();
 <body>
 
     <style>
-
-
         /* warna icon font-awesome */
         .fa-wallet {
             color: black;
         }
-
-
     </style>
 
     <div class="container text-center mt-3" data-aos="fade-down">
@@ -70,7 +66,7 @@ $row = $checksql->fetch();
                         OVO CASH
                     </div>
                     <div class="card-body">
-                        <h5  class="card-title"><sup> Rp </sup> <span id="saldoSekarang"> <?php echo $row['saldo'];  ?></span></h5>
+                        <h5 class="card-title"><sup> Rp </sup> <span id="saldoSekarang"> <?php echo $row['saldo'];  ?></span></h5>
                         <!-- <p class="card-text">With supporting text below as a natural lead-in to additional content.</p> -->
                         <button class="btn btn-primary my-2 animate__animated animate__shakeY animate__slower animate__infinite	infinite" data-bs-toggle="modal" data-bs-target="#exampleModal"> <i class="fa-solid fa-hand-holding-dollar"></i> Isi Ulang</a>
                     </div>
@@ -102,7 +98,34 @@ $row = $checksql->fetch();
         </div>
     </div>
 
+
+
+
     <div class="container transaksi" data-aos="fade-down">
+        <div class="row">
+            <div class="col-12 mt-4">
+
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Transaksi Perjalanan</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Transaksi Isi Saldo</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">...</div>
+                    <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">...</div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
         <?php
         // echo $row['id'];
 
@@ -155,7 +178,7 @@ $row = $checksql->fetch();
                 <div>
                     <ul class="navbar-nav">
                         <li class="nav-item mx-3">
-                            <a class="nav-link text-center" href="ride.php"><i class="fa-solid fa-car-side"></i></a>
+                            <a class="nav-link text-center" href="ride_user.php"><i class="fa-solid fa-car-side"></i></a>
                             <p class="fs-6">Ride</p>
 
                         </li>
@@ -215,7 +238,7 @@ $row = $checksql->fetch();
 
 
 
-            
+
 
             const xmlHttp = new XMLHttpRequest();
             xmlHttp.onload = function() {

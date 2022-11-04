@@ -105,7 +105,7 @@
                         if (this.responseText == "Maaf Username / Password Anda Salah") {
                             window.location.href = "http://localhost/ride_sharing/login.php";
                         } else {
-                            window.location.href = "http://localhost/ride_sharing/ride.php";
+                            window.location.href = "http://localhost/ride_sharing/ride_user.php";
                         }
 
                     }, 3000)
