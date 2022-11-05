@@ -68,26 +68,26 @@ if (!isset($_SESSION['username'])) {
       </div>
     </div>
     <div class="row mt-3">
-      <div class="col-12 col-sm-6 my-3">
+      <div class="col-12 col-sm-4 my-3">
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          Lokasi Tujuan
+          Lokasi User
         </button>
 
       </div>
-      <div class="col-12 col-sm-6 my-3">
+      <div class="col-12 col-sm-4 my-3">
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          Lokasi User Lain
+          Lokasi Tujuan User 
         </button>
       </div>
-      <!-- <div class="col-12 col-sm-4 my-3">
-        Button trigger modal
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          Lokasi Driver
-        </button>
-      </div> -->
 
+      <div class="col-12 col-sm-4 my-3">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          List User 
+        </button>
+      </div>
     </div>
   </div>
 

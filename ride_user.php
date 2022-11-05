@@ -64,10 +64,14 @@ if (!isset($_SESSION['username'])) {
     </div>
     <div class="row">
       <div class="col">
-        <button type="button" class="btn btn-success animate__animated animate__pulse animate__infinite	infinite" onclick="viewUserSekitar()"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        <button id="searchButton" type="button" class="btn btn-success animate__animated animate__pulse animate__infinite	infinite" onclick="searchDriver()"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+
+        <button id="cancelButton" type="button" class="btn btn-danger animate__animated animate__pulse animate__infinite	infinite" style="display: none;" onclick="cancelSearchDriver()"><i class="fa-solid fa-xmark"></i> Cancel</button>
+
       </div>
     </div>
     <div class="row mt-3">
+
       <div class="col-12 col-sm-6 my-3">
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -75,18 +79,16 @@ if (!isset($_SESSION['username'])) {
         </button>
 
       </div>
+
       <div class="col-12 col-sm-6 my-3">
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal1">
           List Driver
         </button>
       </div>
-      <!-- <div class="col-12 col-sm-4 my-3">
-        Button trigger modal
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          Lokasi Driver
-        </button>
-      </div> -->
+
+
+
 
     </div>
   </div>
@@ -515,6 +517,43 @@ if (!isset($_SESSION['username'])) {
 
     }
 
+
+
+
+
+
+
+
+
+    // search driver
+    function searchDriver() {
+
+      $("#searchButton").css("display", "none");
+      $("#cancelButton").css("display", "inline-block");
+
+    }
+
+    function cancelSearchDriver() {
+
+
+
+      if (confirm("Pencarian Driver Akan Di Batalkan")) {
+        
+        $("#searchButton").css("display", "inline-block");
+        $("#cancelButton").css("display", "none");
+        return;
+        
+      } else {
+        console.log("lanjut")
+
+      }
+
+
+    }
+
+
+
+    // aos initiate
     $(function() {
       AOS.init({
         duration: 1200,
