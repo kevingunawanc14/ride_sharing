@@ -8,9 +8,9 @@ $username = $_POST['username'];
 
 
 // cek username
-$sql = 'SELECT * FROM user';
+$sql = 'SELECT * FROM user WHERE username = ?';
 $checksql = $pdo->prepare($sql);
-$checksql->execute();
+$checksql->execute([$_POST['username']]);
 
 $cekUsername= false;
 $cekPassword= false;
@@ -27,7 +27,6 @@ while ($row = $checksql->fetch()) {
 
         $cekPassword =  true;
 
-
     }
 }
 
@@ -42,6 +41,3 @@ if($cekUsername == false || $cekPassword == false){
 $_SESSION["username"] = $username;
 
 exit ("Login Berhasil");
-
-
-?>

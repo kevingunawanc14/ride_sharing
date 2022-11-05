@@ -70,7 +70,7 @@ if (!isset($_SESSION['username'])) {
 
       </div>
     </div>
-    <div class="row mt-3">
+    <div id="detailData" class="row mt-3" style="display: none;">
 
       <div class="col-12 col-sm-6 my-3">
         <!-- Button trigger modal -->
@@ -138,8 +138,20 @@ if (!isset($_SESSION['username'])) {
           <h1 class="modal-title fs-5" id="exampleModalLabel">Lokasi Tujuan</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div id="map2" class="modal-body">
+        <div class="modal-body" style="padding: 0;">
+          <div id="map2">
 
+          </div>
+          <div class="container text-start">
+            <div class="row">
+              <div class="col lokasiTujuan">
+                  <p>Lokasi Asal :</p>
+                  <p>Lokasi Tujuan :</p>
+                  <p>Jarak :</p>
+                  <p>Biaya :</p>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -190,13 +202,6 @@ if (!isset($_SESSION['username'])) {
   </div>
 
 
-
-
-
-
-
-
-
   <!-- Link CDN Jquery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -216,75 +221,47 @@ if (!isset($_SESSION['username'])) {
 
 
 
-
   <script>
-    var map, map2
+    // global scope variabel map
+    var map1, map2
 
-
+    // init map
     function initMap() {
-
-      // Direction 
-      const directionsService = new google.maps.DirectionsService();
-      const directionsRenderer = new google.maps.DirectionsRenderer();
-
-
 
       var options = {
         center: {
           lat: -7.3399815207700065,
           lng: 112.73688888681441
         },
-        zoom: 10,
-        mapId: '93eb27799b5c0810'
-      }
-
-      var options2 = {
-        center: {
-          lat: -7.3399815207700065,
-          lng: 112.73688888681441
-        },
-        zoom: 18,
         disableDefaultUI: true,
-        preserveViewport: true,
         mapId: '93eb27799b5c0810'
       }
 
-      map = new google.maps.Map(document.getElementById('map'), options);
-
-      map2 = new google.maps.Map(document.getElementById("map2"), options2);
-
-      //Direction  
-      directionsRenderer.setMap(map2);
-
-      const onChangeHandler = function() {
-        calculateAndDisplayRoute(directionsService, directionsRenderer);
-
-
-      };
-
-      document.getElementById("start").addEventListener("change", onChangeHandler);
-      document.getElementById("end").addEventListener("change", onChangeHandler);
+      map1 = new google.maps.Map(document.getElementById('map'), options);
+      // map2 = new google.maps.Map(document.getElementById('map2'), options);
 
     }
 
     // script saat window di load ambil lokasi user
     window.onload = function getLocation() {
       if (navigator.geolocation) {
+        // run fungsi showPosition()
         navigator.geolocation.getCurrentPosition(showPosition);
       } else {
         alert("Geolocation is not supported by this browser.");
       }
     }
 
-
+    // untuk ambil lokasi user saat ini
     function showPosition(position) {
       var lat = position.coords.latitude;
       var lng = position.coords.longitude;
 
 
       console.log(lat, lng, "x")
-      console.log(typeof(lat))
+      // console.log(typeof(lat))
 
+      //isi value form nya dengan lat,lng yang didapat dari geolocation yang nanti buat displit
       $("input").eq(0).val(lat + "," + lng, );
 
       // Geocoding
@@ -293,7 +270,9 @@ if (!isset($_SESSION['username'])) {
 
       const input = document.getElementById("start").value;
       const latlngStr = input.split(",", 2);
+
       console.log(latlngStr)
+
       const latlng = {
         lat: parseFloat(latlngStr[0]),
         lng: parseFloat(latlngStr[1]),
@@ -305,38 +284,25 @@ if (!isset($_SESSION['username'])) {
         })
         .then((response) => {
           if (response.results[0]) {
-            map.setZoom(18);
+            map1.setZoom(18);
 
             const marker = new google.maps.Marker({
               position: latlng,
-              map: map,
+              map: map1,
             });
-
+            // resultnya berupa banyak array ini coba ke 1 karena akurat
             infowindow.setContent(response.results[1].formatted_address);
-            infowindow.open(map, marker);
+            infowindow.open(map1, marker);
 
 
-            // console.log(response.results)
-
-            // console.log(response.results[0])
-
-            // console.log(response.results[0].geometry.location_type)
-
-            // console.log(response.results[6])
-
-            // console.log(response.results[0].address_components[1])
-
-            // console.log(response.results[1].address_components[1].short_name)
-            // console.log()
-
-
+            // cetak di form nya 
             $("input").eq(0).val(response.results[1].address_components[0].short_name + "," + response.results[1].address_components[1].short_name);
 
             const dataLokasi = document.querySelector("#start");
             dataLokasi.dataset.lokasi = lat + "" + lng;
 
 
-            map.setCenter(new google.maps.LatLng(lat, lng));
+            map1.setCenter(new google.maps.LatLng(lat, lng));
           } else {
             window.alert("No results found");
           }
@@ -347,202 +313,36 @@ if (!isset($_SESSION['username'])) {
     }
 
 
-    function calculateAndDisplayRoute(directionsService, directionsRenderer) {
-
-      const dataLokasi = document.querySelector("#start");
-
-
-      directionsService
-        .route({
-          origin: {
-            query: $("input").eq(0).val(),
-          },
-          destination: {
-            query: $("input").eq(1).val(),
-          },
-          travelMode: google.maps.TravelMode.DRIVING,
-          unitSystem: google.maps.UnitSystem.METRIC
-        })
-        .then((response) => {
-          directionsRenderer.setDirections(response);
-          console.log(response.routes[0].legs[0].distance.text)
-
-
-
-          // console.log(response['request'])
-          // console.log(JSON.stringify(response.data));
-        })
-        .catch((e) => window.alert("Directions request failed due to " + status));
-    }
-
-
-    function liveMap() {
-
-
-
-      let DataLokasiUser = new FormData();
-      DataLokasiUser.append("lokasi", $("#start").val());
-
-      console.log($("#start").val())
-
-      const xmlHttp = new XMLHttpRequest();
-      xmlHttp.onload = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-
-          $(".mapLoading").html("<span class='loader'></span>");
-
-          $(".loader").css({
-            "margin-top": "50%",
-          });
-
-
-
-          setTimeout(() => {
-
-            console.log("aa")
-
-          }, 3000)
-
-
-        } else {
-          alert("Error!");
-        }
-      }
-      xmlHttp.open("POST", "request/map_live_ajax.php");
-      xmlHttp.send(DataLokasiUser);
-
-    }
-
-    function viewUserSekitar() {
-
-
-      let lokasi_awal = $("input").eq(0).val();
-
-      let DataLokasi = new FormData();
-      DataLokasi.append("lokasi_awal", lokasi_awal);
-
-
-      const xmlHttp = new XMLHttpRequest();
-      xmlHttp.onload = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-
-          data = JSON.parse(this.responseText);
-          // terima data lokasi
-          // misal 
-          // awal user = petra w
-          // awal driver = petra e
-          // awal driver = petra q
-          // ......
-          // if lokasi user dicompare dengan driver2 yang ada kurang dari 500m 
-          // jalano script api direction untuk cek 
-          // console.log(data)
-          // console.log(this.responseText)
-
-          const directionsService = new google.maps.DirectionsService();
-          const directionsRenderer = new google.maps.DirectionsRenderer();
-
-
-
-          for (let i = 1; i < data.length; i++) {
-            // console.log(data.length)
-            console.log(data[0]["lokasi_berangkat"], " ini isi datanya")
-
-            directionsService
-              .route({
-                origin: {
-                  query: data[0]["lokasi_berangkat"],
-                },
-                destination: {
-                  query: data[i]["lokasi_berangkat"],
-                },
-                travelMode: google.maps.TravelMode.DRIVING,
-              })
-              .then((response) => {
-                directionsRenderer.setDirections(response);
-                console.log(response.routes)
-
-                const myArray = response.routes[0].legs[0].distance.text.split(" ");
-
-                if (myArray[0] <= 1) {
-                  alert("kurang dari 1 kilo")
-                  console.log(response.routes[0].legs[0].distance.text)
-
-                }
-
-                let data = `  
-                  <ol class='list-group list-group-numbered'>
-                  <li class='list-group-item d-flex justify-content-between align-items-start'>
-                    <div class='ms-2 me-auto'>
-                      <div class='fw-bold'>Subheading</div>
-                      Content for list item
-                    </div>
-                    <span class='badge bg-primary rounded-pill'>14</span>
-                  </li>
-                  <li class='list-group-item d-flex justify-content-between align-items-start'>
-                    <div class='ms-2 me-auto'>
-                      <div class='fw-bold'>Subheading</div>
-                      Content for list item
-                    </div>
-                    <span class='badge bg-primary rounded-pill'>14</span>
-                  </li>
-                  <li class='list-group-item d-flex justify-content-between align-items-start'>
-                    <div class='ms-2 me-auto'>
-                      <div class='fw-bold'>Subheading</div>
-                      Content for list item
-                    </div>
-                    <span class='badge bg-primary rounded-pill'>14</span>
-                  </li>
-                </ol>
-                `
-
-                $(".formRide").html(data)
-
-              })
-              .catch((e) => window.alert("Directions request failed due to " + status + "maro"));
-          }
-
-
-
-
-
-
-
-        } else {
-          alert("Error!");
-        }
-      }
-      xmlHttp.open("POST", "request/user_sekitar_ajax.php");
-      xmlHttp.send(DataLokasi);
-
-
-    }
-
-
-
-
-
-
-
-
 
     // search driver
     function searchDriver() {
+      if ($("#end").val() == "") {
+        alert("Alamat Tujuan Masih Kosong")
+        return
+      }
 
       $("#searchButton").css("display", "none");
       $("#cancelButton").css("display", "inline-block");
+      $("#detailData").css("display", "flex");
+
+
+      viewLokasiTujuan();
+
 
     }
 
+    // cancel search driver
     function cancelSearchDriver() {
 
 
 
       if (confirm("Pencarian Driver Akan Di Batalkan")) {
-        
+
         $("#searchButton").css("display", "inline-block");
         $("#cancelButton").css("display", "none");
+        $("#detailData").css("display", "none");
         return;
-        
+
       } else {
         console.log("lanjut")
 
@@ -550,6 +350,108 @@ if (!isset($_SESSION['username'])) {
 
 
     }
+
+    function viewLokasiTujuan() {
+      // alert("jalankan api direction")
+
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+
+      var options = {
+        center: {
+          lat: -7.3399815207700065,
+          lng: 112.73688888681441
+        },
+        disableDefaultUI: true,
+        zoomControl: true,
+        mapTypeControl: false,
+        scaleControl: false,
+        streetViewControl: false,
+        rotateControl: false,
+        fullscreenControl: false,
+        mapId: '93eb27799b5c0810'
+      }
+
+      map2 = new google.maps.Map(document.getElementById('map2'), options);
+
+
+      directionsRenderer.setMap(map2);
+
+      directionsService
+        .route({
+          origin: {
+            query: document.getElementById("start").value,
+          },
+          destination: {
+            query: document.getElementById("end").value,
+          },
+          travelMode: google.maps.TravelMode.DRIVING,
+        })
+        .then((response) => {
+          directionsRenderer.setDirections(response);
+
+          // gak jalan
+          map2.setZoom(18);
+
+          // $(".lokasiTujuan p")[0]
+
+          console.log(response)
+
+          console.log(response.request.destination)
+
+          console.log(response.request.destination.query)
+
+
+
+        })
+        .catch((e) =>
+
+          {
+            window.alert("Directions request failed due to " + e)
+
+            alert("su asu alamt e ra onok")
+
+            $("#searchButton").css("display", "inline-block");
+            $("#cancelButton").css("display", "none");
+            $("#detailData").css("display", "none");
+            return;
+          }
+
+
+
+
+        );
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    // window.initMap = initMap;
 
 
 
