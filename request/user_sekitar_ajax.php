@@ -1,45 +1,57 @@
 <?php
 require_once '../includes/connect.php';
 
-$lokasi_awal = $_POST["lokasi_awal"];
-$lokasi_tujuan = "x";
-
-//sql get status user
-$sql = 'SELECT * FROM USER WHERE username = ?';
+//sql get status user buat tau ini user yang mana
+$sql = 'SELECT * FROM user WHERE username = ?';
 $checksql = $pdo->prepare($sql);
 $checksql->execute([$_SESSION['username']]);
 
 $row = $checksql->fetch();
 
-// echo $row['status'];
 $id = $row['id'];
 $status = $row['status'];
 
 // echo $id;
-// echo $status;
 
-//sql insert
-// $sql = 'INSERT INTO `search_live`(`id`, `lokasi_berangkat`, `lokasi_tujuan`, `id_user`, `status`) 
-// VALUES (NULL, ?, ?, ?, ?)';
-// $checksql = $pdo->prepare($sql);
-// $checksql->execute([$lokasi_awal, $lokasi_tujuan, $id, $status]);
+// ambil data lokasi berangkat user sesuai id
+$sql = 'SELECT * FROM search_live WHERE id_user = ?';
+$checksql = $pdo->prepare($sql);
+$checksql->execute([$id]);
+
+
+
+$rowLokasi = $checksql->fetch();
+
+$valueResponse = array();
+
+array_push($valueResponse, array(
+
+
+    "lokasiStartUserIni" => "{$rowLokasi['lokasi_berangkat']}",
+
+    "lokasiEndUserIni" => "{$rowLokasi['lokasi_tujuan']}"
+
+
+));
+
+
 
 
 // ambil semua data lokasi berangkat
-$sql = 'SELECT * FROM search_live ';
+$sql = 'SELECT * FROM search_live WHERE id_user != ?';
 $checksql = $pdo->prepare($sql);
-$checksql->execute();
+$checksql->execute([$id]);
 
 
-$valueResponse = array();
+
 
 while ($rowLokasi = $checksql->fetch()) {
     // echo $row['lokasi_berangkat'];
     array_push($valueResponse, array(
 
 
-        "lokasi_berangkat" => "{$rowLokasi['lokasi_berangkat']}"
-
+        "lokasiStart" => "{$rowLokasi['lokasi_berangkat']}",
+        "lokasiEnd" => "{$rowLokasi['lokasi_tujuan']}",
 
 
     ));
@@ -47,5 +59,10 @@ while ($rowLokasi = $checksql->fetch()) {
 }
 
 
-
 echo json_encode($valueResponse);
+
+
+
+
+
+?>

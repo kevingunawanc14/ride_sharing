@@ -53,7 +53,7 @@ if (!isset($_SESSION['username'])) {
     <div class="row">
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-map-pin"></i></span>
-        <input id="start" type="text" class="form-control" placeholder="Lokasi Anda" aria-describedby="basic-addon1" data-lokasi="3" readonly>
+        <input id="start" type="text" class="form-control" placeholder="Lokasi Anda" aria-describedby="basic-addon1" readonly>
       </div>
     </div>
     <div class="row">
@@ -67,6 +67,7 @@ if (!isset($_SESSION['username'])) {
         <button id="searchButton" type="button" class="btn btn-success animate__animated animate__pulse animate__infinite	infinite" onclick="searchDriver()"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
 
         <button id="cancelButton" type="button" class="btn btn-danger animate__animated animate__pulse animate__infinite	infinite" style="display: none;" onclick="cancelSearchDriver()"><i class="fa-solid fa-xmark"></i> Cancel</button>
+
 
       </div>
     </div>
@@ -135,7 +136,7 @@ if (!isset($_SESSION['username'])) {
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Lokasi Tujuan</h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fa-solid fa-map-location-dot"></i> Lokasi Tujuan</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" style="padding: 0;">
@@ -145,16 +146,16 @@ if (!isset($_SESSION['username'])) {
           <div class="container text-start">
             <div class="row">
               <div class="col lokasiTujuan">
-                  <p>Lokasi Asal :</p>
-                  <p>Lokasi Tujuan :</p>
-                  <p>Jarak :</p>
-                  <p>Biaya :</p>
+                <p>Lokasi Asal :</p>
+                <p>Lokasi Tujuan :</p>
+                <p>Jarak :</p>
+                <p>Biaya :</p>
               </div>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -165,7 +166,7 @@ if (!isset($_SESSION['username'])) {
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">List Driver</h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel"> <i class="fa-solid fa-car-side"></i> List Driver</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -195,11 +196,12 @@ if (!isset($_SESSION['username'])) {
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
   </div>
+
 
 
   <!-- Link CDN Jquery -->
@@ -225,6 +227,13 @@ if (!isset($_SESSION['username'])) {
     // global scope variabel map
     var map1, map2
 
+    // global scope interval live map
+    var interval
+
+    // global scope marker
+    var gmarkers = [];
+
+
     // init map
     function initMap() {
 
@@ -238,18 +247,20 @@ if (!isset($_SESSION['username'])) {
       }
 
       map1 = new google.maps.Map(document.getElementById('map'), options);
-      // map2 = new google.maps.Map(document.getElementById('map2'), options);
 
     }
 
     // script saat window di load ambil lokasi user
     window.onload = function getLocation() {
+
       if (navigator.geolocation) {
         // run fungsi showPosition()
         navigator.geolocation.getCurrentPosition(showPosition);
       } else {
         alert("Geolocation is not supported by this browser.");
       }
+
+
     }
 
     // untuk ambil lokasi user saat ini
@@ -289,6 +300,11 @@ if (!isset($_SESSION['username'])) {
             const marker = new google.maps.Marker({
               position: latlng,
               map: map1,
+              icon: {
+                url: "https://cdn-icons-png.flaticon.com/512/3710/3710297.png",
+                scaledSize: new google.maps.Size(38, 31)
+              },
+              animation: google.maps.Animation.DROP
             });
             // resultnya berupa banyak array ini coba ke 1 karena akurat
             infowindow.setContent(response.results[1].formatted_address);
@@ -298,8 +314,8 @@ if (!isset($_SESSION['username'])) {
             // cetak di form nya 
             $("input").eq(0).val(response.results[1].address_components[0].short_name + "," + response.results[1].address_components[1].short_name);
 
-            const dataLokasi = document.querySelector("#start");
-            dataLokasi.dataset.lokasi = lat + "" + lng;
+            // const dataLokasi = document.querySelector("#start");
+            // dataLokasi.dataset.lokasi = lat + "" + lng;
 
 
             map1.setCenter(new google.maps.LatLng(lat, lng));
@@ -312,8 +328,6 @@ if (!isset($_SESSION['username'])) {
 
     }
 
-
-
     // search driver
     function searchDriver() {
       if ($("#end").val() == "") {
@@ -325,8 +339,23 @@ if (!isset($_SESSION['username'])) {
       $("#cancelButton").css("display", "inline-block");
       $("#detailData").css("display", "flex");
 
-
+      // view lokasi tujuan 
       viewLokasiTujuan();
+
+      // insert posisi user sekarang
+      insertPosisiUserSaatIni()
+
+      console.log(insertPosisiUserSaatIni())
+
+      // view driver sekitar secara live
+      interval = setInterval(function() {
+
+        viewDriverSekitar();
+
+
+      }, 5000);
+
+
 
 
     }
@@ -341,12 +370,37 @@ if (!isset($_SESSION['username'])) {
         $("#searchButton").css("display", "inline-block");
         $("#cancelButton").css("display", "none");
         $("#detailData").css("display", "none");
+
+        // delete posisi user biar gak numpuk
+        deletePosisiUserSaatIni()
+
+        // stop interval update map
+        clearInterval(interval);
+
+        // remove marker
+        for (i = 0; i < gmarkers.length; i++) {
+          gmarkers[i].setMap(null);
+        }
+
+
+
+        if (navigator.geolocation) {
+          // run fungsi showPosition()
+          navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+          alert("Geolocation is not supported by this browser.");
+        }
+
+        alert("reset ")
+
+
         return;
 
       } else {
         console.log("lanjut")
 
       }
+
 
 
     }
@@ -397,10 +451,28 @@ if (!isset($_SESSION['username'])) {
 
           console.log(response)
 
-          console.log(response.request.destination)
+          // console.log(response.request.destination)
 
-          console.log(response.request.destination.query)
+          // console.log(response.request.destination.query)
 
+
+          console.log(response.routes[0].legs[0].distance.text)
+
+          console.log(response.routes[0].legs[0])
+
+          console.log(response.routes[0].legs[0].end_address)
+
+          console.log(response.routes[0].legs[0].start_address)
+
+          console.log(typeof(response.routes[0].legs[0].distance.text))
+
+
+          $(".lokasiTujuan p").eq(0).html("Lokasi Asal &nbsp;&nbsp;&nbsp;&nbsp;: " + response.routes[0].legs[0].start_address)
+          $(".lokasiTujuan p").eq(1).html("Lokasi Tujuan : " + response.routes[0].legs[0].end_address)
+
+          $(".lokasiTujuan p").eq(2).html("Jarak &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: " + response.routes[0].legs[0].distance.text)
+
+          $(".lokasiTujuan p").eq(3).html("Biaya &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Rp. " + (parseInt(response.routes[0].legs[0].distance.text) * 4500))
 
 
         })
@@ -409,11 +481,12 @@ if (!isset($_SESSION['username'])) {
           {
             window.alert("Directions request failed due to " + e)
 
-            alert("su asu alamt e ra onok")
+            alert("alamat tidak ada")
 
             $("#searchButton").css("display", "inline-block");
             $("#cancelButton").css("display", "none");
             $("#detailData").css("display", "none");
+
             return;
           }
 
@@ -434,23 +507,238 @@ if (!isset($_SESSION['username'])) {
 
     }
 
+    function viewDriverSekitar() {
+      // iki fungsine harus jalan terus 
+      let lokasiStart = document.getElementById("start").value
+      let lokasiEnd = document.getElementById("end").value
+
+
+      let DataLokasiUser = new FormData();
+      DataLokasiUser.append("lokasiStart", lokasiStart);
+      DataLokasiUser.append("lokasiEnd", lokasiEnd);
+
+      // console.log(DataLokasiUser)
+
+      // Display the key/value pairs
+      // for (var pair of DataLokasiUser.entries()) {
+      //   console.log(pair[0] + ', ' + pair[1]);
+      // }
+
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          data = JSON.parse(this.responseText);
+          console.log(data)
+
+          console.log(data.length)
+
+          // console.log(data[0]["lokasiStartUserIni"])
+
+
+          // alert(this.responseText)
+          // console.log(this.responseText)
+
+
+          // console.log(data[0])
+
+          // titik punya user sesuai session
+          let titikStartUserSession = data[0]["lokasiStartUserIni"];
+          let titikEndUserSession = data[0]["lokasiEndUserIni"];
+
+          // console.log(titikStartUserSession+" , "+titikEndUserSession)
+
+          const directionsService = new google.maps.DirectionsService();
+          const directionsRenderer = new google.maps.DirectionsRenderer();
+
+
+          for (let i = 1; i < data.length; i++) {
+            // console.log(data[i]["lokasiStart"])
+            // console.log(data[1]["lokasiEnd"])
+
+            directionsService
+              .route({
+                origin: {
+                  query: titikStartUserSession,
+                },
+                destination: {
+                  query: data[i]["lokasiStart"],
+                },
+                travelMode: google.maps.TravelMode.DRIVING,
+              })
+              .then((response) => {
+                directionsRenderer.setDirections(response);
+
+                console.log(response.routes)
+
+                // console.log(response.routes[0].legs)
+
+                console.log(response.routes[0].legs)
+
+                console.log(response.routes[0].legs[0].distance.text)
+                console.log(response.routes[0].legs[0].start_address)
+                console.log(response.routes[0].legs[0].end_address)
+
+
+
+                console.log(response.routes[0].legs[0].start_location)
+
+                console.log(response.routes[0].legs[0].start_location.lat())
+
+                console.log(response.routes[0].legs[0].start_location.lng())
+
+                console.log(i)
+
+
+
+                // console.log(response.routes[0].legs.start_location.lat())
+
+
+
+                // console.log(response.routes.start_location.lat())
+                // -7.3411696653574525, 112.73821289113626
+                // map1 = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+                // console.log(response.routes[0].legs[0].end_address.lat())
+                // console.log(response.routes[0].legs[0].end_address.lng())
+
+                // const icon = {
+                //   url: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png", // url
+                //   scaledSize: new google.maps.Size(-50, -50), // scaled size
+                //   origin: new google.maps.Point(0, 0), // origin
+                //   anchor: new google.maps.Point(0, 0) // anchor
+                // };
+
+                marker = new google.maps.Marker({
+                  position: {
+                    lat: response.routes[0].legs[0].end_location.lat(),
+                    lng: response.routes[0].legs[0].end_location.lng()
+                  },
+                  map: map1,
+                  icon: {
+                    url: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png",
+                    scaledSize: new google.maps.Size(38, 31)
+                  },
+                  animation: google.maps.Animation.DROP
+                  // icon: "assets/cars.png"
+
+                });
+
+
+
+
+                // Push your newly created marker into the array:
+                gmarkers.push(marker);
+
+
+                // new google.maps.Marker({
+                //   position: {
+                //     lat: -7.3411696653574525,
+                //     lng: 112.73821289113626
+                //   },
+                //   title: "Hello World!",
+                //   icon: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png"
+
+                // });
+
+
+
+                // To add the marker to the map, call setMap();
+                // marker.setMap(map1);
+
+              })
+              .catch((e) => window.alert("Directions request failed due to " + status));
+          }
+
+
+
+
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/user_sekitar_ajax.php");
+      xmlHttp.send(DataLokasiUser);
 
 
 
 
 
 
+    }
+
+    function insertPosisiUserSaatIni() {
+      // iki fungsine harus jalan terus 
+      let lokasiStart = document.getElementById("start").value
+      let lokasiEnd = document.getElementById("end").value
 
 
+      let DataLokasiUser = new FormData();
+      DataLokasiUser.append("lokasiStart", lokasiStart);
+      DataLokasiUser.append("lokasiEnd", lokasiEnd);
 
-
-
-
-
-
-
+      console.log(DataLokasiUser)
 
     
+
+      // console.log($("#detailData").css("display"))
+
+
+
+      // Display the key/value pairs
+      // for (var pair of DataLokasiUser.entries()) {
+      //   console.log(pair[0] + ', ' + pair[1]);
+      // }
+
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          // alert(this.responseText + "aa")
+
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/insert_posisi_user_ajax.php");
+      xmlHttp.send(DataLokasiUser);
+
+      return "check2";
+
+    }
+
+    function deletePosisiUserSaatIni() {
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          // alert(this.responseText + "deleted")
+
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/delete_posisi_user_ajax.php");
+      xmlHttp.send();
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // window.initMap = initMap;
 
 
