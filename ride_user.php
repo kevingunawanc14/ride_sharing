@@ -486,7 +486,7 @@ if (!isset($_SESSION['username'])) {
             $("#searchButton").css("display", "inline-block");
             $("#cancelButton").css("display", "none");
             $("#detailData").css("display", "none");
-
+            window.location.reload();
             return;
           }
 
@@ -695,7 +695,7 @@ if (!isset($_SESSION['username'])) {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
           // alert(this.responseText + "aa")
-
+          
         } else {
           alert("Error!");
         }
