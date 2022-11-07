@@ -78,19 +78,20 @@ if (!isset($_SESSION['username'])) {
       <div class="col-12 col-sm-4 my-3">
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          Lokasi Tujuan User 
+          Lokasi Tujuan User
         </button>
       </div>
 
       <div class="col-12 col-sm-4 my-3">
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          List User 
+          List User
         </button>
       </div>
     </div>
   </div>
 
+  <button onclick="waypoint()">button sementara coba</button>
 
   <nav class="navbar navbar-expand bg-light fixed-bottom">
     <div class="container-fluid">
@@ -202,13 +203,13 @@ if (!isset($_SESSION['username'])) {
 
       // geocodeLatLng(geocoder, map, infoWindow)
 
-      const marker = new google.maps.Marker({
-        position: {
-          lat: lat,
-          lng: lng
-        },
-        map: map
-      })
+      // const marker = new google.maps.Marker({
+      //   position: {
+      //     lat: lat,
+      //     lng: lng
+      //   },
+      //   map: map
+      // })
 
 
     }
@@ -331,7 +332,7 @@ if (!isset($_SESSION['username'])) {
 
                 }
 
-                  let data = `  
+                let data = `  
                   <ol class='list-group list-group-numbered'>
                   <li class='list-group-item d-flex justify-content-between align-items-start'>
                     <div class='ms-2 me-auto'>
@@ -357,7 +358,7 @@ if (!isset($_SESSION['username'])) {
                 </ol>
                 `
 
-                  $(".formRide").html(data)
+                $(".formRide").html(data)
 
               })
               .catch((e) => window.alert("Directions request failed due to " + status + "maro"));
@@ -378,6 +379,76 @@ if (!isset($_SESSION['username'])) {
 
 
     }
+
+
+    function waypoint() {
+      // alert("waypoint")
+
+      arrayLokasi = [];
+      arrayLokasi.push("20,Jl. Siwalankerto Permai II")
+      arrayLokasi.push("Gedung P, Siwalankerto")
+      arrayLokasi.push("13,Jl. Siwalankerto Permai II")
+      arrayLokasi.push("1,Jl. Siwalankerto Permai II")
+      arrayLokasi.push("30,Jl. Siwalankerto Permai II ")
+      arrayLokasi.push("Gedung E, Siwalankerto, Kec. Wonocolo, Kota SBY, Jawa Timur 60236")
+
+
+
+
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+
+      directionsRenderer.setMap(map);
+
+
+      const waypts = [];
+
+      for (let i = 0; i < arrayLokasi.length; i++) {
+          waypts.push({
+            location: arrayLokasi[i],
+            stopover: true,
+          });
+      }
+
+      directionsService
+        .route({
+          origin: arrayLokasi[0],
+          destination: arrayLokasi[arrayLokasi.length-1],
+          waypoints: waypts,
+          optimizeWaypoints: true,
+          travelMode: google.maps.TravelMode.DRIVING,
+        })
+        .then((response) => {
+          directionsRenderer.setDirections(response);
+
+          const route = response.routes[0];
+          const summaryPanel = document.getElementById("directions-panel");
+
+          summaryPanel.innerHTML = "";
+
+          // For each route, display summary information.
+          for (let i = 0; i < route.legs.length; i++) {
+            const routeSegment = i + 1;
+
+            summaryPanel.innerHTML +=
+              "<b>Route Segment: " + routeSegment + "</b><br>";
+            summaryPanel.innerHTML += route.legs[i].start_address + " to ";
+            summaryPanel.innerHTML += route.legs[i].end_address + "<br>";
+            summaryPanel.innerHTML += route.legs[i].distance.text + "<br><br>";
+          }
+        })
+        .catch((e) => window.alert("Directions request failed due to " + status));
+
+    }
+
+
+
+
+
+
+
+
+
 
     $(function() {
       AOS.init({

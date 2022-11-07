@@ -37,8 +37,11 @@ array_push($valueResponse, array(
 
 
 
-// ambil semua data lokasi berangkat
-$sql = 'SELECT * FROM search_live WHERE id_user != ?';
+// ambil semua data lokasi berangkat di join buat ambil detail user
+$sql = 'SELECT * FROM search_live 
+    INNER JOIN user ON search_live.id_user=user.id 
+    where id_user != ?';
+
 $checksql = $pdo->prepare($sql);
 $checksql->execute([$id]);
 
@@ -52,7 +55,9 @@ while ($rowLokasi = $checksql->fetch()) {
 
         "lokasiStart" => "{$rowLokasi['lokasi_berangkat']}",
         "lokasiEnd" => "{$rowLokasi['lokasi_tujuan']}",
-
+        "username" => "{$rowLokasi['username']}",
+        "status" => "{$rowLokasi['status']}",
+        "kapasitas" => "{$rowLokasi['kapasitas']}"
 
     ));
 

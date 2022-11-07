@@ -169,8 +169,8 @@ if (!isset($_SESSION['username'])) {
           <h1 class="modal-title fs-5" id="exampleModalLabel"> <i class="fa-solid fa-car-side"></i> List Driver</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          <div class="card mt-3">
+        <div id="listDriver" class="modal-body">
+          <!-- <div class="card mt-3">
             <h5 class="card-header">Featured</h5>
             <div class="card-body">
               <h5 class="card-title">Special title treatment</h5>
@@ -185,15 +185,8 @@ if (!isset($_SESSION['username'])) {
               <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
               <a href="#" class="btn btn-primary">Go somewhere</a>
             </div>
-          </div>
-          <div class="card mt-3">
-            <h5 class="card-header">Featured</h5>
-            <div class="card-body">
-              <h5 class="card-title">Special title treatment</h5>
-              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-          </div>
+          </div> -->
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
@@ -307,6 +300,7 @@ if (!isset($_SESSION['username'])) {
               animation: google.maps.Animation.DROP
             });
             // resultnya berupa banyak array ini coba ke 1 karena akurat
+            console.log(response.results)
             infowindow.setContent(response.results[1].formatted_address);
             infowindow.open(map1, marker);
 
@@ -535,6 +529,9 @@ if (!isset($_SESSION['username'])) {
 
           // console.log(data[0]["lokasiStartUserIni"])
 
+          // reset list driver
+          $("#listDriver").html("")
+
 
           // alert(this.responseText)
           // console.log(this.responseText)
@@ -587,10 +584,9 @@ if (!isset($_SESSION['username'])) {
 
                 console.log(response.routes[0].legs[0].start_location.lng())
 
-                console.log(i)
+                console.log(data)
 
-
-
+       
                 // console.log(response.routes[0].legs.start_location.lat())
 
 
@@ -625,26 +621,18 @@ if (!isset($_SESSION['username'])) {
                 });
 
 
-
+                console.log(response.routes[0].legs[0].distance.text)
 
                 // Push your newly created marker into the array:
                 gmarkers.push(marker);
 
+                // append ke list driver juga
+       
+                $("#listDriver").append('<div class="card mt-3 listDriverDetail"> <h5 class="card-header"> '+data[i]['username']+'</h5><div class="card-body"><h5 class="card-title">Mobil Innova</h5><p class="card-text">Jarak '+response.routes[0].legs[0].distance.text+" dari posisi anda sekarang "+" <br> Estimasi waktu penjemputan "+ response.routes[0].legs[0].duration.text+'</p><a href="#" class="btn btn-primary">'+data[i]['status']+" / 5"+'</a> <a href="#" class="btn btn-primary">'+"Go"+'</a> </div></div> ')
 
-                // new google.maps.Marker({
-                //   position: {
-                //     lat: -7.3411696653574525,
-                //     lng: 112.73821289113626
-                //   },
-                //   title: "Hello World!",
-                //   icon: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png"
-
-                // });
+                // $('.listDriverDetail').attr('id', data[i]['username']);
 
 
-
-                // To add the marker to the map, call setMap();
-                // marker.setMap(map1);
 
               })
               .catch((e) => window.alert("Directions request failed due to " + status));
@@ -679,7 +667,7 @@ if (!isset($_SESSION['username'])) {
 
       console.log(DataLokasiUser)
 
-    
+
 
       // console.log($("#detailData").css("display"))
 
@@ -695,7 +683,7 @@ if (!isset($_SESSION['username'])) {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
           // alert(this.responseText + "aa")
-          
+
         } else {
           alert("Error!");
         }
@@ -739,7 +727,11 @@ if (!isset($_SESSION['username'])) {
 
 
 
-    // window.initMap = initMap;
+
+
+
+
+    window.initMap = initMap;
 
 
 
