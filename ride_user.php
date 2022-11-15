@@ -18,7 +18,7 @@ if (!isset($_SESSION['username'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>University Ride Sharing - Ride</title>
+  <title>University Ride Sharing - Ride User</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
   <!-- CSS -->
   <link rel="stylesheet" href="style.css">
@@ -73,17 +73,17 @@ if (!isset($_SESSION['username'])) {
     </div>
     <div id="detailData" class="row mt-3" style="display: none;">
 
-      <div class="col-12 col-sm-6 my-3">
+      <div class="col-12 col-sm-12 my-3">
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">
           Lokasi Tujuan
         </button>
 
       </div>
 
-      <div class="col-12 col-sm-6 my-3">
+      <div class="col-12 col-sm-12 my-3">
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal1">
           List Driver
         </button>
       </div>
@@ -93,7 +93,6 @@ if (!isset($_SESSION['username'])) {
 
     </div>
   </div>
-
 
   <nav class="navbar navbar-expand bg-light fixed-bottom">
     <div class="container-fluid">
@@ -128,8 +127,6 @@ if (!isset($_SESSION['username'])) {
       </div>
     </div>
   </nav>
-
-
 
   <!-- Modal Lokasi Tujuan -->
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -170,22 +167,6 @@ if (!isset($_SESSION['username'])) {
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div id="listDriver" class="modal-body">
-          <!-- <div class="card mt-3">
-            <h5 class="card-header">Featured</h5>
-            <div class="card-body">
-              <h5 class="card-title">Special title treatment</h5>
-              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-          </div>
-          <div class="card mt-3">
-            <h5 class="card-header">Featured</h5>
-            <div class="card-body">
-              <h5 class="card-title">Special title treatment</h5>
-              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-          </div> -->
 
         </div>
         <div class="modal-footer">
@@ -195,14 +176,11 @@ if (!isset($_SESSION['username'])) {
     </div>
   </div>
 
-
-
   <!-- Link CDN Jquery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
   <!-- Link CDN AOS -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-
 
   <!-- Link API Google -->
   <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwBBeg0pfj-FAVt_Q298ElrXKz0MO1Gg8&callback=initMap">
@@ -213,7 +191,6 @@ if (!isset($_SESSION['username'])) {
 
   <!-- api key AIzaSyCwBBeg0pfj-FAVt_Q298ElrXKz0MO1Gg8 -->
   <!-- map id 93eb27799b5c0810  -->
-
 
 
   <script>
@@ -262,9 +239,6 @@ if (!isset($_SESSION['username'])) {
       var lng = position.coords.longitude;
 
 
-      console.log(lat, lng, "x")
-      // console.log(typeof(lat))
-
       //isi value form nya dengan lat,lng yang didapat dari geolocation yang nanti buat displit
       $("input").eq(0).val(lat + "," + lng, );
 
@@ -275,7 +249,6 @@ if (!isset($_SESSION['username'])) {
       const input = document.getElementById("start").value;
       const latlngStr = input.split(",", 2);
 
-      console.log(latlngStr)
 
       const latlng = {
         lat: parseFloat(latlngStr[0]),
@@ -308,9 +281,6 @@ if (!isset($_SESSION['username'])) {
             // cetak di form nya 
             $("input").eq(0).val(response.results[1].address_components[0].short_name + "," + response.results[1].address_components[1].short_name);
 
-            // const dataLokasi = document.querySelector("#start");
-            // dataLokasi.dataset.lokasi = lat + "" + lng;
-
 
             map1.setCenter(new google.maps.LatLng(lat, lng));
           } else {
@@ -319,14 +289,13 @@ if (!isset($_SESSION['username'])) {
         })
         .catch((e) => window.alert("Geocoder failed due to: " + e));
 
-
     }
 
     // search driver
     function searchDriver() {
       if ($("#end").val() == "") {
         alert("Alamat Tujuan Masih Kosong")
-        return
+        return;
       }
 
       $("#searchButton").css("display", "none");
@@ -339,15 +308,13 @@ if (!isset($_SESSION['username'])) {
       // insert posisi user sekarang
       insertPosisiUserSaatIni()
 
-      console.log(insertPosisiUserSaatIni())
-
       // view driver sekitar secara live
       interval = setInterval(function() {
 
         viewDriverSekitar();
 
 
-      }, 5000);
+      }, 10000);
 
 
 
@@ -356,8 +323,6 @@ if (!isset($_SESSION['username'])) {
 
     // cancel search driver
     function cancelSearchDriver() {
-
-
 
       if (confirm("Pencarian Driver Akan Di Batalkan")) {
 
@@ -376,16 +341,12 @@ if (!isset($_SESSION['username'])) {
           gmarkers[i].setMap(null);
         }
 
-
-
         if (navigator.geolocation) {
           // run fungsi showPosition()
           navigator.geolocation.getCurrentPosition(showPosition);
         } else {
           alert("Geolocation is not supported by this browser.");
         }
-
-        alert("reset ")
 
 
         return;
@@ -473,15 +434,9 @@ if (!isset($_SESSION['username'])) {
         .catch((e) =>
 
           {
-            window.alert("Directions request failed due to " + e)
-
-            alert("alamat tidak ada")
-
-            $("#searchButton").css("display", "inline-block");
-            $("#cancelButton").css("display", "none");
-            $("#detailData").css("display", "none");
+            window.alert("Maaf lokasi tidak ditemukan ")
             window.location.reload();
-            return;
+
           }
 
 
@@ -523,21 +478,9 @@ if (!isset($_SESSION['username'])) {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
           data = JSON.parse(this.responseText);
-          console.log(data)
-
-          console.log(data.length)
-
-          // console.log(data[0]["lokasiStartUserIni"])
-
+     
           // reset list driver
           $("#listDriver").html("")
-
-
-          // alert(this.responseText)
-          // console.log(this.responseText)
-
-
-          // console.log(data[0])
 
           // titik punya user sesuai session
           let titikStartUserSession = data[0]["lokasiStartUserIni"];
@@ -550,9 +493,6 @@ if (!isset($_SESSION['username'])) {
 
 
           for (let i = 1; i < data.length; i++) {
-            // console.log(data[i]["lokasiStart"])
-            // console.log(data[1]["lokasiEnd"])
-
             directionsService
               .route({
                 origin: {
@@ -565,45 +505,6 @@ if (!isset($_SESSION['username'])) {
               })
               .then((response) => {
                 directionsRenderer.setDirections(response);
-
-                console.log(response.routes)
-
-                // console.log(response.routes[0].legs)
-
-                console.log(response.routes[0].legs)
-
-                console.log(response.routes[0].legs[0].distance.text)
-                console.log(response.routes[0].legs[0].start_address)
-                console.log(response.routes[0].legs[0].end_address)
-
-
-
-                console.log(response.routes[0].legs[0].start_location)
-
-                console.log(response.routes[0].legs[0].start_location.lat())
-
-                console.log(response.routes[0].legs[0].start_location.lng())
-
-                console.log(data)
-
-       
-                // console.log(response.routes[0].legs.start_location.lat())
-
-
-
-                // console.log(response.routes.start_location.lat())
-                // -7.3411696653574525, 112.73821289113626
-                // map1 = new google.maps.Map(document.getElementById("map"), mapOptions);
-
-                // console.log(response.routes[0].legs[0].end_address.lat())
-                // console.log(response.routes[0].legs[0].end_address.lng())
-
-                // const icon = {
-                //   url: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png", // url
-                //   scaledSize: new google.maps.Size(-50, -50), // scaled size
-                //   origin: new google.maps.Point(0, 0), // origin
-                //   anchor: new google.maps.Point(0, 0) // anchor
-                // };
 
                 marker = new google.maps.Marker({
                   position: {
@@ -620,22 +521,19 @@ if (!isset($_SESSION['username'])) {
 
                 });
 
-
-                console.log(response.routes[0].legs[0].distance.text)
-
                 // Push your newly created marker into the array:
                 gmarkers.push(marker);
 
                 // append ke list driver juga
-       
-                $("#listDriver").append('<div class="card mt-3 listDriverDetail"> <h5 class="card-header"> '+data[i]['username']+'</h5><div class="card-body"><h5 class="card-title">Mobil Innova</h5><p class="card-text">Jarak '+response.routes[0].legs[0].distance.text+" dari posisi anda sekarang "+" <br> Estimasi waktu penjemputan "+ response.routes[0].legs[0].duration.text+'</p><a href="#" class="btn btn-primary">'+data[i]['status']+" / 5"+'</a> <a href="#" class="btn btn-primary">'+"Go"+'</a> </div></div> ')
+
+                $("#listDriver").append('<div class="card mt-3 listDriverDetail"> <h5 class="card-header"> ' + data[i]['username'] + '</h5><div class="card-body"><h5 class="card-title">Mobil Innova</h5><p class="card-text">Jarak ' + response.routes[0].legs[0].distance.text + " dari posisi anda sekarang " + " <br> Estimasi waktu penjemputan " + response.routes[0].legs[0].duration.text + '</p><a href="#" class="btn btn-primary">' + data[i]['status'] + " / 5" + '</a> <a href="#" class="btn btn-primary">' + "Go" + '</a> </div></div> ')
 
                 // $('.listDriverDetail').attr('id', data[i]['username']);
 
-
-
               })
-              .catch((e) => window.alert("Directions request failed due to " + status));
+              .catch((e) => {
+                console.log("error 123")
+              });
           }
 
 
