@@ -18,7 +18,7 @@ if (!isset($_SESSION['username'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>University Ride Sharing - Ride User</title>
+  <title>University Ride Sharing - Ride Driver</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
   <!-- CSS -->
   <link rel="stylesheet" href="style.css">
@@ -75,17 +75,18 @@ if (!isset($_SESSION['username'])) {
 
       <div class="col-12 col-sm-12 my-3">
         <!-- Button trigger modal -->
+        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+          List User
+        </button>
+      </div>
+
+
+      <div class="col-12 col-sm-12 my-3">
+        <!-- Button trigger modal -->
         <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">
           Status Order
         </button>
 
-      </div>
-
-      <div class="col-12 col-sm-12 my-3">
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal1">
-          List User
-        </button>
       </div>
 
     </div>
@@ -130,7 +131,7 @@ if (!isset($_SESSION['username'])) {
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fa-solid fa-map-location-dot"></i> Status Order</h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fa-solid fa-map-location-dot"></i> Status Order <button type="button" class="btn btn-success rounded-pill">2/5</button></h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" style="padding: 0;">
@@ -142,10 +143,10 @@ if (!isset($_SESSION['username'])) {
               <div class="col lokasiTujuan">
                 <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
                   <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Lokasi Berangkat</button>
+                    <button class="nav-link active" id="lokasi_berangkat" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true" onclick="gantiPilihanLokasi()">Lokasi Berangkat</button>
                   </li>
                   <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Lokasi Tujuan</button>
+                    <button class="nav-link" id="lokasi_tujuan" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false" onclick="gantiPilihanLokasi()">Lokasi Tujuan</button>
                   </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
@@ -523,9 +524,7 @@ if (!isset($_SESSION['username'])) {
 
                 // append ke list driver juga
 
-                $("#listDriver").append('<div class="card mt-3 listDriverDetail"> <h5 class="card-header"> ' + data[i]['username'] + '</h5><div class="card-body"><p class="card-text">Jarak ' + response.routes[0].legs[0].distance.text + " dari posisi anda sekarang " + " <br> Estimasi waktu penjemputan " + response.routes[0].legs[0].duration.text + '</p><a href="#" class="btn btn-warning disabled">' + "WAITING" + '</a> </div></div> ')
-
-                $("#listDriver").append('<div class="card mt-3 listDriverDetail"> <h5 class="card-header"> ' + data[i]['username'] + '</h5><div class="card-body"><p class="card-text">Jarak ' + response.routes[0].legs[0].distance.text + " dari posisi anda sekarang " + " <br> Estimasi waktu penjemputan " + response.routes[0].legs[0].duration.text + '</p><a href="#" class="btn btn-success disabled">' + "READY" + '</a> <a href="#" class="btn btn-success">' + "PICK-UP" + '</a> </div></div> ')
+                $("#listDriver").append('<div class="card mt-3 listDriverDetail"> <h5 class="card-header"> ' + data[i]['username'] + '</h5><div class="card-body"><p class="card-text">Jarak ' + response.routes[0].legs[0].distance.text + " dari posisi anda sekarang " + " <br> Estimasi waktu penjemputan " + response.routes[0].legs[0].duration.text + '</p> <a href="#" class="btn btn-success" ' + "onclick" + "=" + "pickUser(\"" + (data[i]['username']) + "\")" + '>' + "PICK-UP" + '</a> </div></div> ')
 
                 // $('.listDriverDetail').attr('id', data[i]['username']);
 
@@ -606,6 +605,97 @@ if (!isset($_SESSION['username'])) {
       xmlHttp.open("POST", "request/delete_posisi_user_ajax.php");
       xmlHttp.send();
 
+    }
+
+    function pickUser(id) {
+
+      // let id_driver = 
+      let id_user = id
+
+
+      let DataOrder = new FormData();
+      DataOrder.append("id_user", id_user);
+
+      // console.log(id_user)
+
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          console.log(this.responseText)
+
+          statusOrderLive()
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/insert_order_live_ajax.php");
+      xmlHttp.send(DataOrder);
+
+    }
+
+    function statusOrderLive() {
+
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+
+          arrayLokasi = [];
+          arrayLokasi.push("20,Jl. Siwalankerto Permai II")
+          arrayLokasi.push("Gedung P, Siwalankerto")
+          arrayLokasi.push("13,Jl. Siwalankerto Permai II")
+          arrayLokasi.push("1,Jl. Siwalankerto Permai II")
+          arrayLokasi.push("30,Jl. Siwalankerto Permai II ")
+          arrayLokasi.push("Gedung E, Siwalankerto, Kec. Wonocolo, Kota SBY, Jawa Timur 60236")
+
+
+
+          const directionsService = new google.maps.DirectionsService();
+          const directionsRenderer = new google.maps.DirectionsRenderer();
+
+          directionsRenderer.setMap(map);
+
+          const waypts = [];
+
+          for (let i = 0; i < arrayLokasi.length; i++) {
+            waypts.push({
+              location: arrayLokasi[i],
+              stopover: true,
+            });
+          }
+
+          directionsService
+            .route({
+              origin: arrayLokasi[0],
+              destination: arrayLokasi[arrayLokasi.length - 1],
+              waypoints: waypts,
+              optimizeWaypoints: true,
+              travelMode: google.maps.TravelMode.DRIVING,
+            })
+            .then((response) => {
+              directionsRenderer.setDirections(response);
+
+
+            })
+            .catch((e) => window.alert("Directions request failed due to " + status));
+
+
+
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/view_order_live_ajax.php");
+      xmlHttp.send();
+
+
+
+
+    }
+
+    function gantiPilihanLokasi() {
+      console.log($('#lokasi_berangkat').attr('aria-selected'))
     }
 
 

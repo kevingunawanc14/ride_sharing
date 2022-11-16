@@ -41,3 +41,4 @@ if($cekUsername == false || $cekPassword == false){
 $_SESSION["username"] = $username;
 
 exit ("Login Berhasil");
+?>

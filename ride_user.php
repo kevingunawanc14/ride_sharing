@@ -80,13 +80,13 @@ if (!isset($_SESSION['username'])) {
         </button>
 
       </div>
-
       <div class="col-12 col-sm-12 my-3">
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal1">
-          List Driver
+        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal2">
+          Status Order
         </button>
       </div>
+
 
 
 
@@ -167,6 +167,24 @@ if (!isset($_SESSION['username'])) {
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div id="listDriver" class="modal-body">
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Status Order -->
+  <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel"> <i class="fa-solid fa-map-location-dot"></i> Status Order</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="statusOrder" class="modal-body">
 
         </div>
         <div class="modal-footer">
@@ -478,7 +496,7 @@ if (!isset($_SESSION['username'])) {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
           data = JSON.parse(this.responseText);
-     
+
           // reset list driver
           $("#listDriver").html("")
 
