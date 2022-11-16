@@ -142,10 +142,10 @@ if (!isset($_SESSION['username'])) {
               <div class="col lokasiTujuan">
                 <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
                   <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Lokasi Tujuan</button>
+                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Lokasi Berangkat</button>
                   </li>
                   <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Lokasi Berangkat</button>
+                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Lokasi Tujuan</button>
                   </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
@@ -169,7 +169,7 @@ if (!isset($_SESSION['username'])) {
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-info">Finish Order</button>
+          <button type="button" class="btn btn-primary">Finish Order</button>
         </div>
       </div>
     </div>
