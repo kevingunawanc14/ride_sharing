@@ -130,7 +130,7 @@ if (!isset($_SESSION['username'])) {
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fa-solid fa-map-location-dot"></i> Lokasi Tujuan</h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fa-solid fa-map-location-dot"></i> Status Order</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" style="padding: 0;">
@@ -140,15 +140,36 @@ if (!isset($_SESSION['username'])) {
           <div class="container text-start">
             <div class="row">
               <div class="col lokasiTujuan">
-                <p>Lokasi Asal :</p>
-                <p>Lokasi Tujuan :</p>
-                <p>Jarak :</p>
+                <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Lokasi Tujuan</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Lokasi Berangkat</button>
+                  </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                  <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                    <p>Lokasi Berangkat Driver :</p>
+                    <p>Lokasi Berangkat userx :</p>
+                    <p>Lokasi Berangkat userx1 :</p>
+                    <p>Lokasi Berangkat userx2 :</p>
+                  </div>
+                  <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                    <p>Lokasi Tujuan Driver :</p>
+                    <p>Lokasi Tujuan usery :</p>
+                    <p>Lokasi Tujuan usery1 :</p>
+                    <p>Lokasi Tujuan usery2 :</p>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-info">Finish Order</button>
         </div>
       </div>
     </div>
@@ -398,10 +419,10 @@ if (!isset($_SESSION['username'])) {
           // gak jalan saat didalam modal ?
           map2.setZoom(18);
 
-          $(".lokasiTujuan p").eq(0).html("Lokasi Asal &nbsp;&nbsp;&nbsp;&nbsp;: " + response.routes[0].legs[0].start_address)
-          $(".lokasiTujuan p").eq(1).html("Lokasi Tujuan : " + response.routes[0].legs[0].end_address)
+          // $(".lokasiTujuan p").eq(0).html("Lokasi Asal &nbsp;&nbsp;&nbsp;&nbsp;: " + response.routes[0].legs[0].start_address)
+          // $(".lokasiTujuan p").eq(1).html("Lokasi Tujuan : " + response.routes[0].legs[0].end_address)
 
-          $(".lokasiTujuan p").eq(2).html("Jarak &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: " + response.routes[0].legs[0].distance.text)
+          // $(".lokasiTujuan p").eq(2).html("Jarak &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: " + response.routes[0].legs[0].distance.text)
 
           // $(".lokasiTujuan p").eq(3).html("Biaya &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Rp. " + (parseInt(response.routes[0].legs[0].distance.text) * 4500))
 

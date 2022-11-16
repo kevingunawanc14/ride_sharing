@@ -526,7 +526,7 @@ if (!isset($_SESSION['username'])) {
 
                 // append ke list driver juga
 
-                $("#listDriver").append('<div class="card mt-3 listDriverDetail"> <h5 class="card-header"> ' + data[i]['username'] + '</h5><div class="card-body"><h5 class="card-title">Mobil Innova</h5><p class="card-text">Jarak ' + response.routes[0].legs[0].distance.text + " dari posisi anda sekarang " + " <br> Estimasi waktu penjemputan " + response.routes[0].legs[0].duration.text + '</p><a href="#" class="btn btn-primary">' + data[i]['status'] + " / 5" + '</a> <a href="#" class="btn btn-primary">' + "Go" + '</a> </div></div> ')
+                $("#listDriver").append('<div class="card mt-3 listDriverDetail"> <h5 class="card-header"> ' + data[i]['username'] + '</h5><div class="card-body"><p class="card-text">Jarak ' + response.routes[0].legs[0].distance.text + " dari posisi anda sekarang " + " <br> Estimasi waktu penjemputan " + response.routes[0].legs[0].duration.text + '</p><a href="#" class="btn btn-primary">' + data[i]['status'] + " / 5" + '</a> <a href="#" class="btn btn-primary">' + "PICK" + '</a> </div></div> ')
 
                 // $('.listDriverDetail').attr('id', data[i]['username']);
 
