@@ -541,7 +541,7 @@ if (!isset($_SESSION['username'])) {
           alert("Error!");
         }
       }
-      xmlHttp.open("POST", "request/user_sekitar_ajax.php");
+      xmlHttp.open("POST", "request/view_user_sekitar_ajax.php");
       xmlHttp.send(DataLokasiUser);
 
 
@@ -610,12 +610,12 @@ if (!isset($_SESSION['username'])) {
     function pickUser(id) {
 
       // let id_driver = 
-      let id_user = id
+      let username = id
 
 
       let DataOrder = new FormData();
-      DataOrder.append("id_user", id_user);
-
+      DataOrder.append("username", username);
+      // console.log(username)
       // console.log(id_user)
 
       const xmlHttp = new XMLHttpRequest();
@@ -623,7 +623,6 @@ if (!isset($_SESSION['username'])) {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
           console.log(this.responseText)
-
           statusOrderLive()
         } else {
           alert("Error!");
@@ -640,21 +639,44 @@ if (!isset($_SESSION['username'])) {
       xmlHttp.onload = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
+          // console.log(this.responseText)
+          data = JSON.parse(this.responseText);
+          console.log(data)
 
           arrayLokasi = [];
-          arrayLokasi.push("20,Jl. Siwalankerto Permai II")
-          arrayLokasi.push("Gedung P, Siwalankerto")
-          arrayLokasi.push("13,Jl. Siwalankerto Permai II")
-          arrayLokasi.push("1,Jl. Siwalankerto Permai II")
-          arrayLokasi.push("30,Jl. Siwalankerto Permai II ")
-          arrayLokasi.push("Gedung E, Siwalankerto, Kec. Wonocolo, Kota SBY, Jawa Timur 60236")
+
+          // data ke 0 start sebagai start awal di way point
+          arrayLokasi.push(data[0]['lokasiStartDriverIni'])
+          // array.push(data[0]['lokasiEndDriverIni'])
+
+          // push lo
+          for (let i = 1; i < data.length; i++) {
+            arrayLokasi.push(data[i]['lokasiStartUser'])
+          }
 
 
+          var options = {
+            center: {
+              lat: -7.3399815207700065,
+              lng: 112.73688888681441
+            },
+            disableDefaultUI: true,
+            zoomControl: true,
+            mapTypeControl: false,
+            scaleControl: false,
+            streetViewControl: false,
+            rotateControl: false,
+            fullscreenControl: false,
+            mapId: '93eb27799b5c0810'
+          }
 
+          map2 = new google.maps.Map(document.getElementById('map2'), options);
+          
           const directionsService = new google.maps.DirectionsService();
           const directionsRenderer = new google.maps.DirectionsRenderer();
 
-          directionsRenderer.setMap(map);
+          directionsRenderer.setMap(map2);
+
 
           const waypts = [];
 

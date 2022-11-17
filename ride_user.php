@@ -561,7 +561,7 @@ if (!isset($_SESSION['username'])) {
           alert("Error!");
         }
       }
-      xmlHttp.open("POST", "request/user_sekitar_ajax.php");
+      xmlHttp.open("POST", "request/view_user_sekitar_ajax.php");
       xmlHttp.send(DataLokasiUser);
 
 
