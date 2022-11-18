@@ -511,7 +511,7 @@ if (!isset($_SESSION['username'])) {
                   },
                   map: map1,
                   icon: {
-                    url: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png",
+                    url: "https://cdn-icons-png.flaticon.com/512/3710/3710297.png",
                     scaledSize: new google.maps.Size(38, 31)
                   },
                   animation: google.maps.Animation.DROP

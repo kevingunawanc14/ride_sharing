@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 07, 2022 at 03:03 AM
+-- Generation Time: Nov 17, 2022 at 09:23 AM
 -- Server version: 10.4.17-MariaDB
 -- PHP Version: 8.0.0
 
@@ -61,6 +61,43 @@ CREATE TABLE `history` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `order_live`
+--
+
+CREATE TABLE `order_live` (
+  `id` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `id_driver` int(11) NOT NULL,
+  `kapasitas` int(11) NOT NULL COMMENT 'kapasitas mobil'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `order_live`
+--
+
+INSERT INTO `order_live` (`id`, `id_user`, `id_driver`, `kapasitas`) VALUES
+(1, 14, 1, 5),
+(2, 0, 14, -1),
+(3, 12, 14, -1),
+(4, 12, 14, -1),
+(5, 12, 14, -1),
+(6, 12, 14, 4),
+(7, 12, 14, 4),
+(8, 12, 14, 4),
+(9, 12, 14, 4),
+(10, 12, 14, 4),
+(11, 12, 14, 4),
+(12, 12, 14, 4),
+(13, 12, 14, 4),
+(14, 12, 14, 4),
+(15, 12, 14, 4),
+(16, 12, 14, 4),
+(17, 12, 14, 4),
+(18, 12, 14, 4);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `search_live`
 --
 
@@ -69,23 +106,31 @@ CREATE TABLE `search_live` (
   `lokasi_berangkat` varchar(100) NOT NULL,
   `lokasi_tujuan` varchar(100) NOT NULL,
   `id_user` int(11) NOT NULL,
-  `status` int(11) NOT NULL
+  `status` int(11) NOT NULL COMMENT '0 = driver, 1 = user',
+  `id_driver` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `search_live`
 --
 
-INSERT INTO `search_live` (`id`, `lokasi_berangkat`, `lokasi_tujuan`, `id_user`, `status`) VALUES
-(37, '20,Jl. Siwalankerto Permai II', '', 0, 0),
-(38, '30,Jl. Siwalankerto Permai II', '', 17, 1),
-(39, '13,Jl. Siwalankerto Permai II', '', 18, 1),
-(40, '1,Jl. Siwalankerto Permai II', '', 19, 1),
-(169, 'Gedung P, Siwalankerto', '', 16, 1),
-(328, '39,Jl. Siwalankerto Permai II', 'tumapel', 14, 0),
-(329, '39,Jl. Siwalankerto Permai II', 'tumapel', 14, 0),
-(330, '39,Jl. Siwalankerto Permai II', 'tumapel', 14, 0),
-(331, '39,Jl. Siwalankerto Permai II', 'tumapel', 14, 0);
+INSERT INTO `search_live` (`id`, `lokasi_berangkat`, `lokasi_tujuan`, `id_user`, `status`, `id_driver`) VALUES
+(445, '1,Jl. Siwalankerto Permai II', 'jombang', 12, 1, 14),
+(453, '39,Jl. Siwalankerto Permai II', 'gedung p siwalankerto', 14, 0, 0),
+(454, '39,Jl. Siwalankerto Permai II', 'tumapel', 14, 0, 0),
+(455, '39,Jl. Siwalankerto Permai II', ' gedung p siwalankerto', 14, 0, 0),
+(456, '39,Jl. Siwalankerto Permai II', 'gedung p siwalankerto', 14, 0, 0),
+(457, '39,Jl. Siwalankerto Permai II', 'tumapel', 14, 0, 0),
+(458, '39,Jl. Siwalankerto Permai II', 'gedung p siwalankerto', 14, 0, 0),
+(459, '39,Jl. Siwalankerto Permai II', 'gedung p siwalankerto', 14, 0, 0),
+(460, '39,Jl. Siwalankerto Permai II', 'gedung p siwalankerto', 14, 0, 0),
+(461, '39,Jl. Siwalankerto Permai II', 'gedung p siwalankerto', 14, 0, 0),
+(462, '39,Jl. Siwalankerto Permai II', 'gedung p siwalankerto', 14, 0, 0),
+(463, '39,Jl. Siwalankerto Permai II', 'gedung p siwalankerto', 14, 0, 0),
+(464, '39,Jl. Siwalankerto Permai II', 'tumapel', 14, 0, 0),
+(465, '39,Jl. Siwalankerto Permai II', 'tumapel', 14, 0, 0),
+(466, '39,Jl. Siwalankerto Permai II', 'tumapel', 14, 0, 0),
+(467, '39,Jl. Siwalankerto Permai II', 'tumapel', 14, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -123,12 +168,13 @@ CREATE TABLE `user` (
 INSERT INTO `user` (`id`, `username`, `password`, `umur`, `alamat`, `saldo`, `kapasitas`, `status`) VALUES
 (12, 'driver', 'driver', 20, 'Jl. Tumapel No.47', 61362, 4, 1),
 (13, 'user', 'user', 21, 'Jl. Tumapel No.45', 110000, 0, 0),
-(14, 'user1', 'user1', 27, 'Jl. Siwalankerto VIII', 57000, 0, 0),
+(14, 'user1', 'user1', 27, 'Jl. Siwalankerto VIII', 57000, 5, 0),
 (15, 'user2', 'user2', 22, 'Jl. Siwalankerto VIII', 56000, 0, 0),
 (16, 'user3', 'user3', 21, 'Jl. Siwalankerto VIII', 50000, 0, 0),
 (17, 'user4', 'user4', 34, 'Jl. Siwalankerto VIII', 50000, 0, 0),
 (18, 'user5', 'user5', 31, 'Jl. Siwalankerto VIII', 50000, 0, 0),
-(19, 'user6', 'user6', 23, 'Jl. Siwalankerto VIII', 50000, 0, 0);
+(19, 'user6', 'user6', 23, 'Jl. Siwalankerto VIII', 50000, 0, 0),
+(20, '', '', 0, '', 50000, 0, 0);
 
 --
 -- Indexes for dumped tables
@@ -144,6 +190,12 @@ ALTER TABLE `histori_isisaldo`
 -- Indexes for table `history`
 --
 ALTER TABLE `history`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `order_live`
+--
+ALTER TABLE `order_live`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -181,10 +233,16 @@ ALTER TABLE `history`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `order_live`
+--
+ALTER TABLE `order_live`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
 -- AUTO_INCREMENT for table `search_live`
 --
 ALTER TABLE `search_live`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=332;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=468;
 
 --
 -- AUTO_INCREMENT for table `transaksi`
@@ -196,7 +254,7 @@ ALTER TABLE `transaksi`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
