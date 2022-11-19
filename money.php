@@ -100,75 +100,82 @@ $row = $checksql->fetch();
 
 
 
-
+    <!-- Detail History -->
     <div class="container transaksi" data-aos="fade-down">
         <div class="row">
             <div class="col-12 mt-4">
 
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Transaksi Perjalanan</button>
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#transaksi-perjalanan" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Transaksi Perjalanan</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Transaksi Isi Saldo</button>
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#transaksi-isi-saldo" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Transaksi Isi Saldo</button>
                     </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0"></div>
-                    <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0"></div>
-                </div>
-            </div>
-        </div>
+                    <div class="tab-pane fade show active" id="transaksi-perjalanan" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+
+                        <?php
+                        //sql ambil id_user
+
+
+                        ?>
 
 
 
 
+                    </div>
+                    <div class="tab-pane fade" id="transaksi-isi-saldo" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
 
 
 
-        <?php
-        // echo $row['id'];
 
-        $sql = 'SELECT * FROM transaksi WHERE id_user = ?';
-        $checksql = $pdo->prepare($sql);
-        $checksql->execute([$row['id']]);
+                        <?php
+
+                        $sql = 'SELECT * FROM user WHERE username = ?';
+                        $checksql = $pdo->prepare($sql);
+                        $checksql->execute([$_SESSION["username"]]);
+
+                        $row = $checksql->fetch();
+
+                        $idUser = $row['id'];
+
+                        $sql = 'SELECT * FROM histori_isisaldo WHERE id_user = ?';
+                        $checksql = $pdo->prepare($sql);
+                        $checksql->execute([$idUser]);
 
 
+                        while ($rowHistoriIsiSaldo = $checksql->fetch()) {
 
-        while ($rowTransaksi = $checksql->fetch()) {
-
-            echo    "
-                            
-                        <div class='row'>
-                            <div class='col mt-4'>
-                                <h1>Transaksi</h1>
-                                <div class='card w-100'>
-                                    <div class='card-body'>
-                                        <h5 class='card-title'>Perjalanan</h5>
-                                        <p class='card-text'>Kode Pemesanan {$rowTransaksi['id']} </p>
-                                        <a href='#' class='btn btn-primary'>-Rp. {$rowTransaksi['biaya']} </a>
+                            echo    "
+    
+                                <div class='row'>
+                                    <div class='col mt-4'>
+                                        <h3>{$rowHistoriIsiSaldo['tanggal']}</h3>
+                                        <div class='card w-100'>
+                                            <div class='card-body'>
+                                                <h5 class='card-title'>Isi Saldo</h5>
+                                                <p class='card-text'>Kode Pengisian {$rowHistoriIsiSaldo['id']} </p>
+                                                <a href='#' class='btn btn-primary'>+Rp. {$rowHistoriIsiSaldo['jumlah_uang']} </a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                    ";
-        }
+                        ";
+                        }
 
-        ?>
+            
+                        ?>
 
-        <!-- <div class='row'>
-            <div class='col mt-4'>
-                <h1>Transaksi</h1>
-                <div class='card w-100'>
-                    <div class='card-body'>
-                        <h5 class='card-title'>Perjalanan</h5>
-                        <p class='card-text'>Kode Pemesanan 123</p>
-                        <a href='#' class='btn btn-primary'>-Rp.5000</a>
+
+
+
                     </div>
                 </div>
             </div>
-        </div> -->
+        </div>
 
     </div>
 
@@ -231,14 +238,14 @@ $row = $checksql->fetch();
     <script>
         function isiSaldoAjax() {
 
+            saldoAdd = document.getElementById("saldo").value
+            saldoNow = document.getElementById("saldoSekarang").textContent
+
+            // console.log(saldoAdd,saldoNow)
 
             let formData = new FormData();
-            formData.append("saldo", $("#saldo").val());
-            formData.append("saldoSekarang", $("#saldoSekarang").html());
-
-
-
-
+            formData.append("saldo", saldoAdd);
+            formData.append("saldoSekarang", saldoNow);
 
             const xmlHttp = new XMLHttpRequest();
             xmlHttp.onload = function() {
@@ -249,6 +256,7 @@ $row = $checksql->fetch();
                         title: 'Dalam Proses...',
                         html: '',
                         timer: 2000,
+                        allowOutsideClick: false,
                         timerProgressBar: true,
                         didOpen: () => {
                             Swal.showLoading()
@@ -271,10 +279,31 @@ $row = $checksql->fetch();
                             confirmButtonColor: "#0d6efd"
                         });
 
-                        // console.log(result)
-                        console.log(this.responseText)
+                        // console.log(this.responseText)
+                        data = JSON.parse(this.responseText);
 
-                        $(".card-title").eq(0).html("<sup> Rp </sup>" + this.responseText)
+                        console.log(data)
+
+                        // replace value saldo 
+                        $(".card-title").eq(0).html("<sup> Rp </sup> <span id='saldoSekarang'>" + data[0]['saldoUpdate'] + "</span>")
+
+                        // replace value list transaksi isi saldo
+                        $("#transaksi-isi-saldo").html("")
+                        
+                        for (let i = 1; i < data.length; i++) {
+                            console.log("aa")
+                            $("#transaksi-isi-saldo").append(
+                               "<div class='row'><div class='col mt-4'><h3>"+data[i]['tanggal']+"</h3><div class='card w-100'><div class='card-body'><h5 class='card-title'>Isi Saldo</h5><p class='card-text'>Kode Pengisian " + data[i]['kode'] +"</p><a href='#' class='btn btn-primary'>+Rp. "+ data[i]['jumlah_uang'] + "</a></div></div></div></div>"
+                            )
+                        }
+
+
+
+
+
+
+
+
                         $(".form-saldo").trigger("reset");
 
                     })
@@ -296,39 +325,6 @@ $row = $checksql->fetch();
 
 
         }
-
-        // $("button").click(function() {
-        //     alert("The paragraph was clicked.");
-        // });
-
-
-
-        // $(document).ready(function() {
-        //     $(".swal2-confirm.swal2-styled.swal2-default-outline").click(function() {
-        //         alert("The paragraph was clicked 11.");
-
-
-        //         // let formData = new FormData();
-        //         // formData.append("jumlahUang", $(".swal2-input").val());
-
-
-        //         // const xmlHttp = new XMLHttpRequest();
-        //         // xmlHttp.onload = function() {
-        //         //     if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-
-
-        //         //         $(".card-title").text(this.responseText)
-
-        //         //     } else {
-        //         //         alert("Error!");
-        //         //     }
-        //         // }
-        //         // xmlHttp.open("POST", "request/isi_saldo_ajax.php");
-        //         // xmlHttp.send(formData);
-
-        //     });
-
-        // });
 
 
 

@@ -75,10 +75,6 @@
 
 
 
-
-
-
-
     <!-- Link CDN Jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- Link CDN AOS -->
@@ -92,8 +88,6 @@
 
         $('body').on('change', '.pilihanStatus', function() {
             var pil = $(this).val();
-            alert(pil)
-            alert(counter)
 
             if (pil == "1" && counter == 0) {
                 let formKapasitas =
@@ -162,9 +156,9 @@
             $(".formSignUp").html(dataUmum);
 
             // Display the values
-            for (const value of DataAkun.values()) {
-                console.log(value);
-            }
+            // for (const value of DataAkun.values()) {
+            //     console.log(value);
+            // }
 
         }
 
@@ -217,17 +211,14 @@
 
             let status = $('.pilihanStatus').find(":selected").val();
 
-            alert(status)
 
             if (status == "1") {
-                alert("aa")
                 let kapasitas = $('.kapasitas').find(":selected").val();
                 DataAkun.append("status", status);
                 DataAkun.append("kapasitas", kapasitas);
-            }else{
-                alert("bb")
+            } else {
                 DataAkun.append("status", status);
-                DataAkun.append("kapasitas", 0);    
+                DataAkun.append("kapasitas", 0);
             }
 
             // console.log(DataAkun)
@@ -241,22 +232,60 @@
             xmlHttp.onload = function() {
                 if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: 'Pembuatan Akun Berhasil',
-                        showConfirmButton: false,
-                        timer: 3000
-                    })
 
-                
+                    $(".formSignUp").attr('style', 'margin-top: 40vh !important');
+                    $(".formSignUp").html("<span class='loader'></span>");
+
                     setTimeout(() => {
                         if (this.responseText == "Pembuatan Akun Berhasil") {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Pembuatan Akun Berhasil',
+                                showConfirmButton: false,
+                                allowOutsideClick: false,
+                                timer: 3000
+                            })
+                        } else {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: 'Pembuatan Akun Gagal',
+                                showConfirmButton: false,
+                                allowOutsideClick: false,
+                                timer: 3000
+                            })
+                        }
+                    }, 1000)
+
+
+
+                    setTimeout(() => {
+                        if (this.responseText == "Pembuatan Akun Berhasil") {
+                            // Swal.fire({
+                            //     position: 'center',
+                            //     icon: 'success',
+                            //     title: 'Pembuatan Akun Berhasil',
+                            //     showConfirmButton: false,
+                            //     allowOutsideClick: false,
+                            //     timer: 3000
+                            // })
                             window.location.href = "http://localhost/ride_sharing/login.php";
-                        } 
+                        } else {
+                            // Swal.fire({
+                            //     position: 'center',
+                            //     icon: 'error',
+                            //     title: 'Pembuatan Akun Gagal',
+                            //     showConfirmButton: false,
+                            //     allowOutsideClick: false,
+                            //     timer: 3000
+                            // })
+                            window.location.href = "http://localhost/ride_sharing/sign_up.php";
+
+                        }
 
 
-                    }, 3000)
+                    }, 4000)
 
 
 

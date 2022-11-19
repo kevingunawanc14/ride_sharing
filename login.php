@@ -89,7 +89,7 @@
             DataAkun.append("password", password);
 
 
-            console.log(username, password)
+            // console.log(username, password)
 
             const xmlHttp = new XMLHttpRequest();
             xmlHttp.onload = function() {
@@ -98,18 +98,32 @@
 
                     $(".formLogin").attr('style', 'margin-top: 40vh !important');
                     $(".formLogin").html("<span class='loader'></span>");
-                    alert(this.responseText)
+                    // alert(this.responseText)
+
+                    setTimeout(() => {
+                        if (this.responseText == "Maaf Username / Password Anda Salah") {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: 'Username / Password Anda Salah',
+                                showConfirmButton: false,
+                                allowOutsideClick: false,
+                                timer: 3000
+                            })
+                        } 
+                    }, 1000)
 
                     setTimeout(() => {
 
                         if (this.responseText == "Maaf Username / Password Anda Salah") {
-                            alert("Username / Password Anda Salah")
+                            // alert("Username / Password Anda Salah")
+
                             window.location.href = "http://localhost/ride_sharing/login.php";
                         } else {
                             window.location.href = "http://localhost/ride_sharing/ride_user.php";
                         }
 
-                    }, 3000)
+                    }, 4000)
 
 
                 } else {
@@ -152,6 +166,9 @@
 
     <!-- Link CDN Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+    <!-- Link CDN sweetalert  -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 </body>
