@@ -3,8 +3,20 @@ require_once 'includes/connect.php';
 
 // echo $_SESSION['username'];
 
-if (!isset($_SESSION['username'])) {
-  echo '<script>window.location.href = "http://localhost/ride_sharing/login.php";</script>';
+//sql get status user buat tau ini user atau driver
+$sql = 'SELECT * FROM USER WHERE username = ?';
+$checksql = $pdo->prepare($sql);
+$checksql->execute([$_SESSION['username']]);
+
+$row = $checksql->fetch();
+
+
+
+
+if ($row['status'] != 0) {
+  echo '<script>window.location.href = "http://localhost/ride_sharing/ride_driver.php";</script>';
+}else{
+
 }
 
 
@@ -384,6 +396,7 @@ if (!isset($_SESSION['username'])) {
       const directionsService = new google.maps.DirectionsService();
       const directionsRenderer = new google.maps.DirectionsRenderer();
 
+
       var options = {
         center: {
           lat: -7.3399815207700065,
@@ -400,7 +413,6 @@ if (!isset($_SESSION['username'])) {
       }
 
       map2 = new google.maps.Map(document.getElementById('map2'), options);
-
 
       directionsRenderer.setMap(map2);
 
@@ -446,6 +458,7 @@ if (!isset($_SESSION['username'])) {
           $(".lokasiTujuan p").eq(2).html("Jarak &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: " + response.routes[0].legs[0].distance.text)
 
           $(".lokasiTujuan p").eq(3).html("Biaya &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Rp. " + (parseInt(response.routes[0].legs[0].distance.text) * 4500))
+
 
 
         })

@@ -2,10 +2,20 @@
 require_once 'includes/connect.php';
 
 // echo $_SESSION['username'];
+$sql = 'SELECT * FROM USER WHERE username = ?';
+$checksql = $pdo->prepare($sql);
+$checksql->execute([$_SESSION['username']]);
 
-if (!isset($_SESSION['username'])) {
-  echo '<script>window.location.href = "http://localhost/ride_sharing/login.php";</script>';
+$row = $checksql->fetch();
+
+
+
+if ($row['status'] != 1) {
+  echo '<script>window.location.href = "http://localhost/ride_sharing/ride_user.php";</script>';
+} else {
 }
+
+
 
 
 
@@ -126,12 +136,12 @@ if (!isset($_SESSION['username'])) {
     </div>
   </nav>
 
-  <!-- Modal Lokasi Tujuan -->
+  <!-- Modal Status Order -->
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fa-solid fa-map-location-dot"></i> Status Order <button type="button" class="btn btn-success rounded-pill">2/5</button></h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fa-solid fa-map-location-dot"></i> Status Order <button type="button" class="btn btn-success rounded-pill">0/0</button></h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" style="padding: 0;">
@@ -151,16 +161,16 @@ if (!isset($_SESSION['username'])) {
                 </ul>
                 <div class="tab-content" id="myTabContent">
                   <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-                    <p>Lokasi Berangkat Driver :</p>
+                    <!-- <p>Lokasi Berangkat Driver :</p>
                     <p>Lokasi Berangkat userx :</p>
                     <p>Lokasi Berangkat userx1 :</p>
-                    <p>Lokasi Berangkat userx2 :</p>
+                    <p>Lokasi Berangkat userx2 :</p> -->
                   </div>
                   <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-                    <p>Lokasi Tujuan Driver :</p>
+                    <!-- <p>Lokasi Tujuan Driver :</p>
                     <p>Lokasi Tujuan usery :</p>
                     <p>Lokasi Tujuan usery1 :</p>
-                    <p>Lokasi Tujuan usery2 :</p>
+                    <p>Lokasi Tujuan usery2 :</p> -->
                   </div>
                 </div>
 
@@ -330,7 +340,7 @@ if (!isset($_SESSION['username'])) {
       interval = setInterval(function() {
 
         viewDriverSekitar();
-
+        statusOrderLive();
 
       }, 10000);
 
@@ -489,6 +499,7 @@ if (!isset($_SESSION['username'])) {
           const directionsService = new google.maps.DirectionsService();
           const directionsRenderer = new google.maps.DirectionsRenderer();
 
+          console.log(data)
 
           for (let i = 1; i < data.length; i++) {
             directionsService
@@ -623,7 +634,7 @@ if (!isset($_SESSION['username'])) {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
           console.log(this.responseText)
-          statusOrderLive()
+          // statusOrderLive()
         } else {
           alert("Error!");
         }
@@ -642,6 +653,7 @@ if (!isset($_SESSION['username'])) {
           // console.log(this.responseText)
           data = JSON.parse(this.responseText);
           console.log(data)
+          console.log("test")
 
           arrayLokasi = [];
 
@@ -653,6 +665,8 @@ if (!isset($_SESSION['username'])) {
           for (let i = 1; i < data.length; i++) {
             arrayLokasi.push(data[i]['lokasiStartUser'])
           }
+
+          console.log(arrayLokasi)
 
 
           var options = {
@@ -671,7 +685,7 @@ if (!isset($_SESSION['username'])) {
           }
 
           map2 = new google.maps.Map(document.getElementById('map2'), options);
-          
+
           const directionsService = new google.maps.DirectionsService();
           const directionsRenderer = new google.maps.DirectionsRenderer();
 
@@ -680,7 +694,7 @@ if (!isset($_SESSION['username'])) {
 
           const waypts = [];
 
-          for (let i = 0; i < arrayLokasi.length; i++) {
+          for (let i = 1; i < arrayLokasi.length; i++) {
             waypts.push({
               location: arrayLokasi[i],
               stopover: true,
@@ -698,6 +712,22 @@ if (!isset($_SESSION['username'])) {
             .then((response) => {
               directionsRenderer.setDirections(response);
 
+              // const summaryPanel = document.getElementById("home-tab-pane");
+
+              // summaryPanel.innerHTML = "";
+
+              // // For each route, display summary information.
+              // for (let i = 0; i < route.legs.length; i++) {
+              //   const routeSegment = i + 1;
+
+              //   summaryPanel.innerHTML +=
+              //     "<b>Route Segment: " + routeSegment + "</b><br>";
+              //   summaryPanel.innerHTML += route.legs[i].start_address + " to ";
+              //   summaryPanel.innerHTML += route.legs[i].end_address + "<br>";
+              //   summaryPanel.innerHTML += route.legs[i].distance.text + "<br><br>";
+
+              // }
+              console.log(route.legs[i].start_address)
 
             })
             .catch((e) => window.alert("Directions request failed due to " + status));
