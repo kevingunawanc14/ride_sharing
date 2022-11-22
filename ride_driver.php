@@ -153,20 +153,20 @@ if ($row['status'] != 1) {
               <div class="col lokasiTujuan">
                 <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
                   <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="lokasi_berangkat" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true" onclick="gantiPilihanLokasi()">Lokasi Berangkat</button>
+                    <button class="nav-link active" id="lokasi_berangkat" data-bs-toggle="tab" data-bs-target="#lokasi_berangkat" type="button" role="tab" aria-controls="lokasi_berangkat" aria-selected="true" onclick="gantiPilihanLokasi()">Lokasi Berangkat</button>
                   </li>
                   <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="lokasi_tujuan" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false" onclick="gantiPilihanLokasi()">Lokasi Tujuan</button>
+                    <button class="nav-link" id="lokasi_tujuan" data-bs-toggle="tab" data-bs-target="#lokasi_tujuan" type="button" role="tab" aria-controls="lokasi_tujuan" aria-selected="false" onclick="gantiPilihanLokasi()">Lokasi Tujuan</button>
                   </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
-                  <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                  <div class="tab-pane fade show active" id="lokasi_berangkat-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
                     <!-- <p>Lokasi Berangkat Driver :</p>
                     <p>Lokasi Berangkat userx :</p>
                     <p>Lokasi Berangkat userx1 :</p>
                     <p>Lokasi Berangkat userx2 :</p> -->
                   </div>
-                  <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                  <div class="tab-pane fade" id="lokasi_tujuan-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
                     <!-- <p>Lokasi Tujuan Driver :</p>
                     <p>Lokasi Tujuan usery :</p>
                     <p>Lokasi Tujuan usery1 :</p>
@@ -656,6 +656,8 @@ if ($row['status'] != 1) {
           console.log("test")
 
           arrayLokasi = [];
+          $("#lokasi_berangkat-pane").html("")
+          $("#lokasi_tujuan-pane").html("")
 
           // data ke 0 start sebagai start awal di way point
           arrayLokasi.push(data[0]['lokasiStartDriverIni'])
@@ -711,7 +713,8 @@ if ($row['status'] != 1) {
             })
             .then((response) => {
               directionsRenderer.setDirections(response);
-
+              console.log(response)
+              const route = response.routes[0];
               // const summaryPanel = document.getElementById("home-tab-pane");
 
               // summaryPanel.innerHTML = "";
@@ -727,7 +730,25 @@ if ($row['status'] != 1) {
               //   summaryPanel.innerHTML += route.legs[i].distance.text + "<br><br>";
 
               // }
-              console.log(route.legs[i].start_address)
+              // console.log(route.legs[i].start_address)
+              var totalJarak=0;
+              for (let i = 0; i < route.legs.length; i++) {
+                const routeSegment = i + 1;
+                
+                $("#lokasi_berangkat-pane").append("<p>"+"Rute Penjemputan : " + routeSegment + "</p>")
+                $("#lokasi_berangkat-pane").append("<p>"+route.legs[i].start_address+"</p>")
+                $("#lokasi_berangkat-pane").append("<p>"+route.legs[i].end_address+"</p>")
+                $("#lokasi_berangkat-pane").append("<p>"+route.legs[i].distance.text  +"</p>")
+
+                totalJarak+=route.legs[i].distance.text;
+                console.log(totalJarak)
+                
+              }
+
+              
+              // $("#lokasi_tujuan-pane").append("<p>xx</p>")
+
+
 
             })
             .catch((e) => window.alert("Directions request failed due to " + status));

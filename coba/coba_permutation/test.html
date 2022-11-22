@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button onclick="">x</button>
+</body>
+
+<script>
+    const permutator = (inputArr) => {
+        let result = [];
+
+        const permute = (arr, m = []) => {
+            if (arr.length === 0) {
+                result.push(m)
+            } else {
+                for (let i = 0; i < arr.length; i++) {
+                    let curr = arr.slice();
+                    let next = curr.splice(i, 1);
+                    permute(curr.slice(), m.concat(next))
+                }
+            }
+        }
+
+        permute(inputArr)
+
+        return result;
+    }
+
+    permutator(['c','a','t']);
+
+</script>
+
+</html>
