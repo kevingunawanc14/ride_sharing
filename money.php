@@ -118,6 +118,39 @@ $row = $checksql->fetch();
 
                         <?php
                         //sql ambil id_user
+                        $sql = 'SELECT * FROM user WHERE username = ?';
+                        $checksql = $pdo->prepare($sql);
+                        $checksql->execute([$_SESSION["username"]]);
+
+                        $row = $checksql->fetch();
+
+                        $idUser = $row['id'];
+
+
+                        $sql = 'SELECT * FROM transaksi WHERE id_user = ?';
+                        $checksql = $pdo->prepare($sql);
+                        $checksql->execute([$idUser]);
+
+                        while ($rowTransaksi = $checksql->fetch()) {
+
+                            echo    "
+                                    
+                                <div class='row'>
+                                    <div class='col mt-4'>
+                                    <h3>{$rowTransaksi['tanggal']}</h3>
+                                        <div class='card w-100'>
+                                            <div class='card-body'>
+                                                <h5 class='card-title'>Perjalanan</h5>
+                                                <p class='card-text'>Kode Pemesanan {$rowTransaksi['id']} </p>
+                                                <a href='#' class='btn btn-primary'>+Rp. {$rowTransaksi['biaya']} </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            ";
+                        }
+
 
 
                         ?>
@@ -166,7 +199,7 @@ $row = $checksql->fetch();
                         ";
                         }
 
-            
+
                         ?>
 
 
@@ -289,11 +322,11 @@ $row = $checksql->fetch();
 
                         // replace value list transaksi isi saldo
                         $("#transaksi-isi-saldo").html("")
-                        
+
                         for (let i = 1; i < data.length; i++) {
                             console.log("aa")
                             $("#transaksi-isi-saldo").append(
-                               "<div class='row'><div class='col mt-4'><h3>"+data[i]['tanggal']+"</h3><div class='card w-100'><div class='card-body'><h5 class='card-title'>Isi Saldo</h5><p class='card-text'>Kode Pengisian " + data[i]['kode'] +"</p><a href='#' class='btn btn-primary'>+Rp. "+ data[i]['jumlah_uang'] + "</a></div></div></div></div>"
+                                "<div class='row'><div class='col mt-4'><h3>" + data[i]['tanggal'] + "</h3><div class='card w-100'><div class='card-body'><h5 class='card-title'>Isi Saldo</h5><p class='card-text'>Kode Pengisian " + data[i]['kode'] + "</p><a href='#' class='btn btn-primary'>+Rp. " + data[i]['jumlah_uang'] + "</a></div></div></div></div>"
                             )
                         }
 

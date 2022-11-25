@@ -266,7 +266,7 @@ if ($row['status'] != 1) {
       var lat = position.coords.latitude;
       var lng = position.coords.longitude;
 
-
+      
       //isi value form nya dengan lat,lng yang didapat dari geolocation yang nanti buat displit
       $("input").eq(0).val(lat + "," + lng, );
 
@@ -731,21 +731,21 @@ if ($row['status'] != 1) {
 
               // }
               // console.log(route.legs[i].start_address)
-              var totalJarak=0;
+              var totalJarak = 0;
               for (let i = 0; i < route.legs.length; i++) {
                 const routeSegment = i + 1;
-                
-                $("#lokasi_berangkat-pane").append("<p>"+"Rute Penjemputan : " + routeSegment + "</p>")
-                $("#lokasi_berangkat-pane").append("<p>"+route.legs[i].start_address+"</p>")
-                $("#lokasi_berangkat-pane").append("<p>"+route.legs[i].end_address+"</p>")
-                $("#lokasi_berangkat-pane").append("<p>"+route.legs[i].distance.text  +"</p>")
 
-                totalJarak+=route.legs[i].distance.text;
+                $("#lokasi_berangkat-pane").append("<p>" + "Rute Penjemputan : " + routeSegment + "</p>")
+                $("#lokasi_berangkat-pane").append("<p>" + route.legs[i].start_address + "</p>")
+                $("#lokasi_berangkat-pane").append("<p>" + route.legs[i].end_address + "</p>")
+                $("#lokasi_berangkat-pane").append("<p>" + route.legs[i].distance.text + "</p>")
+
+                totalJarak += route.legs[i].distance.text;
                 console.log(totalJarak)
-                
+
               }
 
-              
+
               // $("#lokasi_tujuan-pane").append("<p>xx</p>")
 
 
@@ -769,6 +769,35 @@ if ($row['status'] != 1) {
 
     function gantiPilihanLokasi() {
       console.log($('#lokasi_berangkat').attr('aria-selected'))
+    }
+
+    function finishOrder() {
+      let username = document.getElementById("username").value
+      let password = document.getElementById("password").value
+
+
+      let DataAkun = new FormData();
+      DataAkun.append("username", username);
+      DataAkun.append("password", password);
+
+
+      // console.log(username, password)
+
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+
+        
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/finish_order_ajax.php");
+      xmlHttp.send(DataAkun);
+
+
+
     }
 
 

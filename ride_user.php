@@ -15,8 +15,7 @@ $row = $checksql->fetch();
 
 if ($row['status'] != 0) {
   echo '<script>window.location.href = "http://localhost/ride_sharing/ride_driver.php";</script>';
-}else{
-
+} else {
 }
 
 
@@ -360,6 +359,9 @@ if ($row['status'] != 0) {
         $("#cancelButton").css("display", "none");
         $("#detailData").css("display", "none");
 
+        // reset isi form tujuan
+        document.getElementById("end").value = ""
+
         // delete posisi user biar gak numpuk
         deletePosisiUserSaatIni()
 
@@ -457,7 +459,22 @@ if ($row['status'] != 0) {
 
           $(".lokasiTujuan p").eq(2).html("Jarak &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: " + response.routes[0].legs[0].distance.text)
 
-          $(".lokasiTujuan p").eq(3).html("Biaya &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Rp. " + (parseInt(response.routes[0].legs[0].distance.text) * 4500))
+          console.log(parseInt(response.routes[0].legs[0].distance.value / 1000))
+          jarak = response.routes[0].legs[0].distance.value
+
+          biaya = 0
+
+          if (jarak < 2000) {
+            $(".lokasiTujuan p").eq(3).html("Biaya &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Rp. " + (2 * 4500))
+            biaya = 2 * 4500
+          } else {
+            $(".lokasiTujuan p").eq(3).html("Biaya &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Rp. " + (parseInt(jarak / 1000) * 4500))
+
+            biaya = (parseInt(jarak / 1000) * 4500)
+          }
+
+          cekSaldo(biaya)
+
 
 
 
@@ -465,8 +482,19 @@ if ($row['status'] != 0) {
         .catch((e) =>
 
           {
-            window.alert("Maaf lokasi tidak ditemukan ")
-            window.location.reload();
+            // window.alert("Maaf lokasi tidak ditemukan ")
+            Swal.fire({
+              position: 'center',
+              icon: 'error',
+              title: 'Maaf lokasi tidak ditemukan',
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 1500
+            })
+            setTimeout(function() {
+              window.location.reload();
+            }, 1500);
+
 
           }
 
@@ -640,7 +668,47 @@ if ($row['status'] != 0) {
 
     }
 
+    function cekSaldo(biaya) {
 
+      let biayaPerjalanan = biaya
+
+      let DataBiaya = new FormData();
+      DataBiaya.append("biaya", biayaPerjalanan);
+
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          data = JSON.parse(this.responseText);
+
+          console.log(data)
+          
+          if (data[0]["status"] == "true") {
+            console.log("lanjut karena saldo masih ada")
+
+          } else {
+            // console.log("reload alert maaf saldo anda tidak cukup untuk perjalanan ini")
+            Swal.fire({
+              position: 'center',
+              icon: 'warning',
+              title: 'Saldo Anda Kurang '+data[0]["saldoKurang"]+ ' Untuk Melakukan Perjalanan Ini Silakan Isi Saldo Terlebih Dahulu',
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 2500
+            })
+            setTimeout(function() {
+              window.location.reload(); }, 2500);
+
+          }
+
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/cek_biaya_ajax.php");
+      xmlHttp.send(DataBiaya);
+
+    }
 
 
 
@@ -679,6 +747,9 @@ if ($row['status'] != 0) {
 
   <!-- Link CDN Bootstrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  <!-- Link CDN sweetalert  -->
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 </body>

@@ -63,10 +63,8 @@ $row = $checksql->fetch();
           <thead>
             <tr>
               <th scope="col">#</th>
-              <th scope="col">Waktu</th>
               <th scope="col">Lokasi Asal</th>
               <th scope="col">Lokasi Tujuan</th>
-              <th scope="col">Jarak</th>
               <th scope="col">Biaya</th>
 
 
@@ -83,8 +81,6 @@ $row = $checksql->fetch();
             // $rowHistory = $checksql->fetch();
             
 
-
-
             while ($rowHistory = $checksql->fetch()) {
 
               echo    "
@@ -92,10 +88,8 @@ $row = $checksql->fetch();
       
                         <tr>
                           <th scope='row'>1</th>
-                          <td>kolom tanggal masih x</td>
                           <td>{$rowHistory['lokasi_berangkat']}</td>
                           <td>{$rowHistory['lokasi_tujuan']}</td>
-                          <td>500 m</td>
                           <td>{$rowHistory['biaya']}</td>
           
                         </tr>
@@ -103,125 +97,7 @@ $row = $checksql->fetch();
             }
 
             ?>
-            <!-- <tr>
-              <th scope='row'>1</th>
-              <td>30-Oct-22, 9.12 - 9.20</td>
-              <td>Jalan x</td>
-              <td>Jalan y</td>
-              <td>500 m</td>
-              <td>Rp. 9000</td>
 
-            </tr> -->
-            <!-- <tr>
-              <th scope="row">2</th>
-              <td>31-Oct-22, 9.12 - 9.20</td>
-              <td>Jalan x</td>
-              <td>Jalan y</td>
-              <td>500 m</td>
-
-              <td>Rp. 6000</td>
-
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>31-Oct-22, 9.22 - 9.25</td>
-              <td>Jalan x</td>
-              <td>Jalan y</td>
-              <td>500 m</td>
-
-              <td>Rp. 7000</td>
-
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>31-Oct-22, 9.22 - 9.25</td>
-              <td>Jalan x</td>
-              <td>Jalan y</td>
-              <td>500 m</td>
-
-              <td>Rp. 7000</td>
-
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>31-Oct-22, 9.22 - 9.25</td>
-              <td>Jalan x</td>
-              <td>Jalan y</td>
-              <td>500 m</td>
-
-              <td>Rp. 7000</td>
-
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>31-Oct-22, 9.22 - 9.25</td>
-              <td>Jalan x</td>
-              <td>Jalan y</td>
-              <td>500 m</td>
-
-              <td>Rp. 7000</td>
-
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>31-Oct-22, 9.22 - 9.25</td>
-              <td>Jalan x</td>
-              <td>Jalan y</td>
-              <td>500 m</td>
-
-              <td>Rp. 7000</td>
-
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>31-Oct-22, 9.22 - 9.25</td>
-              <td>Jalan x</td>
-              <td>Jalan y</td>
-              <td>500 m</td>
-
-              <td>Rp. 7000</td>
-
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>31-Oct-22, 9.22 - 9.25</td>
-              <td>Jalan x</td>
-              <td>Jalan y</td>
-              <td>500 m</td>
-
-              <td>Rp. 7000</td>
-
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>31-Oct-22, 9.22 - 9.25</td>
-              <td>Jalan x</td>
-              <td>Jalan y</td>
-              <td>500 m</td>
-
-              <td>Rp. 7000</td>
-
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>31-Oct-22, 9.22 - 9.25</td>
-              <td>Jalan x</td>
-              <td>Jalan y</td>
-              <td>500 m</td>
-
-              <td>Rp. 7000</td>
-
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>31-Oct-22, 9.22 - 9.25</td>
-              <td>Jalan x</td>
-              <td>Jalan y</td>
-              <td>500 m</td>
-
-              <td>Rp. 700000000000000000000000000000000</td>
-
-            </tr> -->
           </tbody>
         </table>
       </div>
