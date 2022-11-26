@@ -79,21 +79,23 @@ if ($row['status'] != 0) {
 
         <button id="cancelButton" type="button" class="btn btn-danger animate__animated animate__pulse animate__infinite	infinite" style="display: none;" onclick="cancelSearchDriver()"><i class="fa-solid fa-xmark"></i> Cancel</button>
 
+        <button id="ongoingButton" type="button" class="btn btn-dark animate__animated animate__pulse animate__infinite	infinite" style="display: none;" onclick=""><i class="fa-regular fa-hourglass"></i> ONGOING</button>
+
 
       </div>
     </div>
-    <div id="detailData" class="row mt-3" style="display: none;">
+    <div id="detailData" class="row mt-3">
 
       <div class="col-12 col-sm-12 my-3">
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <button id="lokasiTujuanModal" type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal" style="display: none;">
           Lokasi Tujuan
         </button>
 
       </div>
       <div class="col-12 col-sm-12 my-3">
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal2">
+        <button id="statusOrderModal" type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal2" style="display: none;">
           Status Order
         </button>
       </div>
@@ -189,17 +191,49 @@ if ($row['status'] != 0) {
 
   <!-- Modal Status Order -->
   <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel"> <i class="fa-solid fa-map-location-dot"></i> Status Order</h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fa-solid fa-map-location-dot"></i> Status Order <button type="button" class="btn btn-success rounded-pill">0/0</button></h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div id="statusOrder" class="modal-body">
+        <div class="modal-body" style="padding: 0;">
+          <div id="map2">
 
+          </div>
+          <div class="container text-start">
+            <div class="row">
+              <div class="col lokasiTujuan">
+                <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="lokasi_berangkat" data-bs-toggle="tab" data-bs-target="#lokasi_berangkat" type="button" role="tab" aria-controls="lokasi_berangkat" aria-selected="true" onclick="gantiPilihanLokasi()">Lokasi Berangkat</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="lokasi_tujuan" data-bs-toggle="tab" data-bs-target="#lokasi_tujuan" type="button" role="tab" aria-controls="lokasi_tujuan" aria-selected="false" onclick="gantiPilihanLokasi()">Lokasi Tujuan</button>
+                  </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                  <div class="tab-pane fade show active" id="lokasi_berangkat-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                    <!-- <p>Lokasi Berangkat Driver :</p>
+                    <p>Lokasi Berangkat userx :</p>
+                    <p>Lokasi Berangkat userx1 :</p>
+                    <p>Lokasi Berangkat userx2 :</p> -->
+                  </div>
+                  <div class="tab-pane fade" id="lokasi_tujuan-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                    <!-- <p>Lokasi Tujuan Driver :</p>
+                    <p>Lokasi Tujuan usery :</p>
+                    <p>Lokasi Tujuan usery1 :</p>
+                    <p>Lokasi Tujuan usery2 :</p> -->
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Finish Order</button>
         </div>
       </div>
     </div>
@@ -329,19 +363,22 @@ if ($row['status'] != 0) {
 
       $("#searchButton").css("display", "none");
       $("#cancelButton").css("display", "inline-block");
-      $("#detailData").css("display", "flex");
+      $("#lokasiTujuanModal").css("display", "inline-block");
+
 
       // view lokasi tujuan 
       viewLokasiTujuan();
 
       // insert posisi user sekarang
-      insertPosisiUserSaatIni()
+      insertPosisiUserSaatIni();
 
       // view driver sekitar secara live
       interval = setInterval(function() {
 
-        viewDriverSekitar();
-
+        // viewDriverSekitar();
+        // buat cek user sudah dipickup atau belum
+        cekStatusUser();
+        statusOrderLive();
 
       }, 10000);
 
@@ -682,7 +719,7 @@ if ($row['status'] != 0) {
           data = JSON.parse(this.responseText);
 
           console.log(data)
-          
+
           if (data[0]["status"] == "true") {
             console.log("lanjut karena saldo masih ada")
 
@@ -691,13 +728,14 @@ if ($row['status'] != 0) {
             Swal.fire({
               position: 'center',
               icon: 'warning',
-              title: 'Saldo Anda Kurang '+data[0]["saldoKurang"]+ ' Untuk Melakukan Perjalanan Ini Silakan Isi Saldo Terlebih Dahulu',
+              title: 'Saldo Anda Kurang ' + data[0]["saldoKurang"] + ' Untuk Melakukan Perjalanan Ini Silakan Isi Saldo Terlebih Dahulu',
               showConfirmButton: false,
               allowOutsideClick: false,
               timer: 2500
             })
             setTimeout(function() {
-              window.location.reload(); }, 2500);
+              window.location.reload();
+            }, 2500);
 
           }
 
@@ -710,7 +748,171 @@ if ($row['status'] != 0) {
 
     }
 
+    function cekStatusUser() {
 
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          // jadi lek misal dia belum mempunyai id driver berarti dia belum di pick up maka tombol cancel masih on tapi ketika sudah di pick up maka tombol cancel menjadi ongoing
+
+          data = JSON.parse(this.responseText);
+          // console.log(this.responseText)
+
+          if (data[0]['status'] == '1') {
+            console.log("button cancel di hidden ganti ongoing")
+            $("#cancelButton").css("display", "none");
+            $("#ongoingButton").css("display", "inline-block");
+            $("#statusOrderModal").css("display", "inline-block");
+
+          } else {
+            console.log("button cancel tidak dihidden")
+          }
+
+
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/cek_status_user_ajax.php");
+      xmlHttp.send();
+    }
+
+    function statusOrderLive() {
+
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          // console.log(this.responseText)
+          console.log(this.responseText)
+
+          if (this.responseText == "") {
+            console.log("a")
+          } else {
+            console.log("b")
+            data = JSON.parse(this.responseText);
+            console.log(data)
+
+            arrayLokasi = [];
+            $("#lokasi_berangkat-pane").html("")
+            $("#lokasi_tujuan-pane").html("")
+
+            // data ke 0 start sebagai start awal di way point
+            arrayLokasi.push(data[0]['lokasiStartDriverIni'])
+            // array.push(data[0]['lokasiEndDriverIni'])
+
+            // push lo
+            for (let i = 1; i < data.length; i++) {
+              arrayLokasi.push(data[i]['lokasiStartUser'])
+            }
+
+            console.log(arrayLokasi)
+
+
+            var options = {
+              center: {
+                lat: -7.3399815207700065,
+                lng: 112.73688888681441
+              },
+              disableDefaultUI: true,
+              zoomControl: true,
+              mapTypeControl: false,
+              scaleControl: false,
+              streetViewControl: false,
+              rotateControl: false,
+              fullscreenControl: false,
+              mapId: '93eb27799b5c0810'
+            }
+
+            map2 = new google.maps.Map(document.getElementById('map2'), options);
+
+            const directionsService = new google.maps.DirectionsService();
+            const directionsRenderer = new google.maps.DirectionsRenderer();
+
+            directionsRenderer.setMap(map2);
+
+
+            const waypts = [];
+
+            for (let i = 1; i < arrayLokasi.length; i++) {
+              waypts.push({
+                location: arrayLokasi[i],
+                stopover: true,
+              });
+            }
+
+            directionsService
+              .route({
+                origin: arrayLokasi[0],
+                destination: arrayLokasi[arrayLokasi.length - 1],
+                waypoints: waypts,
+                optimizeWaypoints: true,
+                travelMode: google.maps.TravelMode.DRIVING,
+              })
+              .then((response) => {
+                directionsRenderer.setDirections(response);
+                console.log(response)
+                const route = response.routes[0];
+                // const summaryPanel = document.getElementById("home-tab-pane");
+
+                // summaryPanel.innerHTML = "";
+
+                // // For each route, display summary information.
+                // for (let i = 0; i < route.legs.length; i++) {
+                //   const routeSegment = i + 1;
+
+                //   summaryPanel.innerHTML +=
+                //     "<b>Route Segment: " + routeSegment + "</b><br>";
+                //   summaryPanel.innerHTML += route.legs[i].start_address + " to ";
+                //   summaryPanel.innerHTML += route.legs[i].end_address + "<br>";
+                //   summaryPanel.innerHTML += route.legs[i].distance.text + "<br><br>";
+
+                // }
+                // console.log(route.legs[i].start_address)
+                var totalJarak = 0;
+                for (let i = 0; i < route.legs.length; i++) {
+                  const routeSegment = i + 1;
+
+                  $("#lokasi_berangkat-pane").append("<p>" + "Rute Penjemputan : " + routeSegment + "</p>")
+                  $("#lokasi_berangkat-pane").append("<p>" + route.legs[i].start_address + "</p>")
+                  $("#lokasi_berangkat-pane").append("<p>" + route.legs[i].end_address + "</p>")
+                  $("#lokasi_berangkat-pane").append("<p>" + route.legs[i].distance.text + "</p>")
+
+                  totalJarak += route.legs[i].distance.text;
+                  console.log(totalJarak)
+
+                }
+
+
+                // $("#lokasi_tujuan-pane").append("<p>xx</p>")
+
+
+
+              })
+              .catch((e) => window.alert("Directions request failed due to " + status));
+
+          }
+
+
+          // data = JSON.parse(this.responseText);
+          // console.log(data)
+
+
+
+
+
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/view_order_live_user_ajax.php");
+      xmlHttp.send();
+
+
+
+
+    }
 
 
 
