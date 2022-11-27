@@ -198,7 +198,7 @@ if ($row['status'] != 0) {
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" style="padding: 0;">
-          <div id="map2">
+          <div id="map3">
 
           </div>
           <div class="container text-start">
@@ -258,7 +258,7 @@ if ($row['status'] != 0) {
 
   <script>
     // global scope variabel map
-    var map1, map2
+    var map1, map2, map3
 
     // global scope interval live map
     var interval
@@ -624,6 +624,8 @@ if ($row['status'] != 0) {
 
                 $("#listDriver").append('<div class="card mt-3 listDriverDetail"> <h5 class="card-header"> ' + data[i]['username'] + '</h5><div class="card-body"><p class="card-text">Jarak ' + response.routes[0].legs[0].distance.text + " dari posisi anda sekarang " + " <br> Estimasi waktu penjemputan " + response.routes[0].legs[0].duration.text + '</p><a href="#" class="btn btn-primary">' + data[i]['status'] + " / 5" + '</a> <a href="#" class="btn btn-primary">' + "PICK" + '</a> </div></div> ')
 
+
+
                 // $('.listDriverDetail').attr('id', data[i]['username']);
 
               })
@@ -825,12 +827,12 @@ if ($row['status'] != 0) {
               mapId: '93eb27799b5c0810'
             }
 
-            map2 = new google.maps.Map(document.getElementById('map2'), options);
+            map3 = new google.maps.Map(document.getElementById('map3'), options);
 
             const directionsService = new google.maps.DirectionsService();
             const directionsRenderer = new google.maps.DirectionsRenderer();
 
-            directionsRenderer.setMap(map2);
+            directionsRenderer.setMap(map3);
 
 
             const waypts = [];
@@ -852,8 +854,29 @@ if ($row['status'] != 0) {
               })
               .then((response) => {
                 directionsRenderer.setDirections(response);
+                console.log("xxx")
                 console.log(response)
                 const route = response.routes[0];
+
+
+                // marker = new google.maps.Marker({
+                //   position: {
+                //     lat: response.routes[0].legs[0].start_location.lat(),
+                //     lng: response.routes[0].legs[0].start_location.lng()
+                //   },
+                //   map: map3,
+                //   icon: {
+                //     url: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png",
+                //     scaledSize: new google.maps.Size(38, 31)
+                //   },
+                //   animation: google.maps.Animation.DROP
+                //   // icon: "assets/cars.png"
+
+                // });
+
+                // Push your newly created marker into the array:
+                // gmarkers.push(marker);
+
                 // const summaryPanel = document.getElementById("home-tab-pane");
 
                 // summaryPanel.innerHTML = "";
@@ -885,6 +908,10 @@ if ($row['status'] != 0) {
                 }
 
 
+                // rename class kembali ke button lokasi berangkat yang aktif
+                $("#lokasi_berangkat").attr('class', 'nav-link active');
+                // document.getElementById("lokasi_berangkat").className = "nav-link active"
+
                 // $("#lokasi_tujuan-pane").append("<p>xx</p>")
 
 
@@ -914,6 +941,257 @@ if ($row['status'] != 0) {
 
     }
 
+    function gantiPilihanLokasi() {
+
+      // console.log($('#lokasi_berangkat').attr('aria-selected'))
+
+      let statusPilihanBerangkat = $('#lokasi_berangkat').attr('class');
+
+      console.log("eee")
+      console.log(statusPilihanBerangkat)
+
+
+      if (statusPilihanBerangkat == "nav-link active") {
+        const xmlHttp = new XMLHttpRequest();
+        xmlHttp.onload = function() {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+            // console.log(this.responseText)
+            console.log(this.responseText)
+
+            if (this.responseText == "") {
+              console.log("a")
+            } else {
+              console.log("b")
+              data = JSON.parse(this.responseText);
+              console.log(data)
+
+              arrayLokasi = [];
+              $("#lokasi_berangkat-pane").html("")
+              $("#lokasi_tujuan-pane").html("")
+
+              // data ke 0 start sebagai start awal di way point
+              arrayLokasi.push(data[0]['lokasiStartDriverIni'])
+              // array.push(data[0]['lokasiEndDriverIni'])
+
+              // push lo
+              for (let i = 1; i < data.length; i++) {
+                arrayLokasi.push(data[i]['lokasiStartUser'])
+              }
+
+              console.log(arrayLokasi)
+
+
+              var options = {
+                center: {
+                  lat: -7.3399815207700065,
+                  lng: 112.73688888681441
+                },
+                disableDefaultUI: true,
+                zoomControl: true,
+                mapTypeControl: false,
+                scaleControl: false,
+                streetViewControl: false,
+                rotateControl: false,
+                fullscreenControl: false,
+                mapId: '93eb27799b5c0810'
+              }
+
+              map3 = new google.maps.Map(document.getElementById('map3'), options);
+
+              const directionsService = new google.maps.DirectionsService();
+              const directionsRenderer = new google.maps.DirectionsRenderer();
+
+              directionsRenderer.setMap(map3);
+
+
+              const waypts = [];
+
+              for (let i = 1; i < arrayLokasi.length; i++) {
+                waypts.push({
+                  location: arrayLokasi[i],
+                  stopover: true,
+                });
+              }
+
+              directionsService
+                .route({
+                  origin: arrayLokasi[0],
+                  destination: arrayLokasi[arrayLokasi.length - 1],
+                  waypoints: waypts,
+                  optimizeWaypoints: true,
+                  travelMode: google.maps.TravelMode.DRIVING,
+                })
+                .then((response) => {
+                  directionsRenderer.setDirections(response);
+                  console.log("xxx")
+                  console.log(response)
+                  const route = response.routes[0];
+
+
+                  var totalJarak = 0;
+                  for (let i = 0; i < route.legs.length; i++) {
+                    const routeSegment = i + 1;
+
+                    $("#lokasi_berangkat-pane").append("<p>" + "Rute Penjemputan : " + routeSegment + "</p>")
+                    $("#lokasi_berangkat-pane").append("<p>" + route.legs[i].start_address + "</p>")
+                    $("#lokasi_berangkat-pane").append("<p>" + route.legs[i].end_address + "</p>")
+                    $("#lokasi_berangkat-pane").append("<p>" + route.legs[i].distance.text + "</p>")
+
+                    totalJarak += route.legs[i].distance.text;
+                    console.log(totalJarak)
+
+                  }
+
+
+
+
+                  // $("#lokasi_tujuan-pane").append("<p>xx</p>")
+
+
+
+                })
+                .catch((e) => window.alert("Directions request failed due to " + status));
+
+            }
+
+
+            // data = JSON.parse(this.responseText);
+            // console.log(data)
+
+
+
+
+
+          } else {
+            alert("Error!");
+          }
+        }
+        xmlHttp.open("POST", "request/view_order_live_user_ajax.php");
+        xmlHttp.send();
+
+      } else {
+        // artine sg aktif iku kan sg lokasi tujuan
+        const xmlHttp = new XMLHttpRequest();
+        xmlHttp.onload = function() {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+            // console.log(this.responseText)
+            console.log(this.responseText)
+
+            if (this.responseText == "") {
+              console.log("a")
+            } else {
+              console.log("b")
+              data = JSON.parse(this.responseText);
+              console.log(data)
+
+              arrayLokasi = [];
+              $("#lokasi_berangkat-pane").html("")
+              $("#lokasi_tujuan-pane").html("")
+
+              // data ke 0 start sebagai start awal di way point
+              arrayLokasi.push(data[0]['lokasiStartDriverIni'])
+              // array.push(data[0]['lokasiEndDriverIni'])
+
+              // push lo
+              for (let i = 1; i < data.length; i++) {
+                arrayLokasi.push(data[i]['lokasiStartUser'])
+              }
+
+              console.log(arrayLokasi)
+
+
+              var options = {
+                center: {
+                  lat: -7.3399815207700065,
+                  lng: 112.73688888681441
+                },
+                disableDefaultUI: true,
+                zoomControl: true,
+                mapTypeControl: false,
+                scaleControl: false,
+                streetViewControl: false,
+                rotateControl: false,
+                fullscreenControl: false,
+                mapId: '93eb27799b5c0810'
+              }
+
+              map3 = new google.maps.Map(document.getElementById('map3'), options);
+
+              const directionsService = new google.maps.DirectionsService();
+              const directionsRenderer = new google.maps.DirectionsRenderer();
+
+              directionsRenderer.setMap(map3);
+
+
+              const waypts = [];
+
+              for (let i = 1; i < arrayLokasi.length; i++) {
+                waypts.push({
+                  location: arrayLokasi[i],
+                  stopover: true,
+                });
+              }
+
+              directionsService
+                .route({
+                  origin: arrayLokasi[0],
+                  destination: arrayLokasi[arrayLokasi.length - 1],
+                  waypoints: waypts,
+                  optimizeWaypoints: true,
+                  travelMode: google.maps.TravelMode.DRIVING,
+                })
+                .then((response) => {
+                  directionsRenderer.setDirections(response);
+                  console.log("xxx")
+                  console.log(response)
+                  const route = response.routes[0];
+
+
+                  var totalJarak = 0;
+                  for (let i = 0; i < route.legs.length; i++) {
+                    const routeSegment = i + 1;
+
+                    $("#lokasi_berangkat-pane").append("<p>" + "Rute Tujuan : " + routeSegment + "</p>")
+                    $("#lokasi_berangkat-pane").append("<p>" + route.legs[i].start_address + "</p>")
+                    $("#lokasi_berangkat-pane").append("<p>" + route.legs[i].end_address + "</p>")
+                    $("#lokasi_berangkat-pane").append("<p>" + route.legs[i].distance.text + "</p>")
+
+                    totalJarak += route.legs[i].distance.text;
+                    console.log(totalJarak)
+
+                  }
+
+
+
+
+                  // $("#lokasi_tujuan-pane").append("<p>xx</p>")
+
+
+
+                })
+                .catch((e) => window.alert("Directions request failed due to " + status));
+
+            }
+
+
+            // data = JSON.parse(this.responseText);
+            // console.log(data)
+
+
+
+
+
+          } else {
+            alert("Error!");
+          }
+        }
+        xmlHttp.open("POST", "request/view_order_live_user_ajax.php");
+        xmlHttp.send();
+      }
+
+    }
 
 
 
