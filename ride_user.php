@@ -233,7 +233,7 @@ if ($row['status'] != 0) {
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Finish Order</button>
+          <!-- <button type="button" class="btn btn-primary">Finish Order</button> -->
         </div>
       </div>
     </div>
