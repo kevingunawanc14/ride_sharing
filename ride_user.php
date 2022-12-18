@@ -89,7 +89,7 @@ if ($row['status'] != 0) {
       <div class="col-12 col-sm-12 my-3">
         <!-- Button trigger modal -->
         <button id="lokasiTujuanModal" type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal" style="display: none;">
-          Lokasi Tujuan
+          Detail Perjalan
         </button>
 
       </div>
@@ -113,7 +113,7 @@ if ($row['status'] != 0) {
         <div>
           <ul class="navbar-nav">
             <li class="nav-item mx-3">
-              <a class="nav-link text-center" href="ride.php"><i class="fa-solid fa-car-side"></i></a>
+              <a class="nav-link text-center" href="ride_user.php"><i class="fa-solid fa-car-side"></i></a>
               <p class="fs-6">Ride</p>
 
             </li>
@@ -146,7 +146,7 @@ if ($row['status'] != 0) {
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fa-solid fa-map-location-dot"></i> Lokasi Tujuan</h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fa-solid fa-map-location-dot"></i> Detail Perjalan</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" style="padding: 0;">
@@ -471,24 +471,6 @@ if ($row['status'] != 0) {
           // gak jalan
           map2.setZoom(18);
 
-          // $(".lokasiTujuan p")[0]
-
-          console.log(response)
-
-          // console.log(response.request.destination)
-
-          // console.log(response.request.destination.query)
-
-
-          console.log(response.routes[0].legs[0].distance.text)
-
-          console.log(response.routes[0].legs[0])
-
-          console.log(response.routes[0].legs[0].end_address)
-
-          console.log(response.routes[0].legs[0].start_address)
-
-          console.log(typeof(response.routes[0].legs[0].distance.text))
 
 
           $(".lokasiTujuan p").eq(0).html("Lokasi Asal &nbsp;&nbsp;&nbsp;&nbsp;: " + response.routes[0].legs[0].start_address)
@@ -656,23 +638,11 @@ if ($row['status'] != 0) {
       let lokasiStart = document.getElementById("start").value
       let lokasiEnd = document.getElementById("end").value
 
-
       let DataLokasiUser = new FormData();
       DataLokasiUser.append("lokasiStart", lokasiStart);
       DataLokasiUser.append("lokasiEnd", lokasiEnd);
 
       console.log(DataLokasiUser)
-
-
-
-      // console.log($("#detailData").css("display"))
-
-
-
-      // Display the key/value pairs
-      // for (var pair of DataLokasiUser.entries()) {
-      //   console.log(pair[0] + ', ' + pair[1]);
-      // }
 
       const xmlHttp = new XMLHttpRequest();
       xmlHttp.onload = function() {
@@ -760,8 +730,8 @@ if ($row['status'] != 0) {
 
           data = JSON.parse(this.responseText);
           // console.log(this.responseText)
-
-          if (data[0]['status'] == '1') {
+          
+          if (data[0]['status'] != '0') {
             console.log("button cancel di hidden ganti ongoing")
             $("#cancelButton").css("display", "none");
             $("#ongoingButton").css("display", "inline-block");
