@@ -364,7 +364,7 @@ if ($row['status'] != 0) {
       $("#searchButton").css("display", "none");
       $("#cancelButton").css("display", "inline-block");
       $("#lokasiTujuanModal").css("display", "inline-block");
-
+      $('#end').attr('readonly', 'readonly');
 
       // view lokasi tujuan 
       viewLokasiTujuan();
@@ -373,14 +373,19 @@ if ($row['status'] != 0) {
       insertPosisiUserSaatIni();
 
       // view driver sekitar secara live
-      interval = setInterval(function() {
+      setTimeout(function() {
+        viewDriverSekitar();;
+      }, 5000);
 
-        // viewDriverSekitar();
-        // buat cek user sudah dipickup atau belum
-        cekStatusUser();
-        statusOrderLive();
 
-      }, 10000);
+      // interval = setInterval(function() {
+
+      //   // viewDriverSekitar();
+      //   // buat cek user sudah dipickup atau belum
+      //   cekStatusUser();
+      //   statusOrderLive();
+
+      // }, 10000);
 
 
 
@@ -398,6 +403,10 @@ if ($row['status'] != 0) {
 
         // reset isi form tujuan
         document.getElementById("end").value = ""
+
+        // activkan form bar biar bisa isi data lagi
+        $('#end').removeAttr('readonly', 'readonly');
+
 
         // delete posisi user biar gak numpuk
         deletePosisiUserSaatIni()
@@ -511,6 +520,7 @@ if ($row['status'] != 0) {
               timer: 1500
             })
             setTimeout(function() {
+              deletePosisiUserSaatIni()
               window.location.reload();
             }, 1500);
 
@@ -535,21 +545,6 @@ if ($row['status'] != 0) {
     }
 
     function viewDriverSekitar() {
-      // iki fungsine harus jalan terus 
-      let lokasiStart = document.getElementById("start").value
-      let lokasiEnd = document.getElementById("end").value
-
-
-      let DataLokasiUser = new FormData();
-      DataLokasiUser.append("lokasiStart", lokasiStart);
-      DataLokasiUser.append("lokasiEnd", lokasiEnd);
-
-      // console.log(DataLokasiUser)
-
-      // Display the key/value pairs
-      // for (var pair of DataLokasiUser.entries()) {
-      //   console.log(pair[0] + ', ' + pair[1]);
-      // }
 
       const xmlHttp = new XMLHttpRequest();
       xmlHttp.onload = function() {
@@ -557,37 +552,36 @@ if ($row['status'] != 0) {
 
           data = JSON.parse(this.responseText);
 
-          // reset list driver
-          $("#listDriver").html("")
-
-          // titik punya user sesuai session
-          let titikStartUserSession = data[0]["lokasiStartUserIni"];
-          let titikEndUserSession = data[0]["lokasiEndUserIni"];
-
-          // console.log(titikStartUserSession+" , "+titikEndUserSession)
-
+        
           const directionsService = new google.maps.DirectionsService();
           const directionsRenderer = new google.maps.DirectionsRenderer();
 
+          console.log(data)
 
-          for (let i = 1; i < data.length; i++) {
+          for (let i = 0; i < data.length; i++) {
+            // console.log("a")
             directionsService
               .route({
                 origin: {
-                  query: titikStartUserSession,
+                  // bebas isi data karena tidak perngaruh cuma perlu value responnya
+                  query: data[i]['lokasiStartDriver'],
                 },
                 destination: {
-                  query: data[i]["lokasiStart"],
+                  query: data[i]['lokasiEndDriver'],
                 },
                 travelMode: google.maps.TravelMode.DRIVING,
               })
               .then((response) => {
                 directionsRenderer.setDirections(response);
 
+                console.log(response)
+                console.log(response.routes[0].legs[0].start_location.lat())
+                console.log(response.routes[0].legs[0].start_location.lng())
+
                 marker = new google.maps.Marker({
                   position: {
-                    lat: response.routes[0].legs[0].end_location.lat(),
-                    lng: response.routes[0].legs[0].end_location.lng()
+                    lat: response.routes[0].legs[0].start_location.lat(),
+                    lng: response.routes[0].legs[0].start_location.lng()
                   },
                   map: map1,
                   icon: {
@@ -602,14 +596,7 @@ if ($row['status'] != 0) {
                 // Push your newly created marker into the array:
                 gmarkers.push(marker);
 
-                // append ke list driver juga
-
-                $("#listDriver").append('<div class="card mt-3 listDriverDetail"> <h5 class="card-header"> ' + data[i]['username'] + '</h5><div class="card-body"><p class="card-text">Jarak ' + response.routes[0].legs[0].distance.text + " dari posisi anda sekarang " + " <br> Estimasi waktu penjemputan " + response.routes[0].legs[0].duration.text + '</p><a href="#" class="btn btn-primary">' + data[i]['status'] + " / 5" + '</a> <a href="#" class="btn btn-primary">' + "PICK" + '</a> </div></div> ')
-
-
-
-                // $('.listDriverDetail').attr('id', data[i]['username']);
-
+           
               })
               .catch((e) => {
                 console.log("error 123")
@@ -619,12 +606,13 @@ if ($row['status'] != 0) {
 
 
 
+
         } else {
           alert("Error!");
         }
       }
-      xmlHttp.open("POST", "request/view_user_sekitar_ajax.php");
-      xmlHttp.send(DataLokasiUser);
+      xmlHttp.open("POST", "request/view_driver_sekitar_ajax.php");
+      xmlHttp.send();
 
 
 
@@ -706,6 +694,7 @@ if ($row['status'] != 0) {
               timer: 2500
             })
             setTimeout(function() {
+              deletePosisiUserSaatIni()
               window.location.reload();
             }, 2500);
 
@@ -730,7 +719,7 @@ if ($row['status'] != 0) {
 
           data = JSON.parse(this.responseText);
           // console.log(this.responseText)
-          
+
           if (data[0]['status'] != '0') {
             console.log("button cancel di hidden ganti ongoing")
             $("#cancelButton").css("display", "none");
@@ -1161,6 +1150,11 @@ if ($row['status'] != 0) {
         xmlHttp.send();
       }
 
+    }
+
+    // saat windows reload delete search live user tersebut
+    if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
+      deletePosisiUserSaatIni();
     }
 
 
