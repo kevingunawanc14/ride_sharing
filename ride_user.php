@@ -572,11 +572,11 @@ if ($row['status'] != 0) {
                 travelMode: google.maps.TravelMode.DRIVING,
               })
               .then((response) => {
-                directionsRenderer.setDirections(response);
+                // directionsRenderer.setDirections(response);
 
-                console.log(response)
-                console.log(response.routes[0].legs[0].start_location.lat())
-                console.log(response.routes[0].legs[0].start_location.lng())
+                // console.log(response)
+                // console.log(response.routes[0].legs[0].start_location.lat())
+                // console.log(response.routes[0].legs[0].start_location.lng())
 
                 marker = new google.maps.Marker({
                   position: {
