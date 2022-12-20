@@ -1395,6 +1395,24 @@ if ($row['status'] != 0) {
       const xmlHttp = new XMLHttpRequest();
       xmlHttp.onload = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+          console.log(this.responseText)
+
+          if (this.responseText == "order selesai") {
+
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: 'Order Selesai Silakan Check History Anda ',
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 2500
+            })
+            setTimeout(function() {
+              window.location.reload();
+            }, 2500);
+
+          }
+
 
           data = JSON.parse(this.responseText);
 
@@ -1417,9 +1435,10 @@ if ($row['status'] != 0) {
               directionsRenderer.setDirections(response);
 
               console.log("ini response", response)
+              console.log("ini responsex", gmarkers)
 
               // hapus marker selain alamat lokasi user dan mobil
-              for (i = 1; i <= gmarkers.length; i++) {
+              for (i = 1; i < gmarkers.length; i++) {
                 gmarkers[i].setMap(null);
               }
 
@@ -1479,6 +1498,30 @@ if ($row['status'] != 0) {
       return permute(inputArr);
     }
 
+    function finishUpOrder() {
+      let username = document.getElementById("username").value
+      let password = document.getElementById("password").value
+
+
+      let DataAkun = new FormData();
+      DataAkun.append("username", username);
+      DataAkun.append("password", password);
+
+
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          console.log("check2")
+         
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/finish_up_order_ajax.php");
+      xmlHttp.send(DataAkun);
+
+    }
 
     var counterUpdate = 0
     // search driver

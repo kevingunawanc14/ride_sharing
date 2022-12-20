@@ -22,6 +22,20 @@ $row = $checksql->fetch();
 // ambil id driver user ini
 $idDriverUserIni = $row['id_driver'];
 
+// select max untuk tau batasan akses
+$sql = 'SELECT MAX(counter_update) FROM live_update';
+$checksql = $pdo->prepare($sql);
+$checksql->execute([]);
+
+$rowMax = $checksql->fetch();
+
+// print_r($rowMax);
+// echo $counter;
+if($counter > $rowMax[0]){
+    exit("order selesai");
+}
+
+
 
 // select yang berdasarkan counter saat ini
 $sql = 'SELECT * FROM live_update WHERE counter_update = ?';
