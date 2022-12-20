@@ -99,6 +99,10 @@ if ($row['status'] != 0) {
           Status Order
         </button>
       </div>
+      <!-- 
+      <div class="buatStatus">
+        <p class="buatStatus_1">notset</p>
+      </div> -->
 
 
 
@@ -239,6 +243,7 @@ if ($row['status'] != 0) {
     </div>
   </div>
 
+
   <!-- Link CDN Jquery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -265,6 +270,9 @@ if ($row['status'] != 0) {
 
     // global scope marker
     var gmarkers = [];
+
+    // global scope data map update
+    var mapUpdate = [];
 
 
     // init map
@@ -351,44 +359,6 @@ if ($row['status'] != 0) {
           }
         })
         .catch((e) => window.alert("Geocoder failed due to: " + e));
-
-    }
-
-    // search driver
-    function searchDriver() {
-      if ($("#end").val() == "") {
-        alert("Alamat Tujuan Masih Kosong")
-        return;
-      }
-
-      $("#searchButton").css("display", "none");
-      $("#cancelButton").css("display", "inline-block");
-      $("#lokasiTujuanModal").css("display", "inline-block");
-      $('#end').attr('readonly', 'readonly');
-
-      // view lokasi tujuan 
-      viewLokasiTujuan();
-
-      // insert posisi user sekarang
-      insertPosisiUserSaatIni();
-
-      // view driver sekitar secara live
-      setTimeout(function() {
-        viewDriverSekitar();;
-      }, 5000);
-
-
-      // interval = setInterval(function() {
-
-      //   // viewDriverSekitar();
-      //   // buat cek user sudah dipickup atau belum
-      //   cekStatusUser();
-      //   statusOrderLive();
-
-      // }, 10000);
-
-
-
 
     }
 
@@ -552,19 +522,21 @@ if ($row['status'] != 0) {
 
           data = JSON.parse(this.responseText);
 
-        
+
           const directionsService = new google.maps.DirectionsService();
           const directionsRenderer = new google.maps.DirectionsRenderer();
 
-          console.log(data)
+          // console.log(data)
 
-          for (let i = 0; i < data.length; i++) {
+          var statusDekat = false;
+
+          // compare lokasi berangkat dan lokasi tujuan
+          for (let i = 1; i < data.length; i++) {
             // console.log("a")
             directionsService
               .route({
                 origin: {
-                  // bebas isi data karena tidak perngaruh cuma perlu value responnya
-                  query: data[i]['lokasiStartDriver'],
+                  query: data[0]['lokasiEndUser'],
                 },
                 destination: {
                   query: data[i]['lokasiEndDriver'],
@@ -575,33 +547,93 @@ if ($row['status'] != 0) {
                 // directionsRenderer.setDirections(response);
 
                 // console.log(response)
-                // console.log(response.routes[0].legs[0].start_location.lat())
-                // console.log(response.routes[0].legs[0].start_location.lng())
+                // console.log(response.routes[0].legs[0].distance.value)
+                if (response.routes[0].legs[0].distance.value < 3500) {
+                  statusDekat = true
+                } else {
+                  statusDekat = false
+                }
 
-                marker = new google.maps.Marker({
-                  position: {
-                    lat: response.routes[0].legs[0].start_location.lat(),
-                    lng: response.routes[0].legs[0].start_location.lng()
-                  },
-                  map: map1,
-                  icon: {
-                    url: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png",
-                    scaledSize: new google.maps.Size(38, 31)
-                  },
-                  animation: google.maps.Animation.DROP
-                  // icon: "assets/cars.png"
+                // console.log(statusDekat)
 
-                });
+                if (statusDekat == true) {
 
-                // Push your newly created marker into the array:
-                gmarkers.push(marker);
+                  directionsService
+                    .route({
+                      origin: {
+                        query: data[0]['lokasiStartUser'],
+                      },
+                      destination: {
+                        query: data[i]['lokasiStartDriver'],
+                      },
+                      travelMode: google.maps.TravelMode.DRIVING,
+                    })
+                    .then((response) => {
+                      // directionsRenderer.setDirections(response);
 
-           
+                      console.log(response)
+                      console.log(response.routes[0].legs[0].distance.value)
+                      if (response.routes[0].legs[0].distance.value < 3500) {
+                        statusDekat = true
+                      } else {
+                        statusDekat = false
+                      }
+
+                      // console.log(response.routes[0].legs[0].start_location.lng())
+
+                      // console.log(statusDekat)
+
+                      if (statusDekat == true) {
+
+                        marker = new google.maps.Marker({
+                          position: {
+                            lat: response.routes[0].legs[0].end_location.lat(),
+                            lng: response.routes[0].legs[0].end_location.lng()
+                          },
+                          map: map1,
+                          icon: {
+                            url: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png",
+                            scaledSize: new google.maps.Size(38, 31)
+                          },
+                          animation: google.maps.Animation.DROP
+                          // icon: "assets/cars.png"
+
+                        });
+
+                        // Push your newly created marker into the array:
+                        gmarkers.push(marker);
+
+                      }
+
+
+
+
+
+                    })
+                    .catch((e) => {
+                      console.log("error 123")
+                    });
+
+                }
+
+
+
+
+
               })
               .catch((e) => {
                 console.log("error 123")
               });
+
+
+
           }
+
+
+
+          // console.log(statusDekat)
+
+
 
 
 
@@ -709,34 +741,90 @@ if ($row['status'] != 0) {
 
     }
 
+
     function cekStatusUser() {
 
-      const xmlHttp = new XMLHttpRequest();
-      xmlHttp.onload = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
-          // jadi lek misal dia belum mempunyai id driver berarti dia belum di pick up maka tombol cancel masih on tapi ketika sudah di pick up maka tombol cancel menjadi ongoing
-
-          data = JSON.parse(this.responseText);
-          // console.log(this.responseText)
+      $.ajax({
+        url: "request/cek_status_user_ajax.php",
+        cache: false,
+        success: function(response) {
+          data = JSON.parse(response);
+          console.log(data)
 
           if (data[0]['status'] != '0') {
             console.log("button cancel di hidden ganti ongoing")
             $("#cancelButton").css("display", "none");
             $("#ongoingButton").css("display", "inline-block");
-            $("#statusOrderModal").css("display", "inline-block");
+
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: 'Menemukan Driver',
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 1000
+            })
 
           } else {
-            console.log("button cancel tidak dihidden")
+            console.log("button cancel tidak dihidden / belum dipick up oleh driverxx")
+
+            Swal.fire({
+              position: 'center',
+              icon: 'warning',
+              title: 'Belum Menemukan Driver',
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 2500
+            })
+
+            setTimeout(function() {
+              window.location.reload();
+            }, 2500);
+
+
           }
-
-
-        } else {
-          alert("Error!");
         }
-      }
-      xmlHttp.open("POST", "request/cek_status_user_ajax.php");
-      xmlHttp.send();
+
+      });
+      // const xmlHttp = new XMLHttpRequest();
+      // xmlHttp.onload = function() {
+      //   if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+      //     callback(xmlHttp.response, xmlHttp.status);
+      //     // jadi lek misal dia belum mempunyai id driver berarti dia belum di pick up maka tombol cancel masih on tapi ketika sudah di pick up maka tombol cancel menjadi ongoing
+
+      //     data = JSON.parse(this.responseText);
+      //     // console.log(this.responseText)
+
+      //     if (data[0]['status'] != '0') {
+      //       console.log("button cancel di hidden ganti ongoing")
+      //       $("#cancelButton").css("display", "none");
+      //       $("#ongoingButton").css("display", "inline-block");
+
+      //       // $("#statusOrderModal").css("display", "inline-block");
+      //       status = "a";
+      //       return status
+      //     } else {
+      //       console.log("button cancel tidak dihidden / belum dipick up oleh driverxx")
+      //       status = "b";
+      //       return status
+
+
+      //     }
+
+
+
+      //   } else {
+      //     alert("Error!");
+      //   }
+      // }
+      // xmlHttp.open("POST", "request/cek_status_user_ajax.php");
+      // xmlHttp.send();
+
+      // return status;
+
+
+
     }
 
     function statusOrderLive() {
@@ -818,40 +906,6 @@ if ($row['status'] != 0) {
                 const route = response.routes[0];
 
 
-                // marker = new google.maps.Marker({
-                //   position: {
-                //     lat: response.routes[0].legs[0].start_location.lat(),
-                //     lng: response.routes[0].legs[0].start_location.lng()
-                //   },
-                //   map: map3,
-                //   icon: {
-                //     url: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png",
-                //     scaledSize: new google.maps.Size(38, 31)
-                //   },
-                //   animation: google.maps.Animation.DROP
-                //   // icon: "assets/cars.png"
-
-                // });
-
-                // Push your newly created marker into the array:
-                // gmarkers.push(marker);
-
-                // const summaryPanel = document.getElementById("home-tab-pane");
-
-                // summaryPanel.innerHTML = "";
-
-                // // For each route, display summary information.
-                // for (let i = 0; i < route.legs.length; i++) {
-                //   const routeSegment = i + 1;
-
-                //   summaryPanel.innerHTML +=
-                //     "<b>Route Segment: " + routeSegment + "</b><br>";
-                //   summaryPanel.innerHTML += route.legs[i].start_address + " to ";
-                //   summaryPanel.innerHTML += route.legs[i].end_address + "<br>";
-                //   summaryPanel.innerHTML += route.legs[i].distance.text + "<br><br>";
-
-                // }
-                // console.log(route.legs[i].start_address)
                 var totalJarak = 0;
                 for (let i = 0; i < route.legs.length; i++) {
                   const routeSegment = i + 1;
@@ -1157,10 +1211,320 @@ if ($row['status'] != 0) {
       deletePosisiUserSaatIni();
     }
 
+    function updatePosisiDriverPermutasi() {
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          // console.log(this.responseText)
+          data = JSON.parse(this.responseText);
+
+          console.log(data)
+
+          arrayLokasi = [];
+          arrayLokasiPermutasi = [];
+
+
+          // data ke 0 start sebagai start awal di way point
+          arrayLokasi.push(data[0]['lokasiStartDriver'])
+          // array.push(data[0]['lokasiEndDriverIni'])
+
+          // data waypoint dipermutasi dahulu semua kemungkinannya
+          for (let i = 1; i < data.length; i++) {
+            arrayLokasi.push(data[i]['lokasiStartUser'])
+            arrayLokasiPermutasi.push(data[i]['lokasiStartUser'])
+          }
+
+          console.log(arrayLokasiPermutasi)
+
+          // permutator(arrayLokasi)
+
+          // console.log(permutator(arrayLokasiPermutasi))
+
+          getPermutasi = permutator(arrayLokasiPermutasi);
+
+          const directionsService = new google.maps.DirectionsService();
+          const directionsRenderer = new google.maps.DirectionsRenderer();
+
+          directionsRenderer.setMap(map3);
+
+
+          var waypts = [];
+
+          // console.log("ini array lokasi", arrayLokasi)
+          // console.log(arrayLokasi[0])
+          // console.log("double loop")
+
+          console.log(getPermutasi)
+
+
+          for (let i = 0; i < getPermutasi.length; i++) {
+            for (let j = 0; j < getPermutasi[0].length; j++) {
+
+              // console.log("ini location yang akan di push", getPermutasi[0].length)
+
+              // console.log("ini location yang akan di push", getPermutasi[i][j])
+              // console.log("ini titik start", arrayLokasi[0])
+              // console.log("ini titik destinasi", getPermutasi[i][getPermutasi[i].length - 1])
+
+              waypts.push({
+                location: getPermutasi[i][j],
+                stopover: true,
+              });
+
+              directionsService
+                .route({
+                  origin: arrayLokasi[0],
+                  destination: getPermutasi[i][getPermutasi[i].length - 1],
+                  waypoints: waypts,
+                  optimizeWaypoints: true,
+                  travelMode: google.maps.TravelMode.DRIVING,
+                })
+                .then((response) => {
+                  console.log(response)
+
+                  const route = response.routes[0];
+
+                  totalJarak = 0
+                  // For each route, display summary information.
+                  for (let i = 0; i < route.legs.length; i++) {
+
+                    totalJarak += route.legs[i].distance.value()
 
 
 
 
+                  }
+
+                  console.log(totalJarak)
+
+
+
+                })
+                .catch((e) => window.alert("Directions request failed due to " + status));
+
+            }
+
+          }
+
+
+          console.log(waypts)
+
+
+
+
+
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/update_posisi_driver_ajax.php");
+      xmlHttp.send();
+
+
+
+    }
+
+    function getDataUpdatePosisiDriver() {
+
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          data = JSON.parse(this.responseText);
+          // console.log(this.responseText)
+          console.log("ini data yang akan dimasukan ke live update", data)
+
+          mapUpdate = data
+
+          console.log("test x", mapUpdate)
+
+
+
+
+
+
+
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/update_posisi_driver_ajax.php");
+      xmlHttp.send();
+
+
+
+
+    }
+
+    function insertDataUpdateLive() {
+
+      // let DataMapLiveUpdate = new FormData();
+
+      var DataMapLiveUpdate = new FormData();
+      var json_arr = JSON.stringify(mapUpdate);
+
+
+
+      DataMapLiveUpdate.append('data', json_arr);
+
+
+
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          console.log(this.responseText)
+
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/insert_data_live_update_ajax.php");
+      xmlHttp.send(DataMapLiveUpdate);
+
+    }
+
+    function updatePosisiDriverBasic(counter) {
+
+
+      var dataCounter = new FormData();
+
+      dataCounter.append('dataCounter', counterUpdate);
+
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          data = JSON.parse(this.responseText);
+
+
+          const directionsService = new google.maps.DirectionsService();
+          const directionsRenderer = new google.maps.DirectionsRenderer();
+
+          console.log("test xx", data)
+          directionsService
+            .route({
+              origin: {
+                query: data[0]["lokasiUpdate"],
+              },
+              destination: {
+                query: data[0]["lokasiUpdate"],
+              },
+              travelMode: google.maps.TravelMode.DRIVING,
+            })
+            .then((response) => {
+              directionsRenderer.setDirections(response);
+
+              console.log("ini response", response)
+
+              // hapus marker selain alamat lokasi user dan mobil
+              for (i = 1; i <= gmarkers.length; i++) {
+                gmarkers[i].setMap(null);
+              }
+
+              marker = new google.maps.Marker({
+                position: {
+                  lat: response.routes[0].legs[0].end_location.lat(),
+                  lng: response.routes[0].legs[0].end_location.lng()
+                },
+                map: map1,
+                icon: {
+                  url: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png",
+                  scaledSize: new google.maps.Size(38, 31)
+                },
+                animation: google.maps.Animation.DROP
+                // icon: "assets/cars.png"
+
+              });
+
+              // Push your newly created marker into the array:
+              gmarkers.push(marker);
+
+
+            })
+            .catch((e) => {});
+
+
+
+
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/update_live_update_ajax.php");
+      xmlHttp.send(dataCounter);
+
+    }
+
+    function permutator(inputArr) {
+      var results = [];
+
+      function permute(arr, memo) {
+        var cur,
+          memo = memo || [];
+
+        for (var i = 0; i < arr.length; i++) {
+          cur = arr.splice(i, 1);
+          if (arr.length === 0) {
+            results.push(memo.concat(cur));
+          }
+          permute(arr.slice(), memo.concat(cur));
+          arr.splice(i, 0, cur[0]);
+        }
+
+        return results;
+      }
+
+      return permute(inputArr);
+    }
+
+
+    var counterUpdate = 0
+    // search driver
+    function searchDriver() {
+      if ($("#end").val() == "") {
+        alert("Alamat Tujuan Masih Kosong")
+        return;
+      }
+
+      $("#searchButton").css("display", "none");
+      $("#cancelButton").css("display", "inline-block");
+      $("#lokasiTujuanModal").css("display", "inline-block");
+      $('#end').attr('readonly', 'readonly');
+
+      // view lokasi tujuan 
+      viewLokasiTujuan();
+
+      // insert posisi user sekarang disearch live
+      insertPosisiUserSaatIni();
+
+      // view driver sekitar secara live sekali saja
+      setTimeout(function() {
+        viewDriverSekitar();
+      }, 5000);
+
+      // cek user sudah dijemput atau belum
+      setTimeout(function() {
+        cekStatusUser();
+        getDataUpdatePosisiDriver();
+      }, 10000);
+
+      setTimeout(function() {
+        insertDataUpdateLive();
+      }, 15000);
+
+      interval = setInterval(function() {
+
+        updatePosisiDriverBasic(counterUpdate);
+        // updatePosisiDriverPermutasi();
+        counterUpdate += 1;
+      }, 17000);
+
+
+
+
+    }
 
 
 
