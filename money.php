@@ -142,7 +142,7 @@ $row = $checksql->fetch();
                                             <div class='card-body'>
                                                 <h5 class='card-title'>Perjalanan</h5>
                                                 <p class='card-text'>Kode Pemesanan {$rowTransaksi['id']} </p>
-                                                <a href='#' class='btn btn-primary'>+Rp. {$rowTransaksi['biaya']} </a>
+                                                <a href='#' class='btn btn-primary'>-Rp. {$rowTransaksi['biaya']} </a>
                                             </div>
                                         </div>
                                     </div>

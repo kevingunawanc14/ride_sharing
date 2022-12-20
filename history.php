@@ -80,20 +80,22 @@ $row = $checksql->fetch();
             
             // $rowHistory = $checksql->fetch();
             
-
+            $counter=1;
             while ($rowHistory = $checksql->fetch()) {
 
               echo    "
                             
       
                         <tr>
-                          <th scope='row'>1</th>
+                          <th scope='row'>$counter</th>
                           <td>{$rowHistory['lokasi_berangkat']}</td>
                           <td>{$rowHistory['lokasi_tujuan']}</td>
                           <td>{$rowHistory['biaya']}</td>
           
                         </tr>
                     ";
+
+                    $counter+=1;
             }
 
             ?>

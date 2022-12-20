@@ -274,6 +274,8 @@ if ($row['status'] != 0) {
     // global scope data map update
     var mapUpdate = [];
 
+    // var detail
+    var biayaInsert,lokasiAsalInsert,LokasiTujuanInsert
 
     // init map
     function initMap() {
@@ -309,7 +311,8 @@ if ($row['status'] != 0) {
       var lat = position.coords.latitude;
       var lng = position.coords.longitude;
 
-
+      // console.log(lat,lng)
+      // -7.342873875818059, 112.73978016990527
       //isi value form nya dengan lat,lng yang didapat dari geolocation yang nanti buat displit
       $("input").eq(0).val(lat + "," + lng, );
 
@@ -473,8 +476,9 @@ if ($row['status'] != 0) {
 
           cekSaldo(biaya)
 
-
-
+          biayaInsert = biaya
+          lokasiAsalInsert = response.routes[0].legs[0].start_address
+          lokasiTujuanInsert = response.routes[0].legs[0].end_address
 
         })
         .catch((e) =>
@@ -526,7 +530,7 @@ if ($row['status'] != 0) {
           const directionsService = new google.maps.DirectionsService();
           const directionsRenderer = new google.maps.DirectionsRenderer();
 
-          // console.log(data)
+          console.log("xxx",data)
 
           var statusDekat = false;
 
@@ -1395,9 +1399,10 @@ if ($row['status'] != 0) {
       const xmlHttp = new XMLHttpRequest();
       xmlHttp.onload = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-          console.log(this.responseText)
 
           if (this.responseText == "order selesai") {
+            
+            finishUpOrder();
 
             Swal.fire({
               position: 'center',
@@ -1410,7 +1415,7 @@ if ($row['status'] != 0) {
             setTimeout(function() {
               window.location.reload();
             }, 2500);
-
+              return
           }
 
 
@@ -1499,28 +1504,48 @@ if ($row['status'] != 0) {
     }
 
     function finishUpOrder() {
-      let username = document.getElementById("username").value
-      let password = document.getElementById("password").value
 
+      let DataPerjalanan = new FormData();
+      DataPerjalanan.append("biaya", biayaInsert);
+      DataPerjalanan.append("lokasiAsal", lokasiAsalInsert);
+      DataPerjalanan.append("lokasiTujuan", lokasiTujuanInsert);
 
-      let DataAkun = new FormData();
-      DataAkun.append("username", username);
-      DataAkun.append("password", password);
-
+      console.log("aaa",biaya,lokasiAsalInsert,lokasiTujuanInsert)
 
       const xmlHttp = new XMLHttpRequest();
       xmlHttp.onload = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
-          console.log("check2")
+          console.log("xxx",this.responseText)
          
         } else {
           alert("Error!");
         }
       }
       xmlHttp.open("POST", "request/finish_up_order_ajax.php");
-      xmlHttp.send(DataAkun);
+      xmlHttp.send(DataPerjalanan);
 
+    }
+
+    function updateSaldo(){
+
+      let DataPerjalanan = new FormData();
+      DataPerjalanan.append("biaya", biayaInsert);
+
+      console.log("yyy",biaya,lokasiAsalInsert,LokasiTujuanInsert)
+
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          console.log("yyyyyxx",this.responseText())
+         
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/update_saldo_ajax.php");
+      xmlHttp.send(DataPerjalanan)
     }
 
     var counterUpdate = 0
@@ -1563,6 +1588,8 @@ if ($row['status'] != 0) {
         // updatePosisiDriverPermutasi();
         counterUpdate += 1;
       }, 17000);
+
+     
 
 
 

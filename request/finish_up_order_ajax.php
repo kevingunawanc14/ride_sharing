@@ -1,73 +1,31 @@
 <?php
 require_once '../includes/connect.php';
 
-//sql get status user buat tau ini user yang mana
-$sql = 'SELECT * FROM user WHERE username = ?';
+$biaya =  $_POST["biaya"];
+$lokasiAsal =  $_POST["lokasiAsal"];
+$lokasiTujuan =  $_POST["lokasiTujuan"];
+
+// ambil data saldo terbaru setelah diupdate
+$sql = 'SELECT * FROM USER WHERE username = ?';
 $checksql = $pdo->prepare($sql);
 $checksql->execute([$_SESSION['username']]);
 
 $row = $checksql->fetch();
 
-$id = $row['id'];
+$idUser = $row['id'];
 
-// check driver yang mana dari suatu user
-$sql = 'SELECT * FROM search_live WHERE id_user = ?';
+// insert ke histori_isisaldo
+$tanggal = date("Y-m-d");
+$sql = $sql = 'INSERT INTO `transaksi`(`id`, `tanggal`, `biaya`, `id_user`) VALUES (NULL, ?, ?, ?)';
 $checksql = $pdo->prepare($sql);
-$checksql->execute([$id]);
+$checksql->execute([$tanggal,$biaya,$idUser]);
 
-$row = $checksql->fetch();
+// insert ke histori_isisaldo
+$tanggal = date("Y-m-d");
+$sql = $sql = 'INSERT INTO `history`(`id`, `biaya`, `lokasi_berangkat`, `lokasi_tujuan`, `id_user`) VALUES (NULL, ?, ?, ?, ?)';
+$checksql = $pdo->prepare($sql);
+$checksql->execute([$biaya,$lokasiAsal,$lokasiTujuan,$idUser]);
 
-// ambil id driver user ini
-$idDriverUserIni = $row['id_driver'];
-
-// $data = $_POST['arr[]'];
-$arr = json_decode($_POST['data'], true);
-
-
-print_r($arr);
-
-// echo $arr[0]['lokasiStartDriver'];
-$counter = 0;
-
-// insert ke lokasi start driver
-for ($x = 0; $x <= 0; $x++) {
-    // sql insert ke tabel order live
-    $sql = 'INSERT INTO `live_update`(`id`, `lokasi`, `counter_update`, `id_driver`) 
-    VALUES (NULL, ?, ?, ?)';
-    $checksql = $pdo->prepare($sql);
-    $checksql->execute([$arr[$x]['lokasiStartDriver'], $counter, $idDriverUserIni]);
-    $counter+=1;
-}
-
-// insert ke lokasi start user
-for ($x = 1; $x < count($arr); $x++) {
-    // sql insert ke tabel order live
-    $sql = 'INSERT INTO `live_update`(`id`, `lokasi`,  `counter_update`, `id_driver`) 
-    VALUES (NULL, ?, ?, ?)';
-    $checksql = $pdo->prepare($sql);
-    $checksql->execute([$arr[$x]['lokasiStartUser'], $counter, $idDriverUserIni]);
-    $counter+=1;
-
-}
-
-// insert ke lokasi tujuan user
-for ($x = 1; $x < count($arr); $x++) {
-    // sql insert ke tabel order live
-    $sql = 'INSERT INTO `live_update`(`id`, `lokasi`, `counter_update`, `id_driver`) 
-    VALUES (NULL, ?, ?, ?)';
-    $checksql = $pdo->prepare($sql);
-    $checksql->execute([$arr[$x]['lokasiEndUser'], $counter, $idDriverUserIni]);
-    $counter+=1;
-
-}
-
-// insert ke lokasi tujuan driver
-for ($x = 0; $x <= 0; $x++) {
-    // sql insert ke tabel order live
-    $sql = 'INSERT INTO `live_update`(`id`, `lokasi`,  `counter_update`, `id_driver`) 
-    VALUES (NULL, ?, ?, ?)';
-    $checksql = $pdo->prepare($sql);
-    $checksql->execute([$arr[$x]['lokasiEndDriver'], $counter, $idDriverUserIni]);
-    $counter+=1;
-
-}
+echo $biaya;
+echo $lokasiAsal;
+echo $lokasiTujuan;
