@@ -275,7 +275,11 @@ if ($row['status'] != 0) {
     var mapUpdate = [];
 
     // var detail
-    var biayaInsert,lokasiAsalInsert,LokasiTujuanInsert
+    var biayaInsert, lokasiAsalInsert, LokasiTujuanInsert
+
+    // global scope array permutasi
+    var permutasiStart = []
+    var permutasiStartDriver = []
 
     // init map
     function initMap() {
@@ -347,7 +351,7 @@ if ($row['status'] != 0) {
               animation: google.maps.Animation.DROP
             });
             // resultnya berupa banyak array ini coba ke 1 karena akurat
-            console.log(response.results)
+            // console.log(response.results)
             infowindow.setContent(response.results[1].formatted_address);
             infowindow.open(map1, marker);
 
@@ -460,18 +464,18 @@ if ($row['status'] != 0) {
 
           $(".lokasiTujuan p").eq(2).html("Jarak &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: " + response.routes[0].legs[0].distance.text)
 
-          console.log(parseInt(response.routes[0].legs[0].distance.value / 1000))
+          // console.log(parseInt(response.routes[0].legs[0].distance.value / 1000))
           jarak = response.routes[0].legs[0].distance.value
 
           biaya = 0
 
           if (jarak < 2000) {
-            $(".lokasiTujuan p").eq(3).html("Biaya &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Rp. " + (2 * 4500))
-            biaya = 2 * 4500
+            $(".lokasiTujuan p").eq(3).html("Biaya &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Rp. " + (4 * 2000))
+            biaya = 4 * 2000
           } else {
             $(".lokasiTujuan p").eq(3).html("Biaya &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Rp. " + (parseInt(jarak / 1000) * 4500))
 
-            biaya = (parseInt(jarak / 1000) * 4500)
+            biaya = (parseInt(jarak / 1000) * 2000)
           }
 
           cekSaldo(biaya)
@@ -530,7 +534,7 @@ if ($row['status'] != 0) {
           const directionsService = new google.maps.DirectionsService();
           const directionsRenderer = new google.maps.DirectionsRenderer();
 
-          console.log("xxx",data)
+          // console.log("xxx", data)
 
           var statusDekat = false;
 
@@ -575,8 +579,8 @@ if ($row['status'] != 0) {
                     .then((response) => {
                       // directionsRenderer.setDirections(response);
 
-                      console.log(response)
-                      console.log(response.routes[0].legs[0].distance.value)
+                      // console.log(response)
+                      // console.log(response.routes[0].legs[0].distance.value)
                       if (response.routes[0].legs[0].distance.value < 3500) {
                         statusDekat = true
                       } else {
@@ -666,7 +670,7 @@ if ($row['status'] != 0) {
       DataLokasiUser.append("lokasiStart", lokasiStart);
       DataLokasiUser.append("lokasiEnd", lokasiEnd);
 
-      console.log(DataLokasiUser)
+      // console.log(DataLokasiUser)
 
       const xmlHttp = new XMLHttpRequest();
       xmlHttp.onload = function() {
@@ -714,10 +718,10 @@ if ($row['status'] != 0) {
 
           data = JSON.parse(this.responseText);
 
-          console.log(data)
+          // console.log(data)
 
           if (data[0]["status"] == "true") {
-            console.log("lanjut karena saldo masih ada")
+            // console.log("lanjut karena saldo masih ada")
 
           } else {
             // console.log("reload alert maaf saldo anda tidak cukup untuk perjalanan ini")
@@ -754,10 +758,10 @@ if ($row['status'] != 0) {
         cache: false,
         success: function(response) {
           data = JSON.parse(response);
-          console.log(data)
+          // console.log(data)
 
           if (data[0]['status'] != '0') {
-            console.log("button cancel di hidden ganti ongoing")
+            // console.log("button cancel di hidden ganti ongoing")
             $("#cancelButton").css("display", "none");
             $("#ongoingButton").css("display", "inline-block");
 
@@ -771,7 +775,7 @@ if ($row['status'] != 0) {
             })
 
           } else {
-            console.log("button cancel tidak dihidden / belum dipick up oleh driverxx")
+            // console.log("button cancel tidak dihidden / belum dipick up oleh driverxx")
 
             Swal.fire({
               position: 'center',
@@ -1337,15 +1341,70 @@ if ($row['status'] != 0) {
 
           data = JSON.parse(this.responseText);
           // console.log(this.responseText)
-          console.log("ini data yang akan dimasukan ke live update", data)
+          // console.log("ini data dari sql ", data)
 
-          mapUpdate = data
+          // mapUpdate = data
 
-          console.log("test x", mapUpdate)
-
-
+          // console.log("ini array map update", mapUpdate)
 
 
+          permutasiStartDriver.push((data[0]['lokasiStartDriver']))
+
+          // console.log(permutator(mapUpdate))
+
+          for (let i = 1; i < data.length; i++) {
+            permutasiStart.push(data[i]['lokasiStartUser'])
+          }
+
+          // console.log(permutasiStart)
+
+          // console.log(permutator(permutasiStart))
+
+          permutasiStart = permutator(permutasiStart)
+
+
+
+          // console.log(permutasiStart[0])
+          // console.log(permutasiStart[0][0])
+
+
+          // for (let i = 0; i < 1; i++) {
+          //   for (let j = 0; j < permutasiStart[i].length - 1; j++) {
+
+          //     // permutasiDelay(permutasiStart[i][j], permutasiStart[i][j + 1])
+
+          //     const directionsService = new google.maps.DirectionsService();
+          //     const directionsRenderer = new google.maps.DirectionsRenderer();
+
+          //     directionsService
+          //       .route({
+          //         origin: {
+          //           query: permutasiStart[i][j],
+          //         },
+          //         destination: {
+          //           query: permutasiStart[i][j + 1],
+          //         },
+          //         travelMode: google.maps.TravelMode.DRIVING,
+          //       })
+          //       .then((response) => {
+          //         directionsRenderer.setDirections(response);
+
+
+          //         // hasil+= response.routes[0].legs[0].distance.value
+
+          //         console.log(i, j)
+
+          //         console.log(response)
+          //         console.log(response.routes[0].legs[0].distance.value)
+
+
+
+
+          //       })
+          //       .catch((e) => window.alert("Directions request failed due to " + status))
+
+          //   }
+          // }
 
 
 
@@ -1361,6 +1420,42 @@ if ($row['status'] != 0) {
 
     }
 
+    function permutasiDelay(origin, end) {
+
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+
+      // setTimeout(function() {
+      directionsService
+        .route({
+          origin: {
+            query: origin,
+          },
+          destination: {
+            query: end,
+          },
+          travelMode: google.maps.TravelMode.DRIVING,
+        })
+        .then((response) => {
+          directionsRenderer.setDirections(response);
+
+
+          // hasil+= response.routes[0].legs[0].distance.value
+
+          console.log(i, j)
+
+          console.log(response)
+          console.log(response.routes[0].legs[0].distance.value)
+
+
+
+
+        })
+        .catch((e) => window.alert("Directions request failed due to " + status))
+      // }, 5000);
+
+    }
+
     function insertDataUpdateLive() {
 
       // let DataMapLiveUpdate = new FormData();
@@ -1368,7 +1463,7 @@ if ($row['status'] != 0) {
       var DataMapLiveUpdate = new FormData();
       var json_arr = JSON.stringify(mapUpdate);
 
-
+      console.log(mapUpdate)
 
       DataMapLiveUpdate.append('data', json_arr);
 
@@ -1396,12 +1491,13 @@ if ($row['status'] != 0) {
 
       dataCounter.append('dataCounter', counterUpdate);
 
+
       const xmlHttp = new XMLHttpRequest();
       xmlHttp.onload = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
           if (this.responseText == "order selesai") {
-            
+
             finishUpOrder();
 
             Swal.fire({
@@ -1415,7 +1511,7 @@ if ($row['status'] != 0) {
             setTimeout(function() {
               window.location.reload();
             }, 2500);
-              return
+            return
           }
 
 
@@ -1510,14 +1606,14 @@ if ($row['status'] != 0) {
       DataPerjalanan.append("lokasiAsal", lokasiAsalInsert);
       DataPerjalanan.append("lokasiTujuan", lokasiTujuanInsert);
 
-      console.log("aaa",biaya,lokasiAsalInsert,lokasiTujuanInsert)
+      console.log("aaa", biaya, lokasiAsalInsert, lokasiTujuanInsert)
 
       const xmlHttp = new XMLHttpRequest();
       xmlHttp.onload = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
-          console.log("xxx",this.responseText)
-         
+          console.log("xxx", this.responseText)
+
         } else {
           alert("Error!");
         }
@@ -1527,19 +1623,19 @@ if ($row['status'] != 0) {
 
     }
 
-    function updateSaldo(){
+    function updateSaldo() {
 
       let DataPerjalanan = new FormData();
       DataPerjalanan.append("biaya", biayaInsert);
 
-      console.log("yyy",biaya,lokasiAsalInsert,LokasiTujuanInsert)
+      console.log("yyy", biaya, lokasiAsalInsert, LokasiTujuanInsert)
 
       const xmlHttp = new XMLHttpRequest();
       xmlHttp.onload = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
-          console.log("yyyyyxx",this.responseText())
-         
+          console.log("yyyyyxx", this.responseText())
+
         } else {
           alert("Error!");
         }
@@ -1547,6 +1643,110 @@ if ($row['status'] != 0) {
       xmlHttp.open("POST", "request/update_saldo_ajax.php");
       xmlHttp.send(DataPerjalanan)
     }
+
+    var index = 0
+    var hasil = 0
+    function insertDataPermutasi(index) {
+      // data diinsert ke database tiap x detik nanti akan dipilih jarak yang minimal
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+      // console.log(index)
+
+      console.log(permutasiStart)
+      // console.log(permutasiStartDriver)
+
+      hasilBaru = hasil
+
+    
+      for (let i = -1; i < permutasiStart[index].length - 1; i++) {
+        // console.log(permutasiStart[index][j])
+        // console.log(permutasiStart[index][i])
+        // console.log(permutasiStart[index][i+1])
+        // console.log(permutasiStartDriver[0])
+        // console.log(permutasiStart[0][0])
+
+        console.log(i)
+
+        
+        if (i == -1) {
+
+          startOrigin = permutasiStartDriver[0]
+          startDestination = permutasiStart[0][0]
+
+        } else {
+
+          startOrigin = permutasiStart[index][i]
+          startDestination = permutasiStart[index][i + 1]
+          // console.log(permutasiStart[index][i])
+          // console.log(permutasiStart[index][i + 1])
+        }
+
+        directionsService
+          .route({
+            origin: {
+              query: startOrigin,
+            },
+            destination: {
+              query: startDestination,
+            },
+            travelMode: google.maps.TravelMode.DRIVING,
+          })
+          .then((response) => {
+            directionsRenderer.setDirections(response);
+
+            
+            hasil += parseInt(response.routes[0].legs[0].distance.value)
+
+
+            console.log(response)
+            console.log(response.routes[0].legs[0].distance.value)
+
+            if(i == permutasiStart[index].length - 2){
+              mapUpdate = permutasiStart[index]
+             setTimeout(console.log(mapUpdate),1000)
+            }
+
+          })
+          .catch((e) => window.alert("Directions request failed due to " + status))
+      }
+
+      // console.log(mapUpdate)
+      // console.log(hasil)
+      // if(hasil > hasilBaru){
+      //   mapUpdate = []
+
+      //   mapUpdate += permutasiStartDriver[0]
+      //   mapUpdate += permutasiStart[index]
+      //   console.log("ini adalah permutasi paling dekat ",mapUpdate)
+      // }
+
+      // var DataMapPermutasi = new FormData();
+      // var json_arr = JSON.stringify(permutasiStart);
+
+      // DataMapPermutasi.append('data', permutasiStart);
+      // DataMapPermutasi.append('counter', counterUpdate);
+      // DataMapPermutasi.append('total', counterUpdate);
+
+      // const xmlHttp = new XMLHttpRequest();
+      // xmlHttp.onload = function() {
+      //   if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+      //     console.log(this.responseText)
+
+      //   } else {
+      //     alert("Error!");
+      //   }
+      // }
+      // xmlHttp.open("POST", "request/insert_data_live_update_ajax.php");
+      // xmlHttp.send(DataMapPermutasi);
+
+    }
+
+    function insertDataPermutasi_1() {
+
+    }
+
+    // function test
 
     var counterUpdate = 0
     // search driver
@@ -1578,23 +1778,31 @@ if ($row['status'] != 0) {
         getDataUpdatePosisiDriver();
       }, 10000);
 
-      setTimeout(function() {
-        insertDataUpdateLive();
-      }, 15000);
 
-      interval = setInterval(function() {
+      setInterval(function() {
+        insertDataPermutasi(index);
+        index += 1
+      }, 11000)
 
-        updatePosisiDriverBasic(counterUpdate);
-        // updatePosisiDriverPermutasi();
-        counterUpdate += 1;
-      }, 17000);
+      // setTimeout(function() {
+      //   insertDataUpdateLive();
+      // }, 15000);
 
-     
+      // interval = setInterval(function() {
+
+      //   updatePosisiDriverBasic(counterUpdate);
+      //   // updatePosisiDriverPermutasi();
+      //   counterUpdate += 1;
+      // }, 17000);
+
+
 
 
 
 
     }
+
+
 
 
 

@@ -44,6 +44,10 @@ $row = $checksql->fetch();
   <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@300;400;700&display=swap" rel="stylesheet">
   <!-- Link Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Link Data Table -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
+
 </head>
 
 <body>
@@ -59,7 +63,7 @@ $row = $checksql->fetch();
     <div class="row history">
       <h1 class="display-2 text-start fw-bolder cool-link">History</h1>
       <div class="col mt-4 table-responsive">
-        <table class="table table-hover ">
+        <table id="historyTable" class="table table-hover ">
           <thead>
             <tr>
               <th scope="col">#</th>
@@ -77,10 +81,10 @@ $row = $checksql->fetch();
             $sql = 'SELECT * FROM HISTORY WHERE id_user = ?';
             $checksql = $pdo->prepare($sql);
             $checksql->execute([$row['id']]);
-            
+
             // $rowHistory = $checksql->fetch();
-            
-            $counter=1;
+
+            $counter = 1;
             while ($rowHistory = $checksql->fetch()) {
 
               echo    "
@@ -95,7 +99,7 @@ $row = $checksql->fetch();
                         </tr>
                     ";
 
-                    $counter+=1;
+              $counter += 1;
             }
 
             ?>
@@ -166,7 +170,18 @@ $row = $checksql->fetch();
         once: true
       });
     });
+
+    // data tabel
+    $(document).ready(function() {
+      $('#historyTable').DataTable();
+    });
   </script>
+  
+  <!-- js data tabel -->
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+
 </body>
 
 </html>
