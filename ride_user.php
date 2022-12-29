@@ -111,6 +111,8 @@ if ($row['status'] != 0) {
     </div>
   </div>
 
+  <p id="hasilPermutasi">titip hasil disini</p>
+
   <nav class="navbar navbar-expand bg-light fixed-bottom">
     <div class="container-fluid">
       <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
@@ -1646,107 +1648,116 @@ if ($row['status'] != 0) {
 
     var index = 0
     var hasil = 0
+
     function insertDataPermutasi(index) {
       // data diinsert ke database tiap x detik nanti akan dipilih jarak yang minimal
       const directionsService = new google.maps.DirectionsService();
       const directionsRenderer = new google.maps.DirectionsRenderer();
       // console.log(index)
 
-      console.log(permutasiStart)
+      // console.log(index)
+      // console.log(permutasiStart)
+      // console.log(permutasiStart.length)
+
+
       // console.log(permutasiStartDriver)
 
-      hasilBaru = hasil
+      hasil = 0
+      arrCoba = []
+      if (index < permutasiStart.length) {
 
-    
-      for (let i = -1; i < permutasiStart[index].length - 1; i++) {
-        // console.log(permutasiStart[index][j])
-        // console.log(permutasiStart[index][i])
-        // console.log(permutasiStart[index][i+1])
-        // console.log(permutasiStartDriver[0])
-        // console.log(permutasiStart[0][0])
+        getHasil = document.getElementById("hasilPermutasi").innerText
+        // console.log(getHasil)
 
-        console.log(i)
+        if (getHasil > 0) {
+          // console.log("a")
+          coba(permutasiStart[index - 1], getHasil)
+        }
+        // coba(hasil,permutasiStart[index])
 
-        
-        if (i == -1) {
+        for (let i = -1; i < permutasiStart[index].length - 1; i++) {
 
-          startOrigin = permutasiStartDriver[0]
-          startDestination = permutasiStart[0][0]
+          if (i == -1) {
 
-        } else {
+            startOrigin = permutasiStartDriver[0]
+            startDestination = permutasiStart[0][0]
 
-          startOrigin = permutasiStart[index][i]
-          startDestination = permutasiStart[index][i + 1]
-          // console.log(permutasiStart[index][i])
-          // console.log(permutasiStart[index][i + 1])
+          } else {
+            startOrigin = permutasiStart[index][i]
+            startDestination = permutasiStart[index][i + 1]
+            // console.log(permutasiStart[index][i])
+            // console.log(permutasiStart[index][i + 1])
+          }
+
+          directionsService
+            .route({
+              origin: {
+                query: startOrigin,
+              },
+              destination: {
+                query: startDestination,
+              },
+              travelMode: google.maps.TravelMode.DRIVING,
+            })
+            .then((response) => {
+              directionsRenderer.setDirections(response);
+
+
+              hasil += parseInt(response.routes[0].legs[0].distance.value)
+
+              document.getElementById("hasilPermutasi").innerText = hasil
+
+              // console.log("ini response",response)
+              // console.log("ini nilai jaraknya", response.routes[0].legs[0].distance.value, " dari ",response.request.origin.query," menuju ",response.request.destination.query)
+
+              // console.log(index,",",i,",",permutasiStart[index].length)
+
+              // console.log("indexing",i)
+              // if (i == permutasiStart[index].length - 2) {
+              //   // console.log(index,",",i,",",permutasiStart[index].length)
+              //   // coba(hasil, permutasiStart[index])
+              // }
+              // console.log("ini index",i)
+              // console.log("ini arr check isi ?",arrCoba)
+
+
+            })
+            .catch((e) => window.alert("Directions request failed due to " + status))
+
+          // console.log("ini arr check isi ?",arrCoba)
+
         }
 
-        directionsService
-          .route({
-            origin: {
-              query: startOrigin,
-            },
-            destination: {
-              query: startDestination,
-            },
-            travelMode: google.maps.TravelMode.DRIVING,
-          })
-          .then((response) => {
-            directionsRenderer.setDirections(response);
-
-            
-            hasil += parseInt(response.routes[0].legs[0].distance.value)
-
-
-            console.log(response)
-            console.log(response.routes[0].legs[0].distance.value)
-
-            if(i == permutasiStart[index].length - 2){
-              mapUpdate = permutasiStart[index]
-             setTimeout(console.log(mapUpdate),1000)
-            }
-
-          })
-          .catch((e) => window.alert("Directions request failed due to " + status))
+      } else {
+        console.log("sudah semua kemungkinan dicoba")
       }
 
-      // console.log(mapUpdate)
-      // console.log(hasil)
-      // if(hasil > hasilBaru){
-      //   mapUpdate = []
+      // console.log("ini hasil",hasil)
+      // console.log("ini hasil dari tag p",document.getElementById("hasilPermutasi").innerText)
+      // setTimeout(coba(permutasiStart[index]),5000)
 
-      //   mapUpdate += permutasiStartDriver[0]
-      //   mapUpdate += permutasiStart[index]
-      //   console.log("ini adalah permutasi paling dekat ",mapUpdate)
-      // }
 
-      // var DataMapPermutasi = new FormData();
-      // var json_arr = JSON.stringify(permutasiStart);
 
-      // DataMapPermutasi.append('data', permutasiStart);
-      // DataMapPermutasi.append('counter', counterUpdate);
-      // DataMapPermutasi.append('total', counterUpdate);
 
-      // const xmlHttp = new XMLHttpRequest();
-      // xmlHttp.onload = function() {
-      //   if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-
-      //     console.log(this.responseText)
-
-      //   } else {
-      //     alert("Error!");
-      //   }
-      // }
-      // xmlHttp.open("POST", "request/insert_data_live_update_ajax.php");
-      // xmlHttp.send(DataMapPermutasi);
-
+      console.log("\n")
     }
 
-    function insertDataPermutasi_1() {
+    var arrJarakTerdekat = []
+    var hasilLama = 0
+    var counterCoba = 0
 
+    function coba(data, hasilBaru) {
+
+      if (hasilBaru < hasilLama || counterCoba == 0) {
+        arrJarakTerdekat = data
+        arrJarakTerdekat += ", "+hasilBaru
+        hasilLama = hasilBaru
+        counterCoba+=1
+      }
+
+      console.log(arrJarakTerdekat)
     }
 
-    // function test
 
     var counterUpdate = 0
     // search driver
