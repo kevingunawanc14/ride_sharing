@@ -1349,6 +1349,7 @@ if ($row['status'] != 0) {
 
           // console.log("ini array map update", mapUpdate)
 
+          // console.log(data)
 
           permutasiStartDriver.push((data[0]['lokasiStartDriver']))
 
@@ -1356,16 +1357,20 @@ if ($row['status'] != 0) {
 
           for (let i = 1; i < data.length; i++) {
             permutasiStart.push(data[i]['lokasiStartUser'])
+            // permutasiStart.push(data[i]['lokasiEndUser'])
+
           }
 
-          // console.log(permutasiStart)
+          // permutasiStart.push(data[0]['lokasiEndDriver'])
+
+          // console.log("ini adalah panjang data arr",permutasiStart.length)
 
           // console.log(permutator(permutasiStart))
 
           permutasiStart = permutator(permutasiStart)
 
 
-
+          // console.log("ini adalah arr permutasi yang akan dicari titik terdekatnnya",permutasiStart)
           // console.log(permutasiStart[0])
           // console.log(permutasiStart[0][0])
 
@@ -1658,12 +1663,9 @@ if ($row['status'] != 0) {
       // console.log(index)
       // console.log(permutasiStart)
       // console.log(permutasiStart.length)
-
-
       // console.log(permutasiStartDriver)
 
       hasil = 0
-      arrCoba = []
       if (index < permutasiStart.length) {
 
         getHasil = document.getElementById("hasilPermutasi").innerText
@@ -1680,7 +1682,7 @@ if ($row['status'] != 0) {
           if (i == -1) {
 
             startOrigin = permutasiStartDriver[0]
-            startDestination = permutasiStart[0][0]
+            startDestination = permutasiStart[index][i + 1]
 
           } else {
             startOrigin = permutasiStart[index][i]
@@ -1708,11 +1710,11 @@ if ($row['status'] != 0) {
               document.getElementById("hasilPermutasi").innerText = hasil
 
               // console.log("ini response",response)
-              // console.log("ini nilai jaraknya", response.routes[0].legs[0].distance.value, " dari ",response.request.origin.query," menuju ",response.request.destination.query)
+              console.log("ini nilai jaraknya", response.routes[0].legs[0].distance.value, " dari ", response.request.origin.query, " menuju ", response.request.destination.query)
 
               // console.log(index,",",i,",",permutasiStart[index].length)
 
-              // console.log("indexing",i)
+              console.log("indexing", i)
               // if (i == permutasiStart[index].length - 2) {
               //   // console.log(index,",",i,",",permutasiStart[index].length)
               //   // coba(hasil, permutasiStart[index])
@@ -1725,11 +1727,12 @@ if ($row['status'] != 0) {
             .catch((e) => window.alert("Directions request failed due to " + status))
 
           // console.log("ini arr check isi ?",arrCoba)
-
+          console.log("ini index array sekarang", index)
         }
 
       } else {
-        console.log("sudah semua kemungkinan dicoba")
+        console.log("sudah semua kemungkinan lokasi berangkat dicoba")
+        insertDataPermutasiTujuan(arrJarakTerdekat)
       }
 
       // console.log("ini hasil",hasil)
@@ -1747,21 +1750,106 @@ if ($row['status'] != 0) {
     var counterCoba = 0
 
     function coba(data, hasilBaru) {
-
+      console.log(permutasiStart)
+      console.log("ini data array lokasinya", data, "ini total jaraknya", hasilBaru)
       if (hasilBaru < hasilLama || counterCoba == 0) {
-        arrJarakTerdekat = data
-        arrJarakTerdekat += ", "+hasilBaru
+        for (let i = 0; i < data.length; i++) {
+          arrJarakTerdekat[i]=data[i]
+        }
+        // arrJarakTerdekat += ", " + hasilBaru
         hasilLama = hasilBaru
-        counterCoba+=1
+        counterCoba += 1
       }
 
-      console.log(arrJarakTerdekat)
+      // console.log(permutasiStart)
+
+      // console.log(arrJarakTerdekat)
     }
 
+    function insertDataPermutasiTujuan(arr) {
+      console.log("ini array yang akan dibuat untuk permutasi ke lokasi tujuan", arr)
+
+      // const directionsService = new google.maps.DirectionsService();
+      // const directionsRenderer = new google.maps.DirectionsRenderer();
+
+      permutasiStart = arr
+
+      // hasil = 0
+
+      console.log(permutasiStart)
+
+      // if (index <= permutasiStart.length*2) {
+
+      //   getHasil = document.getElementById("hasilPermutasi").innerText
+      //   // console.log(getHasil)
+
+      //   if (getHasil > 0) {
+      //     // console.log("a")
+      //     coba(permutasiStart[index - 1], getHasil)
+      //   }
+      //   // coba(hasil,permutasiStart[index])
+
+      //   for (let i = -1; i < permutasiStart[index].length - 1; i++) {
+
+      //     if (i == -1) {
+
+      //       startOrigin = permutasiStartDriver[0]
+      //       startDestination = permutasiStart[index][i + 1]
+
+      //     } else {
+      //       startOrigin = permutasiStart[index][i]
+      //       startDestination = permutasiStart[index][i + 1]
+      //       // console.log(permutasiStart[index][i])
+      //       // console.log(permutasiStart[index][i + 1])
+      //     }
+
+      //     directionsService
+      //       .route({
+      //         origin: {
+      //           query: startOrigin,
+      //         },
+      //         destination: {
+      //           query: startDestination,
+      //         },
+      //         travelMode: google.maps.TravelMode.DRIVING,
+      //       })
+      //       .then((response) => {
+      //         directionsRenderer.setDirections(response);
+
+
+      //         hasil += parseInt(response.routes[0].legs[0].distance.value)
+
+      //         document.getElementById("hasilPermutasi").innerText = hasil
+
+      //         // console.log("ini response",response)
+      //         console.log("ini nilai jaraknya", response.routes[0].legs[0].distance.value, " dari ", response.request.origin.query, " menuju ", response.request.destination.query)
+
+      //         // console.log(index,",",i,",",permutasiStart[index].length)
+
+      //         console.log("indexing", i)
+      //         // if (i == permutasiStart[index].length - 2) {
+      //         //   // console.log(index,",",i,",",permutasiStart[index].length)
+      //         //   // coba(hasil, permutasiStart[index])
+      //         // }
+      //         // console.log("ini index",i)
+      //         // console.log("ini arr check isi ?",arrCoba)
+
+
+      //       })
+      //       .catch((e) => window.alert("Directions request failed due to " + status))
+
+      //     // console.log("ini arr check isi ?",arrCoba)
+      //     console.log("ini index array sekarang", index)
+      //   }
+
+
+      // }
+    }
 
     var counterUpdate = 0
     // search driver
     function searchDriver() {
+
       if ($("#end").val() == "") {
         alert("Alamat Tujuan Masih Kosong")
         return;
