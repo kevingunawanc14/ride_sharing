@@ -282,6 +282,8 @@ if ($row['status'] != 0) {
     // global scope array permutasi
     var permutasiStart = []
     var permutasiStartDriver = []
+    var permutasiEnd = []
+    var permutasiEndDriver = []
 
     // init map
     function initMap() {
@@ -1342,76 +1344,23 @@ if ($row['status'] != 0) {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
           data = JSON.parse(this.responseText);
-          // console.log(this.responseText)
-          // console.log("ini data dari sql ", data)
 
-          // mapUpdate = data
-
-          // console.log("ini array map update", mapUpdate)
-
-          // console.log(data)
 
           permutasiStartDriver.push((data[0]['lokasiStartDriver']))
-
-          // console.log(permutator(mapUpdate))
+          // permutasiEnd.push(data[0]['lokasiEndDriver'])
 
           for (let i = 1; i < data.length; i++) {
+            // push semua data lokasi berangkat dan tujuan user
             permutasiStart.push(data[i]['lokasiStartUser'])
-            // permutasiStart.push(data[i]['lokasiEndUser'])
+            permutasiEnd.push(data[i]['lokasiEndUser'])
 
           }
 
-          // permutasiStart.push(data[0]['lokasiEndDriver'])
-
-          // console.log("ini adalah panjang data arr",permutasiStart.length)
-
-          // console.log(permutator(permutasiStart))
-
+          // dibuat semua banyaknya cara / kemungkinan untuk lokasi berangkat driver,user
           permutasiStart = permutator(permutasiStart)
 
-
-          // console.log("ini adalah arr permutasi yang akan dicari titik terdekatnnya",permutasiStart)
-          // console.log(permutasiStart[0])
-          // console.log(permutasiStart[0][0])
-
-
-          // for (let i = 0; i < 1; i++) {
-          //   for (let j = 0; j < permutasiStart[i].length - 1; j++) {
-
-          //     // permutasiDelay(permutasiStart[i][j], permutasiStart[i][j + 1])
-
-          //     const directionsService = new google.maps.DirectionsService();
-          //     const directionsRenderer = new google.maps.DirectionsRenderer();
-
-          //     directionsService
-          //       .route({
-          //         origin: {
-          //           query: permutasiStart[i][j],
-          //         },
-          //         destination: {
-          //           query: permutasiStart[i][j + 1],
-          //         },
-          //         travelMode: google.maps.TravelMode.DRIVING,
-          //       })
-          //       .then((response) => {
-          //         directionsRenderer.setDirections(response);
-
-
-          //         // hasil+= response.routes[0].legs[0].distance.value
-
-          //         console.log(i, j)
-
-          //         console.log(response)
-          //         console.log(response.routes[0].legs[0].distance.value)
-
-
-
-
-          //       })
-          //       .catch((e) => window.alert("Directions request failed due to " + status))
-
-          //   }
-          // }
+          // dibuat semua banyaknya cara / kemungkinan untuk lokasi tujuan driver,user
+          permutasiEnd = permutator(permutasiEnd)
 
 
 
@@ -1466,6 +1415,11 @@ if ($row['status'] != 0) {
     function insertDataUpdateLive() {
 
       // let DataMapLiveUpdate = new FormData();
+
+      // push lokasi terdekat berangkat
+      
+      
+      // push lokasi terdekat tujuan
 
       var DataMapLiveUpdate = new FormData();
       var json_arr = JSON.stringify(mapUpdate);
@@ -1654,93 +1608,73 @@ if ($row['status'] != 0) {
     var index = 0
     var hasil = 0
 
+    var index_2 = 0
+
     function insertDataPermutasi(index) {
-      // data diinsert ke database tiap x detik nanti akan dipilih jarak yang minimal
-      const directionsService = new google.maps.DirectionsService();
-      const directionsRenderer = new google.maps.DirectionsRenderer();
-      // console.log(index)
 
-      // console.log(index)
-      // console.log(permutasiStart)
-      // console.log(permutasiStart.length)
-      // console.log(permutasiStartDriver)
-
+     
       hasil = 0
-      if (index < permutasiStart.length) {
-
+      if (index <= permutasiStart.length-23) {
+        
+        // get value hasil total jarak permutasi
         getHasil = document.getElementById("hasilPermutasi").innerText
-        // console.log(getHasil)
+
+        if (index == permutasiStart.length-23) {
+          getArrLokasiTerdekat(permutasiStart[index - 1], getHasil)
+
+          // reset variable untuk dipakai di eksekusi fungsi tujuan
+          // getHasil = -1
+          document.getElementById("hasilPermutasi").innerText = "-1"
+          hasilLama = 0
+          counterCoba = 0
+
+          console.log(arrJarakTerdekat)
+          permutasiEndDriver.push(arrJarakTerdekat[arrJarakTerdekat.length-1])
+ 
+          console.log("test masuk sini atau tidak")
+          return
+        }
+
 
         if (getHasil > 0) {
-          // console.log("a")
-          coba(permutasiStart[index - 1], getHasil)
+          getArrLokasiTerdekat(permutasiStart[index - 1], getHasil)
+          
         }
-        // coba(hasil,permutasiStart[index])
 
         for (let i = -1; i < permutasiStart[index].length - 1; i++) {
-
-          if (i == -1) {
-
-            startOrigin = permutasiStartDriver[0]
-            startDestination = permutasiStart[index][i + 1]
-
-          } else {
-            startOrigin = permutasiStart[index][i]
-            startDestination = permutasiStart[index][i + 1]
-            // console.log(permutasiStart[index][i])
-            // console.log(permutasiStart[index][i + 1])
-          }
-
-          directionsService
-            .route({
-              origin: {
-                query: startOrigin,
-              },
-              destination: {
-                query: startDestination,
-              },
-              travelMode: google.maps.TravelMode.DRIVING,
-            })
-            .then((response) => {
-              directionsRenderer.setDirections(response);
-
-
-              hasil += parseInt(response.routes[0].legs[0].distance.value)
-
-              document.getElementById("hasilPermutasi").innerText = hasil
-
-              // console.log("ini response",response)
-              console.log("ini nilai jaraknya", response.routes[0].legs[0].distance.value, " dari ", response.request.origin.query, " menuju ", response.request.destination.query)
-
-              // console.log(index,",",i,",",permutasiStart[index].length)
-
-              console.log("indexing", i)
-              // if (i == permutasiStart[index].length - 2) {
-              //   // console.log(index,",",i,",",permutasiStart[index].length)
-              //   // coba(hasil, permutasiStart[index])
-              // }
-              // console.log("ini index",i)
-              // console.log("ini arr check isi ?",arrCoba)
-
-
-            })
-            .catch((e) => window.alert("Directions request failed due to " + status))
-
-          // console.log("ini arr check isi ?",arrCoba)
-          console.log("ini index array sekarang", index)
+          eksekusiApiDirectionPermutasi(i)
         }
+
+     
 
       } else {
         console.log("sudah semua kemungkinan lokasi berangkat dicoba")
-        insertDataPermutasiTujuan(arrJarakTerdekat)
+        console.log("ini variabel index_2", index_2)
+
+        if (index_2 <= permutasiEnd.length) {
+
+          getHasil = document.getElementById("hasilPermutasi").innerText
+
+          if (index_2 == permutasiEnd.length) {
+            console.log("ini sudah berakhir")
+            return
+          }
+
+          if (getHasil > 0) {
+            getArrLokasiTerdekatTujuan(permutasiEnd[index_2 - 1], getHasil)
+          }
+
+          for (let i = -1; i < permutasiEnd[index_2].length - 1; i++) {
+            eksekusiApiDirectionPermutasiTujuan(i)
+          }
+
+        }
+
+        index_2 += 1
+
+
+
       }
-
-      // console.log("ini hasil",hasil)
-      // console.log("ini hasil dari tag p",document.getElementById("hasilPermutasi").innerText)
-      // setTimeout(coba(permutasiStart[index]),5000)
-
-
-
 
       console.log("\n")
     }
@@ -1749,102 +1683,157 @@ if ($row['status'] != 0) {
     var hasilLama = 0
     var counterCoba = 0
 
-    function coba(data, hasilBaru) {
+    function getArrLokasiTerdekat(data, hasilBaru) {
       console.log(permutasiStart)
-      console.log("ini data array lokasinya", data, "ini total jaraknya", hasilBaru)
+      console.log("ini data array lokasinya ", data, "ini total jaraknya", hasilBaru)
       if (hasilBaru < hasilLama || counterCoba == 0) {
         for (let i = 0; i < data.length; i++) {
-          arrJarakTerdekat[i]=data[i]
+          arrJarakTerdekat[i] = data[i]
         }
-        // arrJarakTerdekat += ", " + hasilBaru
+
         hasilLama = hasilBaru
         counterCoba += 1
       }
 
-      // console.log(permutasiStart)
 
-      // console.log(arrJarakTerdekat)
     }
 
-    function insertDataPermutasiTujuan(arr) {
-      console.log("ini array yang akan dibuat untuk permutasi ke lokasi tujuan", arr)
+    var arrJarakTerdekatTujuan = []
 
-      // const directionsService = new google.maps.DirectionsService();
-      // const directionsRenderer = new google.maps.DirectionsRenderer();
+    
+    // data array update live berisi data arrJarakTerdekat,arrJarakTerdekatTujuan
+    var dataUpdateLive = []
 
-      permutasiStart = arr
+    function getArrLokasiTerdekatTujuan(data, hasilBaru) {
+      console.log("ini data array lokasinya tujuan", data, "ini total jaraknya", hasilBaru)
+      if (hasilBaru < hasilLama || counterCoba == 0) {
+        for (let i = 0; i < data.length; i++) {
+          arrJarakTerdekatTujuan[i] = data[i]
+        }
 
-      // hasil = 0
-
-      console.log(permutasiStart)
-
-      // if (index <= permutasiStart.length*2) {
-
-      //   getHasil = document.getElementById("hasilPermutasi").innerText
-      //   // console.log(getHasil)
-
-      //   if (getHasil > 0) {
-      //     // console.log("a")
-      //     coba(permutasiStart[index - 1], getHasil)
-      //   }
-      //   // coba(hasil,permutasiStart[index])
-
-      //   for (let i = -1; i < permutasiStart[index].length - 1; i++) {
-
-      //     if (i == -1) {
-
-      //       startOrigin = permutasiStartDriver[0]
-      //       startDestination = permutasiStart[index][i + 1]
-
-      //     } else {
-      //       startOrigin = permutasiStart[index][i]
-      //       startDestination = permutasiStart[index][i + 1]
-      //       // console.log(permutasiStart[index][i])
-      //       // console.log(permutasiStart[index][i + 1])
-      //     }
-
-      //     directionsService
-      //       .route({
-      //         origin: {
-      //           query: startOrigin,
-      //         },
-      //         destination: {
-      //           query: startDestination,
-      //         },
-      //         travelMode: google.maps.TravelMode.DRIVING,
-      //       })
-      //       .then((response) => {
-      //         directionsRenderer.setDirections(response);
-
-
-      //         hasil += parseInt(response.routes[0].legs[0].distance.value)
-
-      //         document.getElementById("hasilPermutasi").innerText = hasil
-
-      //         // console.log("ini response",response)
-      //         console.log("ini nilai jaraknya", response.routes[0].legs[0].distance.value, " dari ", response.request.origin.query, " menuju ", response.request.destination.query)
-
-      //         // console.log(index,",",i,",",permutasiStart[index].length)
-
-      //         console.log("indexing", i)
-      //         // if (i == permutasiStart[index].length - 2) {
-      //         //   // console.log(index,",",i,",",permutasiStart[index].length)
-      //         //   // coba(hasil, permutasiStart[index])
-      //         // }
-      //         // console.log("ini index",i)
-      //         // console.log("ini arr check isi ?",arrCoba)
-
-
-      //       })
-      //       .catch((e) => window.alert("Directions request failed due to " + status))
-
-      //     // console.log("ini arr check isi ?",arrCoba)
-      //     console.log("ini index array sekarang", index)
-      //   }
-
-
-      // }
+        hasilLama = hasilBaru
+        counterCoba += 1
+      }
     }
+
+    function eksekusiApiDirectionPermutasi(i) {
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+
+      if (i == -1) {
+
+        startOrigin = permutasiStartDriver[0]
+        startDestination = permutasiStart[index][i + 1]
+
+      } else {
+        startOrigin = permutasiStart[index][i]
+        startDestination = permutasiStart[index][i + 1]
+        // console.log(permutasiStart[index][i])
+        // console.log(permutasiStart[index][i + 1])
+      }
+
+      directionsService
+        .route({
+          origin: {
+            query: startOrigin,
+          },
+          destination: {
+            query: startDestination,
+          },
+          travelMode: google.maps.TravelMode.DRIVING,
+        })
+        .then((response) => {
+          directionsRenderer.setDirections(response);
+
+
+          hasil += parseInt(response.routes[0].legs[0].distance.value)
+
+          document.getElementById("hasilPermutasi").innerText = hasil
+
+          // console.log("ini response",response)
+          console.log("ini nilai jaraknya", response.routes[0].legs[0].distance.value, " dari ", response.request.origin.query, " menuju ", response.request.destination.query)
+
+          // console.log(index,",",i,",",permutasiStart[index].length)
+
+          console.log("indexing", i)
+          // if (i == permutasiStart[index].length - 2) {
+          //   // console.log(index,",",i,",",permutasiStart[index].length)
+          //   // coba(hasil, permutasiStart[index])
+          // }
+          // console.log("ini index",i)
+          // console.log("ini arr check isi ?",arrCoba)
+
+
+        })
+        .catch((e) => window.alert("Directions request failed due to " + status))
+
+      // console.log("ini arr check isi ?",arrCoba)
+      console.log("ini index array sekarang", index)
+    }
+
+    function eksekusiApiDirectionPermutasiTujuan(i) {
+      // deklarasi object api direction
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+
+      // console.log("ini isi array permutasiEndDriver",permutasiEndDriver)
+      // console.log("ini isi array permutasiEnd",permutasiEnd)
+
+      // console.log("ini variabel index 2 ekspetasi 0 untuk yang pertama cetak",index_2,"variabel i ekspetasi -1 untuk yang pertama cetak",i)
+
+      // console.log("ekspetasi titik start driver yaitu 39 permai ii ",permutasiEndDriver[0])
+      // console.log("ekspetasi titik tujuan driver yaitu yang pertama ",permutasiEnd[index_2][i + 1])
+
+      // console.log(permutasiEnd[index_2][i])
+      // console.log(permutasiEnd[index_2][i + 1])
+
+      if (i == -1) {
+
+        startOrigin = permutasiEndDriver[0]
+        startDestination = permutasiEnd[index_2][i + 1]
+
+        // console.log( permutasiEndDriver[0])
+        // console.log(permutasiEnd[index_2][i + 1])
+
+      } else {
+        startOrigin = permutasiEnd[index_2][i]
+        startDestination = permutasiEnd[index_2][i + 1]
+
+        // console.log(permutasiEnd[index_2][i])
+        // console.log(permutasiEnd[index_2][i + 1])
+      }
+
+      directionsService
+        .route({
+          origin: {
+            query: startOrigin,
+          },
+          destination: {
+            query: startDestination,
+          },
+          travelMode: google.maps.TravelMode.DRIVING,
+        })
+        .then((response) => {
+          directionsRenderer.setDirections(response);
+
+
+          hasil += parseInt(response.routes[0].legs[0].distance.value)
+
+          document.getElementById("hasilPermutasi").innerText = hasil
+
+          console.log("ini nilai jaraknya", response.routes[0].legs[0].distance.value, " dari ", response.request.origin.query, " menuju ", response.request.destination.query)
+
+
+          console.log("indexing", i)
+   
+
+        })
+        .catch((e) => window.alert("Directions request failed due to " + status))
+
+      // console.log("ini arr check isi ?",arrCoba)
+      console.log("ini index array sekarang", index_2)
+    }
+
 
     var counterUpdate = 0
     // search driver
