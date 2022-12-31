@@ -1414,27 +1414,29 @@ if ($row['status'] != 0) {
 
     function insertDataUpdateLive() {
 
-      // let DataMapLiveUpdate = new FormData();
-
       // push lokasi terdekat berangkat
-      
-      
+      for (let i = 0; i < arrJarakTerdekat.length; i++) {
+        dataUpdateLive.push(arrJarakTerdekat[i])
+      }
+
       // push lokasi terdekat tujuan
+      for (let i = 0; i < arrJarakTerdekatTujuan.length; i++) {
+        dataUpdateLive.push(arrJarakTerdekatTujuan[i])
+      }
+
+      // console.log("ekspetasi data kegabung antara arrJarakTerdekat dengan arrJarakTerdekatTujuan", dataUpdateLive)
 
       var DataMapLiveUpdate = new FormData();
-      var json_arr = JSON.stringify(mapUpdate);
+      var json_arr = JSON.stringify(dataUpdateLive);
 
-      console.log(mapUpdate)
-
-      DataMapLiveUpdate.append('data', json_arr);
-
-
+      DataMapLiveUpdate.append('dataLokasiStart', permutasiStartDriver[0]);
+      DataMapLiveUpdate.append('dataLokasiTujuan', json_arr);
 
       const xmlHttp = new XMLHttpRequest();
       xmlHttp.onload = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
-          console.log(this.responseText)
+          console.log("ekspetasi jumlah data 1 untuk lokasi berangkat lalu ekspetasi jumlah data banyak x untuk lokasi tujuan, ekspetasi di database terisi banyak x data", this.responseText)
 
         } else {
           alert("Error!");
@@ -1447,6 +1449,15 @@ if ($row['status'] != 0) {
 
     function updatePosisiDriverBasic(counter) {
 
+      // var directions = new google.maps.DirectionsRenderer({suppressMarkers: true});
+
+      // reset router
+      initMap()
+
+      // reset marker
+      for (i = 0; i < gmarkers.length; i++) {
+        gmarkers[i].setMap(null);
+      }
 
       var dataCounter = new FormData();
 
@@ -1475,52 +1486,68 @@ if ($row['status'] != 0) {
             return
           }
 
-
           data = JSON.parse(this.responseText);
 
+          console.log("ini data dari return ajax update :", data)
 
           const directionsService = new google.maps.DirectionsService();
           const directionsRenderer = new google.maps.DirectionsRenderer();
 
-          console.log("test xx", data)
+          // set option suppresMarker true biar tidak kecetak marker yang default
+
+          var options = {
+            suppressMarkers: true,
+          }
+
+          directionsRenderer.setOptions(options)
+          directionsRenderer.setMap(map1);
+
+          // console.log("test xx", data)
           directionsService
             .route({
               origin: {
                 query: data[0]["lokasiUpdate"],
               },
               destination: {
-                query: data[0]["lokasiUpdate"],
+                query: document.getElementById("start").value,
               },
               travelMode: google.maps.TravelMode.DRIVING,
             })
             .then((response) => {
               directionsRenderer.setDirections(response);
 
-              console.log("ini response", response)
-              console.log("ini responsex", gmarkers)
+              markerDriver(response.routes[0].legs[0].start_location.lat(), response.routes[0].legs[0].start_location.lng())
+              markerUser(response.routes[0].legs[0].end_location.lat(), response.routes[0].legs[0].end_location.lng())
 
-              // hapus marker selain alamat lokasi user dan mobil
-              for (i = 1; i < gmarkers.length; i++) {
-                gmarkers[i].setMap(null);
-              }
+              // console.log("ini response", response)
+              // console.log("ini responsex", gmarkers)
 
-              marker = new google.maps.Marker({
-                position: {
-                  lat: response.routes[0].legs[0].end_location.lat(),
-                  lng: response.routes[0].legs[0].end_location.lng()
-                },
-                map: map1,
-                icon: {
-                  url: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png",
-                  scaledSize: new google.maps.Size(38, 31)
-                },
-                animation: google.maps.Animation.DROP
-                // icon: "assets/cars.png"
+              // reset marker
+              // for (i = 0; i < gmarkers.length; i++) {
+              //   gmarkers[i].setMap(null);
+              // }
 
-              });
+              // var leg = response.routes[0].legs[0];
+              // makeMarker(leg.start_location, icons.start, "title", map);
+              // makeMarker(leg.end_location, icons.end, 'title', map);
+
+              // marker = new google.maps.Marker({
+              //   position: {
+              //     lat: response.routes[0].legs[0].end_location.lat(),
+              //     lng: response.routes[0].legs[0].end_location.lng()
+              //   },
+              //   map: map1,
+              //   icon: {
+              //     url: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png",
+              //     scaledSize: new google.maps.Size(38, 31)
+              //   },
+              //   animation: google.maps.Animation.DROP
+              //   // icon: "assets/cars.png"
+
+              // });
 
               // Push your newly created marker into the array:
-              gmarkers.push(marker);
+              // gmarkers.push(marker);
 
 
             })
@@ -1612,14 +1639,15 @@ if ($row['status'] != 0) {
 
     function insertDataPermutasi(index) {
 
-     
       hasil = 0
-      if (index <= permutasiStart.length-23) {
-        
+
+      if (index <= permutasiStart.length - 23) {
+
         // get value hasil total jarak permutasi
         getHasil = document.getElementById("hasilPermutasi").innerText
 
-        if (index == permutasiStart.length-23) {
+        if (index == permutasiStart.length - 23) {
+
           getArrLokasiTerdekat(permutasiStart[index - 1], getHasil)
 
           // reset variable untuk dipakai di eksekusi fungsi tujuan
@@ -1628,55 +1656,71 @@ if ($row['status'] != 0) {
           hasilLama = 0
           counterCoba = 0
 
-          console.log(arrJarakTerdekat)
-          permutasiEndDriver.push(arrJarakTerdekat[arrJarakTerdekat.length-1])
- 
-          console.log("test masuk sini atau tidak")
+          // console.log(arrJarakTerdekat)
+          permutasiEndDriver.push(arrJarakTerdekat[arrJarakTerdekat.length - 1])
+
+          // console.log("test masuk sini atau tidak")
           return
+
         }
 
-
         if (getHasil > 0) {
+
           getArrLokasiTerdekat(permutasiStart[index - 1], getHasil)
-          
+
         }
 
         for (let i = -1; i < permutasiStart[index].length - 1; i++) {
+
           eksekusiApiDirectionPermutasi(i)
+
         }
 
-     
+      } else if (index_2 <= permutasiEnd.length - 23) {
 
-      } else {
-        console.log("sudah semua kemungkinan lokasi berangkat dicoba")
-        console.log("ini variabel index_2", index_2)
+        // console.log("sudah semua kemungkinan lokasi berangkat dicoba")
 
-        if (index_2 <= permutasiEnd.length) {
+        getHasil = document.getElementById("hasilPermutasi").innerText
 
-          getHasil = document.getElementById("hasilPermutasi").innerText
+        if (index_2 == permutasiEnd.length - 23) {
 
-          if (index_2 == permutasiEnd.length) {
-            console.log("ini sudah berakhir")
-            return
-          }
+          getArrLokasiTerdekatTujuan(permutasiEnd[index - 1], getHasil)
 
-          if (getHasil > 0) {
-            getArrLokasiTerdekatTujuan(permutasiEnd[index_2 - 1], getHasil)
-          }
+          insertDataUpdateLive()
 
-          for (let i = -1; i < permutasiEnd[index_2].length - 1; i++) {
-            eksekusiApiDirectionPermutasiTujuan(i)
-          }
+          // console.log("ini sudah berakhir ekspetasi done semua")
+
+          index_2 += 1
+
+          return
+        }
+
+        if (getHasil > 0) {
+
+          getArrLokasiTerdekatTujuan(permutasiEnd[index_2 - 1], getHasil)
+
+        }
+
+        for (let i = -1; i < permutasiEnd[index_2].length - 1; i++) {
+
+          eksekusiApiDirectionPermutasiTujuan(i)
 
         }
 
         index_2 += 1
 
+      } else {
+        console.log("masuk sini")
+
+        updatePosisiDriverBasic(counterUpdate)
+        counterUpdate += 1;
 
 
       }
 
-      console.log("\n")
+
+
+      // console.log("\n")
     }
 
     var arrJarakTerdekat = []
@@ -1684,8 +1728,8 @@ if ($row['status'] != 0) {
     var counterCoba = 0
 
     function getArrLokasiTerdekat(data, hasilBaru) {
-      console.log(permutasiStart)
-      console.log("ini data array lokasinya ", data, "ini total jaraknya", hasilBaru)
+      // console.log(permutasiStart)
+      // console.log("ini data array lokasinya ", data, "ini total jaraknya", hasilBaru)
       if (hasilBaru < hasilLama || counterCoba == 0) {
         for (let i = 0; i < data.length; i++) {
           arrJarakTerdekat[i] = data[i]
@@ -1700,12 +1744,12 @@ if ($row['status'] != 0) {
 
     var arrJarakTerdekatTujuan = []
 
-    
+
     // data array update live berisi data arrJarakTerdekat,arrJarakTerdekatTujuan
     var dataUpdateLive = []
 
     function getArrLokasiTerdekatTujuan(data, hasilBaru) {
-      console.log("ini data array lokasinya tujuan", data, "ini total jaraknya", hasilBaru)
+      // console.log("ini data array lokasinya tujuan", data, "ini total jaraknya", hasilBaru)
       if (hasilBaru < hasilLama || counterCoba == 0) {
         for (let i = 0; i < data.length; i++) {
           arrJarakTerdekatTujuan[i] = data[i]
@@ -1751,11 +1795,11 @@ if ($row['status'] != 0) {
           document.getElementById("hasilPermutasi").innerText = hasil
 
           // console.log("ini response",response)
-          console.log("ini nilai jaraknya", response.routes[0].legs[0].distance.value, " dari ", response.request.origin.query, " menuju ", response.request.destination.query)
+          // console.log("ini nilai jaraknya", response.routes[0].legs[0].distance.value, " dari ", response.request.origin.query, " menuju ", response.request.destination.query)
 
           // console.log(index,",",i,",",permutasiStart[index].length)
 
-          console.log("indexing", i)
+          // console.log("indexing", i)
           // if (i == permutasiStart[index].length - 2) {
           //   // console.log(index,",",i,",",permutasiStart[index].length)
           //   // coba(hasil, permutasiStart[index])
@@ -1821,11 +1865,11 @@ if ($row['status'] != 0) {
 
           document.getElementById("hasilPermutasi").innerText = hasil
 
-          console.log("ini nilai jaraknya", response.routes[0].legs[0].distance.value, " dari ", response.request.origin.query, " menuju ", response.request.destination.query)
+          // console.log("ini nilai jaraknya", response.routes[0].legs[0].distance.value, " dari ", response.request.origin.query, " menuju ", response.request.destination.query)
 
 
-          console.log("indexing", i)
-   
+          // console.log("indexing", i)
+
 
         })
         .catch((e) => window.alert("Directions request failed due to " + status))
@@ -1834,7 +1878,47 @@ if ($row['status'] != 0) {
       console.log("ini index array sekarang", index_2)
     }
 
+    function markerDriver(lat, lng) {
+      marker = new google.maps.Marker({
+        position: {
+          lat: lat,
+          lng: lng
+        },
+        map: map1,
+        icon: {
+          url: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png",
+          scaledSize: new google.maps.Size(38, 31)
+        },
+        title: "posisi driver",
+        animation: google.maps.Animation.DROP
+        // icon: "assets/cars.png"
 
+      });
+
+
+    }
+
+    function markerUser(lat, lng) {
+      marker = new google.maps.Marker({
+        position: {
+          lat: lat,
+          lng: lng
+        },
+        map: map1,
+        icon: {
+          url: "https://cdn-icons-png.flaticon.com/512/3710/3710297.png",
+          scaledSize: new google.maps.Size(38, 31)
+        },
+        title: "posisi user",
+        animation: google.maps.Animation.DROP
+        // icon: "assets/cars.png"
+
+      });
+
+ 
+    }
+
+    // all fungsi
     var counterUpdate = 0
     // search driver
     function searchDriver() {
@@ -1889,6 +1973,7 @@ if ($row['status'] != 0) {
 
 
     }
+
 
 
 
