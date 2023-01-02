@@ -186,7 +186,7 @@ if ($row['status'] != 1) {
     </div>
   </div>
 
-  <!-- Modal List Driver -->
+  <!-- Modal List User -->
   <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
@@ -195,7 +195,18 @@ if ($row['status'] != 1) {
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div id="listDriver" class="modal-body">
-
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Berdasarkan Jarak</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Berdasarkan Priority Weight</button>
+            </li>
+          </ul>
+          <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">...</div>
+            <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">...</div>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
@@ -266,7 +277,7 @@ if ($row['status'] != 1) {
       var lat = position.coords.latitude;
       var lng = position.coords.longitude;
 
-      
+
       //isi value form nya dengan lat,lng yang didapat dari geolocation yang nanti buat displit
       $("input").eq(0).val(lat + "," + lng, );
 
@@ -301,7 +312,7 @@ if ($row['status'] != 1) {
               animation: google.maps.Animation.DROP
             });
             // resultnya berupa banyak array ini coba ke 1 karena akurat
-            console.log(response.results)
+            // console.log(response.results)
             infowindow.setContent(response.results[1].formatted_address);
             infowindow.open(map1, marker);
 
@@ -316,36 +327,6 @@ if ($row['status'] != 1) {
           }
         })
         .catch((e) => window.alert("Geocoder failed due to: " + e));
-
-    }
-
-    // search driver
-    function searchDriver() {
-      if ($("#end").val() == "") {
-        alert("Alamat Tujuan Masih Kosong")
-        return;
-      }
-
-      $("#searchButton").css("display", "none");
-      $("#cancelButton").css("display", "inline-block");
-      $("#detailData").css("display", "flex");
-
-      // view lokasi tujuan 
-      viewLokasiTujuan();
-
-      // insert posisi user sekarang
-      insertPosisiUserSaatIni()
-
-      // view driver sekitar secara live
-      interval = setInterval(function() {
-
-        viewDriverSekitar();
-        statusOrderLive();
-
-      }, 10000);
-
-
-
 
     }
 
@@ -388,8 +369,12 @@ if ($row['status'] != 1) {
 
     }
 
-    function viewLokasiTujuan() {
-      // alert("jalankan api direction")
+    // saat windows reload delete search live user tersebut
+    if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
+      deletePosisiUserSaatIni();
+    }
+
+    function viewLokasiTujuanDriver() {
 
       const directionsService = new google.maps.DirectionsService();
       const directionsRenderer = new google.maps.DirectionsRenderer();
@@ -562,7 +547,7 @@ if ($row['status'] != 1) {
 
     }
 
-    function insertPosisiUserSaatIni() {
+    function insertPosisiDriverSaatIni() {
       // iki fungsine harus jalan terus 
       let lokasiStart = document.getElementById("start").value
       let lokasiEnd = document.getElementById("end").value
@@ -572,24 +557,11 @@ if ($row['status'] != 1) {
       DataLokasiUser.append("lokasiStart", lokasiStart);
       DataLokasiUser.append("lokasiEnd", lokasiEnd);
 
-      console.log(DataLokasiUser)
-
-
-
-      // console.log($("#detailData").css("display"))
-
-
-
-      // Display the key/value pairs
-      // for (var pair of DataLokasiUser.entries()) {
-      //   console.log(pair[0] + ', ' + pair[1]);
-      // }
 
       const xmlHttp = new XMLHttpRequest();
       xmlHttp.onload = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
-          // alert(this.responseText + "aa")
 
         } else {
           alert("Error!");
@@ -599,6 +571,31 @@ if ($row['status'] != 1) {
       xmlHttp.send(DataLokasiUser);
 
       return "check2";
+
+    }
+    arrDataSemuaUser = []
+
+    function getDataSemuaUser() {
+
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+          // console.log(this.responseText)
+          data = JSON.parse(this.responseText);
+
+          // console.log("ini data semua user, ekspetasi ada 3 data user + 1 data driver", data)
+          arrDataSemuaUser = data
+
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/view_user_sekitar_ajax.php");
+      xmlHttp.send();
+
+
+
 
     }
 
@@ -788,7 +785,7 @@ if ($row['status'] != 1) {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
 
-        
+
         } else {
           alert("Error!");
         }
@@ -800,6 +797,242 @@ if ($row['status'] != 1) {
 
     }
 
+    // array kumpulan user dengan weight terendah
+    var arrUserPrioritas = []
+    var weight = 0
+
+    var statusJarakBerangkat = false
+    var statusJarakTujuan = false
+
+    var arrTemp = []
+    var arrTemp1 = []
+
+    function viewUserSekitar() {
+
+      // butuh lokasi berangkat driver untuk di compare dengan lokasi berangkat user
+      // butuh lokasi tujuan driver untuk di compare dengan lokasi tujuan user 
+
+      // console.log("ini data semua user", arrDataSemuaUser)
+
+
+
+      // view user berdasarkan lokasi tujuan berdekatan dengan lokasi berangkat driver, lokasi berangkat berdekatan dengan lokasi berangkat driver
+      // console.log("ini array semua lokasi:",arrDataSemuaUser)
+      if (arrTemp.length == 0) {
+        jarakBerangkatDirection()
+      } else if (arrTemp1.length == 0) {
+        console.log(arrTemp)
+        jarakTujuanDirection()
+        console.log(arrTemp1)
+      } else {
+        priorityWeight()
+        // view berdasarkan array x
+        viewListUserBerdasarkanJarak()
+        // view berdasarkan array y
+        viewListUserBerdasarkanPriority()
+      }
+
+
+
+
+
+
+
+    }
+
+    function jarakBerangkatDirection() {
+
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+
+      for (let i = 1; i < arrDataSemuaUser.length; i++) {
+
+        // console.log(arrDataSemuaUser[i]['lokasiStart'])
+
+        directionsService
+          .route({
+            origin: {
+              query: arrDataSemuaUser[0]['lokasiEndUserIni'],
+            },
+            destination: {
+              query: arrDataSemuaUser[i]['lokasiEnd'],
+            },
+            travelMode: google.maps.TravelMode.DRIVING,
+          })
+          .then((response) => {
+
+            console.log("ini response cari data angka", response)
+            // console.log("ini dari lokasi berangkat :",response.request.origin,"ke ",response.request.destination)
+            // console.log("ekspetasi ini data berupa angka: ",response.routes[0].legs[0].distance.value)
+
+            if (response.routes[0].legs[0].distance.value < 4000) {
+
+              statusJarakTujuan = true
+
+              jarak = response.routes[0].legs[0].distance.value
+              waktu = response.routes[0].legs[0].duration.value
+              // weight akumulasi dari lokasi tujuan driver ke lokasi tujuan driver
+              weight = (jarak / 1000) + (waktu / 60)
+              console.log("weight berubah2", weight)
+
+              // console.log(arrDataSemuaUser[i])
+
+              arrDataSemuaUser[i]["weight"] = weight
+
+              arrTemp.push(arrDataSemuaUser[i])
+
+            } else {
+              statusJarakTujuan = false
+            }
+
+
+
+
+
+
+          })
+          .catch((e) => {
+            console.log("error 123")
+          });
+
+
+
+      }
+    }
+
+    function jarakTujuanDirection() {
+
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+
+      // console.log("panjang", arrTemp.length)
+      // console.log("isi", arrTemp)
+
+      for (let i = 0; i < arrTemp.length; i++) {
+
+        // console.log(arrDataSemuaUser[i]['lokasiStart'])
+        console.log(arrDataSemuaUser[0]['lokasiStartUserIni'], arrTemp[i])
+
+        directionsService
+          .route({
+            origin: {
+              query: arrDataSemuaUser[0]['lokasiStartUserIni'],
+            },
+            destination: {
+              query: arrTemp[i]['lokasiStart'],
+            },
+            travelMode: google.maps.TravelMode.DRIVING,
+          })
+          .then((response) => {
+
+            // console.log("ini response cari data angka", response)
+            // console.log("ini dari lokasi berangkat :",response.request.origin,"ke ",response.request.destination)
+            // console.log("ekspetasi ini data berupa angka: ",response.routes[0].legs[0].distance.value)
+
+            if (response.routes[0].legs[0].distance.value < 4000) {
+
+              statusJarakBerangkat = true
+
+              jarak = response.routes[0].legs[0].distance.value
+              waktu = response.routes[0].legs[0].duration.value
+              // weight akumulasi dari lokasi tujuan driver ke lokasi tujuan driver
+              weight = (jarak / 1000) + (waktu / 60)
+              console.log("weight berubah2", weight)
+
+              marker = new google.maps.Marker({
+                position: {
+                  lat: response.routes[0].legs[0].end_location.lat(),
+                  lng: response.routes[0].legs[0].end_location.lng()
+                },
+                map: map1,
+                icon: {
+                  url: "https://cdn-icons-png.flaticon.com/512/3710/3710297.png",
+                  scaledSize: new google.maps.Size(38, 31)
+                },
+                animation: google.maps.Animation.DROP
+                // icon: "assets/cars.png"
+
+              });
+
+              gmarkers.push(marker);
+
+              getWeightTujuan = arrTemp[i]["weight"]
+
+              arrTemp[i]["weight"] = weight + getWeightTujuan
+
+              arrTemp1.push(arrTemp[i])
+
+            } else {
+              statusJarakBerangkat = false
+            }
+
+
+
+
+
+
+          })
+          .catch((e) => {
+            console.log("error 123")
+          });
+
+
+
+
+
+      }
+    }
+
+    function priorityWeight() {
+      console.log(arrTemp1)
+    }
+
+    function viewListUserBerdasarkanJarak(){
+      $("#listDriver").append('<div class="card mt-3 listDriverDetail"> <h5 class="card-header"> ' + data[i]['username'] + '</h5><div class="card-body"><p class="card-text">Jarak ' + response.routes[0].legs[0].distance.text + " dari posisi anda sekarang " + " <br> Estimasi waktu penjemputan " + response.routes[0].legs[0].duration.text + '</p> <a href="#" class="btn btn-success" ' + "onclick" + "=" + "pickUser(\"" + (data[i]['username']) + "\")" + '>' + "PICK-UP" + '</a> </div></div> ')
+    }
+
+    function viewListUserBerdasarkanPriority(){
+      $("#listDriver").append('<div class="card mt-3 listDriverDetail"> <h5 class="card-header"> ' + data[i]['username'] + '</h5><div class="card-body"><p class="card-text">Jarak ' + response.routes[0].legs[0].distance.text + " dari posisi anda sekarang " + " <br> Estimasi waktu penjemputan " + response.routes[0].legs[0].duration.text + '</p> <a href="#" class="btn btn-success" ' + "onclick" + "=" + "pickUser(\"" + (data[i]['username']) + "\")" + '>' + "PICK-UP" + '</a> </div></div> ')
+    }
+
+    // search driver
+    function searchDriver() {
+      // alamat tujuan kosong langsung stop
+      if ($("#end").val() == "") {
+        alert("Alamat Tujuan Masih Kosong")
+        return;
+      }
+
+      $("#searchButton").css("display", "none");
+      $("#cancelButton").css("display", "inline-block");
+      $("#detailData").css("display", "flex");
+
+      // cek sekitar ada user atau tidak, belum di buat fungsinya
+      // cekStatusSekitar();
+
+      // view lokasi tujuan driver 
+      viewLokasiTujuanDriver();
+
+      // insert posisi driver sekarang
+      insertPosisiDriverSaatIni()
+
+
+
+      interval = setInterval(function() {
+        // get data semua user yang sedang melakukan pencarian driver
+        getDataSemuaUser()
+        // view user sekitar < 50m, view user sekitar berdasarkan prioritas dijemput
+        viewUserSekitar();
+        //   statusOrderLive();
+
+      }, 5000);
+
+
+
+
+
+
+    }
 
 
 
