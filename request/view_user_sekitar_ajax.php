@@ -19,18 +19,15 @@ $checksql = $pdo->prepare($sql);
 $checksql->execute([$id]);
 
 
-
 $rowLokasi = $checksql->fetch();
 
 $valueResponse = array();
 
 array_push($valueResponse, array(
 
+    "lokasiStartDriverIni" => "{$rowLokasi['lokasi_berangkat']}",
 
-    "lokasiStartUserIni" => "{$rowLokasi['lokasi_berangkat']}",
-
-    "lokasiEndUserIni" => "{$rowLokasi['lokasi_tujuan']}"
-
+    "lokasiEndDriverIni" => "{$rowLokasi['lokasi_tujuan']}"
 
 ));
 
@@ -40,10 +37,10 @@ array_push($valueResponse, array(
 // ambil semua data lokasi berangkat di join buat ambil detail user
 $sql = 'SELECT * FROM search_live 
     INNER JOIN user ON search_live.id_user=user.id 
-    where id_user != ?';
+    where id_driver = 0 AND search_live.status = 0';
 
 $checksql = $pdo->prepare($sql);
-$checksql->execute([$id]);
+$checksql->execute();
 
 
 

@@ -115,12 +115,16 @@
 
                     setTimeout(() => {
 
+
                         if (this.responseText == "Maaf Username / Password Anda Salah") {
                             // alert("Username / Password Anda Salah")
 
                             window.location.href = "http://localhost/ride_sharing/login.php";
-                        } else {
+                        } else if(this.responseText == 0) {
                             window.location.href = "http://localhost/ride_sharing/ride_user.php";
+                        }else{
+                            window.location.href = "http://localhost/ride_sharing/ride_driver.php";
+
                         }
 
                     }, 4000)

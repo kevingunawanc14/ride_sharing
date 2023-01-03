@@ -17,6 +17,7 @@ $cekPassword= false;
 
 while ($row = $checksql->fetch()) {
 
+    $_SESSION["status"]=$row["status"];
     
     if ($row['username'] ==  $username) {
         $cekUsername =  true;
@@ -40,5 +41,7 @@ if($cekUsername == false || $cekPassword == false){
 
 $_SESSION["username"] = $username;
 
-exit ("Login Berhasil");
+echo $_SESSION["status"];
+
+// exit ("Login Berhasil");
 ?>
