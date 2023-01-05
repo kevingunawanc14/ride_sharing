@@ -90,6 +90,7 @@ $row = $checksql->fetch();
   </div>
 
   <p id="hasilPermutasi" style="display: none;">titip hasil disini</p>
+  <p id="statusKapasitas" style="display: none;">titip hasil status kapasitas disini</p>
 
   <nav class="navbar navbar-expand bg-light fixed-bottom">
     <div class="container-fluid">
@@ -130,36 +131,26 @@ $row = $checksql->fetch();
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fa-solid fa-map-location-dot"></i> Status Order <button type="button" class="btn btn-success rounded-pill">0/0</button></h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fa-solid fa-map-location-dot"></i> Status Order <button type="button" class="btn btn-success rounded-pill"><span id="kapasitasMobil">0</span>/5</button></h1>
+          <button type="button" class="btn btn-primary rounded mx-2" onclick="setCheck('back')">Back</button>
+          <button type="button" class="btn btn-primary rounded mx-2" onclick="setCheck('next')">Next</button>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" style="padding: 0;">
-          <div id="map2">
-
-          </div>
           <div class="container text-start">
             <div class="row">
               <div class="col lokasiTujuan">
                 <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
                   <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="lokasi_berangkat" data-bs-toggle="tab" data-bs-target="#lokasi_berangkat" type="button" role="tab" aria-controls="lokasi_berangkat" aria-selected="true" onclick="gantiPilihanLokasi()">Lokasi Berangkat</button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="lokasi_tujuan" data-bs-toggle="tab" data-bs-target="#lokasi_tujuan" type="button" role="tab" aria-controls="lokasi_tujuan" aria-selected="false" onclick="gantiPilihanLokasi()">Lokasi Tujuan</button>
+                    <button class="nav-link active" id="detailperjalananmaster" data-bs-toggle="tab" data-bs-target="#detailperjalananmaster" type="button" role="tab" aria-controls="detailperjalananmaster" aria-selected="true" onclick="">Detail Perjalanan</button>
                   </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
-                  <div class="tab-pane fade show active" id="lokasi_berangkat-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                  <div class="tab-pane fade show active" id="detailperjalananmaster-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
                     <!-- <p>Lokasi Berangkat Driver :</p>
                     <p>Lokasi Berangkat userx :</p>
                     <p>Lokasi Berangkat userx1 :</p>
                     <p>Lokasi Berangkat userx2 :</p> -->
-                  </div>
-                  <div class="tab-pane fade" id="lokasi_tujuan-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-                    <!-- <p>Lokasi Tujuan Driver :</p>
-                    <p>Lokasi Tujuan usery :</p>
-                    <p>Lokasi Tujuan usery1 :</p>
-                    <p>Lokasi Tujuan usery2 :</p> -->
                   </div>
                 </div>
 
@@ -169,7 +160,7 @@ $row = $checksql->fetch();
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Finish Order</button>
+          <button type="button" class="btn btn-primary" onclick="finishOrder()">Finish Order</button>
         </div>
       </div>
     </div>
@@ -431,12 +422,10 @@ $row = $checksql->fetch();
           // console.log(this.responseText)
           data = JSON.parse(this.responseText);
 
-          arrDataSemuaUser = data
-          // console.log("arrDataSemuaUser adalah :",arrDataSemuaUser)
-          // arrDataSemuaUser.pop()
-          // arrDataSemuaUser.pop()
-          // arrDataSemuaUser.pop()
+          // console.log(data)
+          arrDataSemuaUser = JSON.parse(this.responseText);
 
+          console.log("Data semua user sekitar:", arrDataSemuaUser)
 
         } else {
           alert("Error!");
@@ -452,21 +441,22 @@ $row = $checksql->fetch();
       // console.log(arrTemp.length)
       if (arrTemp.length == 0) {
         jarakBerangkatDirection()
-        console.log("done")
-      } 
-      // else if (arrTemp1.length == 0) {
-      //   console.log("check2")
-      //   jarakTujuanDirection()
-      // } else {
-      //   console.log(arrUserBerdasarkanJarak)
-      //   console.log(arrUserPrioritas)
+      } else if (arrTemp1.length == 0) {
+        jarakTujuanDirection()
+      } else {
+        // console.log(arrUserBerdasarkanJarak)
+        // console.log(arrUserPrioritas)
 
-      //   priorityWeight()
-      //   // view berdasarkan array x
-      //   viewListUserBerdasarkanJarak()
-      //   // view berdasarkan array y
-      //   viewListUserBerdasarkanPriority()
-      // }
+        // check2 array duplikasi
+        checkDuplicateArray()
+        // 
+        priorityWeight()
+
+        // view berdasarkan array x
+        viewListUserBerdasarkanJarak()
+        // view berdasarkan array y
+        viewListUserBerdasarkanPriority()
+      }
 
     }
 
@@ -476,10 +466,7 @@ $row = $checksql->fetch();
       const directionsService = new google.maps.DirectionsService();
       const directionsRenderer = new google.maps.DirectionsRenderer();
 
-      console.log("aa")
-
       for (let i = 1; i < arrDataSemuaUser.length; i++) {
-        console.log(i)
         directionsService
           .route({
             origin: {
@@ -493,7 +480,7 @@ $row = $checksql->fetch();
           .then((response) => {
 
             // console.log("ini response cari data angka", response)
-            console.log("ini dari lokasi berangkat :", response.request.origin, "ke ", response.request.destination, i)
+            // console.log("ini dari lokasi berangkat :", response.request.origin, "ke ", response.request.destination, i)
 
             // console.log("ekspetasi ini data berupa angka: ", response.routes[0].legs[0].distance.value)
 
@@ -505,7 +492,7 @@ $row = $checksql->fetch();
               waktu = response.routes[0].legs[0].duration.value
               // weight akumulasi dari lokasi tujuan driver ke lokasi tujuan driver
               weight = (jarak / 1000) + (waktu / 60)
-              console.log("weight berubah2", weight)
+              // console.log("weight berubah2", weight)
 
               // console.log(arrDataSemuaUser[i])
 
@@ -513,16 +500,9 @@ $row = $checksql->fetch();
 
 
               arrTemp.push(arrDataSemuaUser[i])
-              console.log("aa")
             } else {
               statusJarakTujuan = false
             }
-
-
-
-
-
-
           })
           .catch((e) => {
             console.log("error 123")
@@ -532,7 +512,6 @@ $row = $checksql->fetch();
 
       }
 
-      console.log("abc")
     }
 
     // cek jarak
@@ -547,7 +526,7 @@ $row = $checksql->fetch();
       for (let i = 0; i < arrTemp.length; i++) {
 
         // console.log(arrDataSemuaUser[i]['lokasiStart'])
-        console.log(arrDataSemuaUser[0]['lokasiStartDriverIni'], arrTemp[i], i)
+        // console.log(arrDataSemuaUser[0]['lokasiStartDriverIni'], arrTemp[i], i)
 
         directionsService
           .route({
@@ -591,6 +570,7 @@ $row = $checksql->fetch();
 
               });
 
+              console.log(response)
               gmarkers.push(marker);
 
               getWeightTujuan = arrTemp[i]["weight"]
@@ -625,8 +605,6 @@ $row = $checksql->fetch();
 
     // get data untuk priority weight
     function priorityWeight() {
-      // console.log("hasil sebelum di sort", arrTemp1)
-
       // arrPriority = arrTemp1
       arrPriority = []
       for (let i = 0; i < arrTemp1.length; i++) {
@@ -635,10 +613,46 @@ $row = $checksql->fetch();
 
       bubbleSort(arrPriority)
 
-      // console.log("hasil setelah di sort", arrPriority)
-
     }
 
+    function checkDuplicateArray() {
+
+      // console.log(arrTemp1)
+      // console.log(arrUserBerdasarkanJarak)
+
+      bubbleSort(arrTemp1)
+
+      // console.log(arrTemp1)
+
+      for (let i = arrTemp1.length - 1; i > 1; i--) {
+        arrTemp1.splice(i, 1);
+      }
+
+      // console.log(arrTemp1, " list arrTemp1 setelah di pop ")
+
+      for (let i = 0; i < arrTemp1.length; i++) {
+        for (let j = 0; j < arrUserBerdasarkanJarak.length; j++) {
+
+          if (arrTemp1[i]['username'] == arrUserBerdasarkanJarak[j]['username']) {
+            // console.log("xx")
+            // arrTemp1[i]['username']
+            // arrUserBerdasarkanJarak[j]['username']
+            // arrTemp1[i]['username']
+            // console.log( arrTemp1[i]['username'], " == ", arrUserBerdasarkanJarak[j]['username'])
+            arrUserBerdasarkanJarak.splice(j, 1);
+            // return
+          }
+
+        }
+      }
+
+      console.log(arrTemp1, " list arr lokasi user berdasarkan prioritas weight ")
+      console.log(arrUserBerdasarkanJarak, " list arr lokasi user berdasarkan jarak ")
+
+      console.log("rumus weight lokasi :  weightLokasiBerangkat = (jarak / 1000) + (waktu / 60) +  weightLokasiTujuan = (jarak / 1000) + (waktu / 60)")
+
+
+    }
     // sort data priority berdasarkan weight terkecil
     function bubbleSort(items) {
       var length = items.length;
@@ -671,7 +685,7 @@ $row = $checksql->fetch();
             <div class="card-body">
               <p class="card-text"> Lokasi Berangkat: </p> 
               <p class="card-text"> Lokasi Tujuan: </p> 
-              <a href="#" class="btn btn-success pickJarak">PICK-UP</a> 
+              <button class="btn btn-success pickJarak">PICK-UP</button> 
             </div>
         </div>
 
@@ -691,15 +705,11 @@ $row = $checksql->fetch();
 
         // document.getElementsByClassName("btn btn-success pickWeight")[i].setAttribute("start", arrPriority[i]['lokasiStart'])
 
-        document.getElementsByClassName("btn btn-success pickJarak")[i].setAttribute('onclick', `pickUp("${arrUserBerdasarkanJarak[i]['lokasiEnd']}","${arrUserBerdasarkanJarak[i]['lokasiStart']}")`)
+        document.getElementsByClassName("btn btn-success pickJarak")[i].setAttribute('onclick', `pickUp("${arrUserBerdasarkanJarak[i]['lokasiStart']}","${arrUserBerdasarkanJarak[i]['lokasiEnd']}","${arrUserBerdasarkanJarak[i]['username']}")`)
 
+        document.getElementsByClassName("btn btn-success pickJarak ")[i].setAttribute('id', `${arrUserBerdasarkanJarak[i]['username']}`)
       }
 
-      // $("#listUserBerdasarkanJarak").html("")
-
-      // for (let i = 0; i < arrUserBerdasarkanJarak.length; i++) {
-      //   $("#listUserBerdasarkanJarak").append('<div class="card mt-3 listDriverDetail"> <h5 class="card-header"> ' + arrUserBerdasarkanJarak[i]['weight'] + '</h5><div class="card-body"><p class="card-text">Jarak ' + arrUserBerdasarkanJarak[i]['weight'] + " dari posisi anda sekarang " + " <br> Estimasi waktu penjemputan " + arrUserBerdasarkanJarak[i]['weight'] + '</p> <a href="#" class="btn btn-success" ' + "onclick" + "=" + "pickUser(\"" + (arrUserBerdasarkanJarak[i]['weight']) + "\")" + '>' + "PICK-UP" + '</a> </div></div> ')
-      // }
 
     }
 
@@ -717,7 +727,7 @@ $row = $checksql->fetch();
               <div class="card-body">
                 <p class="card-text"> Lokasi Berangkat: </p> 
                 <p class="card-text"> Lokasi Tujuan: </p> 
-                <a href="#" class="btn btn-success pickWeight">PICK-UP</a> 
+                <button class="btn btn-success pickWeight">PICK-UP</button> 
               </div>
           </div>
 
@@ -737,93 +747,119 @@ $row = $checksql->fetch();
 
         // document.getElementsByClassName("btn btn-success pickWeight")[i].setAttribute("start", arrPriority[i]['lokasiStart'])
 
-        document.getElementsByClassName("btn btn-success pickWeight")[i].setAttribute('onclick', `pickUp("${arrPriority[i]['lokasiEnd']}","${arrPriority[i]['lokasiStart']}")`)
+        document.getElementsByClassName("btn btn-success pickWeight ")[i].setAttribute('onclick', `pickUp("${arrPriority[i]['lokasiStart']}","${arrPriority[i]['lokasiEnd']}","${arrPriority[i]['username']}")`)
 
+        document.getElementsByClassName("btn btn-success pickWeight ")[i].setAttribute('id', `${arrPriority[i]['username']}`)
       }
 
     }
 
-  
+
     // global scope array permutasi
     var permutasiStart = []
     var permutasiStartDriver = []
     var permutasiEnd = []
     var permutasiEndDriver = []
 
-    // global scope counter update buat fungsi insertDataPermutasi()
-    var counterUpdate = 0
-    var index = 0
-    var index_2 = 0
-    var hasil = 0
-    var hasilLama = 0
-    var arrJarakTerdekat = []
-    var arrJarakTerdekatTujuan = []
-    var counterCoba = 0
+    var permutasiEndR = []
+    var permutasiStartR = []
+
+
+
+    // var handle
+    var interval_1
 
     // saat button pickup diklik
-    function pickUp(lokasiAsal, lokasiTujuan) {
+    function pickUp(lokasiAsal, lokasiTujuan, name) {
 
-      permutasiStart.push(lokasiAsal)
-      permutasiEnd.push(lokasiTujuan)
+      permutasiStartDriver = []
 
-      permutasiStart = permutator(permutasiStart)
-      permutasiEnd = permutator(permutasiEnd)
-
-
-      console.log("ini arr pickup berangkat", permutasiStart)
-      console.log("ini arr pickup tujuan", permutasiEnd)
+      document.getElementById(name).setAttribute('disabled', '');
+      document.getElementById(name).innerText = "PICKED-UP";
+      document.getElementById(name).className = "btn btn-info pickWeight";
 
 
-      setInterval(function() {
-        insertDataPermutasi(index);
-        index += 1
-      }, 8000)
+      get = document.getElementById("kapasitasMobil").innerText
+
+      permutasiStartDriver.push(document.getElementById("start").value)
+
+      permutasiStartR.push(lokasiAsal)
+      permutasiEndR.push(lokasiTujuan)
+
+      console.log("permutasi end: " + permutasiEndR)
+      console.log("permutasi start: " + permutasiStartR)
+
+      permutasiStart = permutator(permutasiStartR)
+
+      permutasiEnd = permutator(permutasiEndR)
+
+      console.log("permutasi end: " + permutasiEnd)
+      console.log("permutasi start: " + permutasiStart)
+
+      if (get < 5) {
+
+        interval_1 = setInterval(function() {
+          insertDataPermutasi();
+          index += 1
+
+        }, 5000)
+
+
+      } else {
+        Swal.fire({
+          position: 'center',
+          icon: 'warning',
+          title: 'Kapasitas Mobil Sudah Penuh',
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          timer: 2500
+        })
+
+        return
+      }
+
+      Swal.fire({
+        position: 'center',
+        icon: 'info',
+        title: 'Mohon Menunggu Proses Pick-Up',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        timer: 10000 * (permutasiStart.length * 2) + 1 * 5000
+        // 5000+5000
+      })
+
 
     }
 
-    // // buat fungsi permutasi array tujuan driver
-    // function permutasiBerangkat() {
-    //   // ekspetasi
-    //   // 39,jalan siwalankerto permai II direksi ke user yang dipick up misal jalan x
-    //   const directionsService = new google.maps.DirectionsService();
-    //   const directionsRenderer = new google.maps.DirectionsRenderer();
+    function cekKapasitasMobil() {
 
-    //   if (i == -1) {
+      x = 0
+      const xmlHttp = new XMLHttpRequest();
+      xmlHttp.onload = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+          if (x == 0) {
+            // lanjut
+            return true
+          } else {
+            Swal.fire({
+              position: 'center',
+              icon: 'warning',
+              title: 'Kapasitas Mobil Sudah Penuh',
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 2500
+            })
 
-    //     startOrigin = permutasiStartDriver[0]
-    //     startDestination = permutasiStart[index][i + 1]
+            return false
 
-    //   } else {
-    //     startOrigin = permutasiStart[index][i]
-    //     startDestination = permutasiStart[index][i + 1]
-
-    //   }
-
-    //   directionsService
-    //     .route({
-    //       origin: {
-    //         query: startOrigin,
-    //       },
-    //       destination: {
-    //         query: startDestination,
-    //       },
-    //       travelMode: google.maps.TravelMode.DRIVING,
-    //     })
-    //     .then((response) => {
-    //       directionsRenderer.setDirections(response);
-
-
-    //       hasil += parseInt(response.routes[0].legs[0].distance.value)
-
-    //       document.getElementById("hasilPermutasi").innerText = hasil
-
-
-    //     })
-    //     .catch((e) => window.alert("Directions request failed due to " + status))
-
-    //   // console.log("ini arr check isi ?",arrCoba)
-    //   console.log("ini index array sekarang", index)
-    // }
+          }
+        } else {
+          alert("Error!");
+        }
+      }
+      xmlHttp.open("POST", "request/cek_kapasitas_mobil_ajax.php");
+      xmlHttp.send();
+    }
 
     // fungsi permutasi
     function permutator(inputArr) {
@@ -848,17 +884,35 @@ $row = $checksql->fetch();
       return permute(inputArr);
     }
 
+    var batasPageOrder = 0
+    var counterPageOrder = 0
+    var indexOrderSekarang = 0
+
+    var masterArray = []
+    var masterArrayR = []
+
+    // global scope counter update buat fungsi insertDataPermutasi()
+    var counterUpdate = 0
+    var index = 0
+    var index_2 = 0
+    var hasil = 0
+    var hasilLama = 0
+    var arrJarakTerdekat = []
+    var arrJarakTerdekatTujuan = []
+    var counterCoba = 0
+
     // insert data permutasi
-    function insertDataPermutasi(index) {
+    function insertDataPermutasi() {
+      console.log("banyaknya cara permutasi lokasi berangkat,", permutasiStart)
+      console.log("banyaknya cara permutasi lokasi tujuan,", permutasiEnd)
 
       hasil = 0
 
-      if (index <= permutasiStart.length - 23) {
-
+      if (index <= permutasiStart.length) {
         // get value hasil total jarak permutasi
         getHasil = document.getElementById("hasilPermutasi").innerText
 
-        if (index == permutasiStart.length - 23) {
+        if (index == permutasiStart.length) {
 
           getArrLokasiTerdekat(permutasiStart[index - 1], getHasil)
 
@@ -868,10 +922,10 @@ $row = $checksql->fetch();
           hasilLama = 0
           counterCoba = 0
 
-          // console.log(arrJarakTerdekat)
-          permutasiEndDriver.push(arrJarakTerdekat[arrJarakTerdekat.length - 1])
 
-          // console.log("test masuk sini atau tidak")
+          permutasiEndDriver.push(arrJarakTerdekat[arrJarakTerdekat.length - 1])
+          // console.log("array terkahir",permutasiEndDriver)
+
           return
 
         }
@@ -888,22 +942,26 @@ $row = $checksql->fetch();
 
         }
 
-      } else if (index_2 <= permutasiEnd.length - 23) {
+      } else if (index_2 <= permutasiEnd.length) {
 
         // console.log("sudah semua kemungkinan lokasi berangkat dicoba")
 
         getHasil = document.getElementById("hasilPermutasi").innerText
 
-        if (index_2 == permutasiEnd.length - 23) {
+        // console.log(getHasil, " ini hasil harusnya ke reset")
 
-          getArrLokasiTerdekatTujuan(permutasiEnd[index - 1], getHasil)
+        if (index_2 == permutasiEnd.length) {
+
+          getArrLokasiTerdekatTujuan(permutasiEnd[index_2 - 1], getHasil)
 
           // insertDataUpdateLive()
-
           // console.log("ini sudah berakhir ekspetasi done semua")
+          // console.log("berikut ini datanya sesuai ekspetasi atau tidak ",arrJarakTerdekat)
+          // console.log("berikut ini datanya sesuai ekspetasi atau tidak ",arrJarakTerdekatTujuan)
+
 
           index_2 += 1
-
+          batasPageOrder = 1
           return
         }
 
@@ -920,16 +978,44 @@ $row = $checksql->fetch();
         }
 
         index_2 += 1
-
       } else {
-        // console.log("ekspetasi cetak ini saja")
-        console.log("ini array jarak terdekat: ",arrJarakTerdekat)
-        console.log("ini array jarak terdekat permutasi tujuan: ",arrJarakTerdekatTujuan)
+        console.log("check interval")
+        // console.log("ini array berangkat: ", arrJarakTerdekat)
+        // console.log("ini array tujuan: ", arrJarakTerdekatTujuan)
+        masterArray = []
+
+
+        // finalized one way array
+        masterArray.push(document.getElementById("start").value)
+
+        for (let i = 0; i < arrJarakTerdekat.length; i++) {
+          masterArray.push(arrJarakTerdekat[i])
+        }
+        for (let i = 0; i < arrJarakTerdekatTujuan.length; i++) {
+          masterArray.push(arrJarakTerdekatTujuan[i])
+        }
+
+        console.log("ini rute terbaik: ", masterArray)
+        setStatusOrder(indexOrderSekarang)
+
+        // finalized one way array
+        masterArrayR.push(document.getElementById("start").value)
+
+        for (let i = 0; i < arrJarakTerdekat.length; i++) {
+          masterArrayR.push(arrJarakTerdekat[i])
+        }
+        for (let i = 0; i < arrJarakTerdekatTujuan.length; i++) {
+          masterArrayR.push(arrJarakTerdekatTujuan[i])
+        }
+
 
         // updatePosisiDriverBasic(counterUpdate)
         // counterUpdate += 1;
-
-
+        // reset 
+        index = -1
+        index_2 = 0
+        clearInterval(interval_1);
+        console.log("done")
       }
 
 
@@ -938,6 +1024,8 @@ $row = $checksql->fetch();
     }
 
     function getArrLokasiTerdekat(data, hasilBaru) {
+
+      // console.log("ini data",data)
 
       if (hasilBaru < hasilLama || counterCoba == 0) {
         for (let i = 0; i < data.length; i++) {
@@ -952,6 +1040,7 @@ $row = $checksql->fetch();
     }
 
     function getArrLokasiTerdekatTujuan(data, hasilBaru) {
+      console.log("ini data", data)
 
       if (hasilBaru < hasilLama || counterCoba == 0) {
         for (let i = 0; i < data.length; i++) {
@@ -993,17 +1082,18 @@ $row = $checksql->fetch();
         .then((response) => {
           directionsRenderer.setDirections(response);
 
+          console.log(response)
+          console.log(response.routes[0].legs[0].distance.value)
 
           hasil += parseInt(response.routes[0].legs[0].distance.value)
 
           document.getElementById("hasilPermutasi").innerText = hasil
 
-
         })
         .catch((e) => window.alert("Directions request failed due to " + status))
 
       // console.log("ini arr check isi ?",arrCoba)
-      console.log("ini index array sekarang", index)
+      // console.log("ini index array sekarang", index)
     }
 
     function eksekusiApiDirectionPermutasiTujuan(i) {
@@ -1035,6 +1125,9 @@ $row = $checksql->fetch();
         .then((response) => {
           directionsRenderer.setDirections(response);
 
+          console.log(response)
+          console.log(response.routes[0].legs[0].distance.value)
+
           hasil += parseInt(response.routes[0].legs[0].distance.value)
 
           document.getElementById("hasilPermutasi").innerText = hasil
@@ -1045,20 +1138,77 @@ $row = $checksql->fetch();
       console.log("ini index array sekarang", index_2)
     }
 
+    function setStatusOrder(indexOrder) {
+
+      console.log(masterArray)
+      // console.log(index)
+      console.log(masterArray[indexOrder])
+      console.log(masterArray[indexOrder + 1])
+
+      // reset detail
+      $("#detailperjalananmaster-pane").html("")
+
+      // reset map
+      initMap()
+
+      // reset marker
+      for (i = 0; i < gmarkers.length; i++) {
+        gmarkers[i].setMap(null);
+      }
+
+      document.getElementById("kapasitasMobil").innerText = indexOrder
+
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+
+      var options = {
+        suppressMarkers: true,
+      }
+
+      directionsRenderer.setOptions(options)
+      directionsRenderer.setMap(map1);
+      // arrJarakTerdekat
+      // arrJarakTerdekatTujuan
+
+      // direksi google map api untuk dapat detail data
+      directionsService
+        .route({
+          origin: {
+            query: masterArray[indexOrder],
+          },
+          destination: {
+            query: masterArray[indexOrder + 1],
+          },
+          travelMode: google.maps.TravelMode.DRIVING,
+        })
+        .then((response) => {
+          directionsRenderer.setDirections(response);
+
+          // console.log("ini response", response)
+          $("#detailperjalananmaster-pane").append("<p >" + "Rute:  <span id='rute'>" + parseInt(indexOrder + 1) + " </span>  </p>");
+          $("#detailperjalananmaster-pane").append("<p>Lokasi Berangkat: " + `${response.request.destination.query}` + "</p>");
+          $("#detailperjalananmaster-pane").append("<p>Lokasi Tujuan: " + `${response.request.destination.query}` + " </p>");
+          $("#detailperjalananmaster-pane").append("<p>Intruksi: </p>");
 
 
+          for (let i = 0; i < response.routes[0].legs[0].steps.length; i++) {
+            // `${arrPriority[i]['username']}`
+            $("#detailperjalananmaster-pane").append("<p> " + parseInt(i + 1) + "." + `${response.routes[0].legs[0].steps[i].instructions}` + "</p>");
+
+          }
+
+          // document.getElementById("")
+          markerDriver(response.routes[0].legs[0].start_location.lat(), response.routes[0].legs[0].start_location.lng(), response.routes[0].legs[0].start_address)
+          markerUser(response.routes[0].legs[0].end_location.lat(), response.routes[0].legs[0].end_location.lng(), response.routes[0].legs[0].end_address)
 
 
+        })
+        .catch((e) => window.alert("Directions request failed due to " + status))
 
+    }
 
-
-
-
-
-
-
-
-
+    // global scope arr data
+    var arrData = []
 
     // search user
     function searchDriver() {
@@ -1071,22 +1221,41 @@ $row = $checksql->fetch();
       $("#searchButton").css("display", "none");
       $("#cancelButton").css("display", "inline-block");
       $("#detailData").css("display", "flex");
+      $('#end').attr('readonly', 'readonly');
+
 
       // view lokasi tujuan driver 
-      viewLokasiTujuanDriver();
+      // viewLokasiTujuanDriver();
 
       // insert posisi driver sekarang
       insertPosisiDriverSaatIni()
 
+      // get data semua lokasi user beserta driver
       setTimeout(function() {
-        // get data semua user yang sedang melakukan pencarian driver
-        getDataSemuaUser()
-        // view user sekitar < 50m, view user sekitar berdasarkan prioritas dijemput
+        getDataSemuaUser();
+      }, 1000);
+
+      setTimeout(function() {
+
         viewUserSekitar();
 
-      }, 5000);
+      }, 2000);
+
+      setTimeout(function() {
+
+        viewUserSekitar();
 
 
+      }, 3000);
+
+      setTimeout(function() {
+
+        viewUserSekitar();
+
+        arrTemp = []
+        arrTemp1 = []
+        arrDataSemuaUser = []
+      }, 4000);
 
     }
 
@@ -1141,6 +1310,41 @@ $row = $checksql->fetch();
 
     }
 
+    function setCheck(status) {
+      get = document.getElementById("rute").innerHTML
+
+      // console.log(get)
+      if (status == "back" && get == 1) {
+        Swal.fire({
+          position: 'center',
+          icon: 'error',
+          title: 'Controller Tidak Bisa Back Karena Berada Pada Posisi Start',
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          timer: 2500
+        })
+        return
+
+      } else if (status == "next") {
+        // get=parseInt(get)+1
+        // console.log(get)
+        setStatusOrder(parseInt(get))
+        document.getElementById("start").value = masterArray[parseInt(get)]
+        document.getElementById("end").value = masterArray[parseInt(get) + 1]
+        viewUserSekitarR()
+      } else if (status == "back") {
+        // get=parseInt(get)+1
+        console.log(get)
+        setStatusOrder(parseInt(get) - 2)
+        document.getElementById("start").value = masterArray[parseInt(get) - 2]
+        document.getElementById("end").value = masterArray[parseInt(get) + 1]
+        viewUserSekitarR()
+      }
+
+
+
+    }
+
     window.initMap = initMap;
 
     // aos initiate
@@ -1150,11 +1354,155 @@ $row = $checksql->fetch();
         once: true
       });
     });
+
+    function markerDriver(lat, lng, street) {
+      // Create an info window to share between markers.
+      const infoWindow = new google.maps.InfoWindow();
+
+      const marker = new google.maps.Marker({
+        position: {
+          lat: lat,
+          lng: lng
+        },
+        map: map1,
+        icon: {
+          url: "https://cdn-icons-png.flaticon.com/512/3097/3097144.png",
+          scaledSize: new google.maps.Size(38, 31)
+        },
+        title: "Posisi Driver : " + street,
+        animation: google.maps.Animation.DROP
+        // icon: "assets/cars.png"
+
+      });
+
+      marker.addListener("click", () => {
+        infoWindow.close();
+        infoWindow.setContent(marker.getTitle());
+        infoWindow.open(marker.getMap(), marker);
+      });
+
+    }
+
+    function markerUser(lat, lng, street) {
+      // Create an info window to share between markers.
+      const infoWindow = new google.maps.InfoWindow();
+
+      const marker = new google.maps.Marker({
+        position: {
+          lat: lat,
+          lng: lng
+        },
+        map: map1,
+        icon: {
+          url: "https://cdn-icons-png.flaticon.com/512/819/819814.png",
+          scaledSize: new google.maps.Size(38, 31)
+        },
+        title: "Posisi User : " + street,
+        animation: google.maps.Animation.DROP
+        // icon: "assets/cars.png"
+
+      });
+
+      marker.addListener("click", () => {
+        infoWindow.close();
+        infoWindow.setContent(marker.getTitle());
+        infoWindow.open(marker.getMap(), marker);
+      });
+
+
+    }
+
+    function markerTujuanUser(lat, lng, street) {
+      // Create an info window to share between markers.
+      const infoWindow = new google.maps.InfoWindow();
+
+      const marker = new google.maps.Marker({
+        position: {
+          lat: lat,
+          lng: lng
+        },
+        map: map1,
+        icon: {
+          url: "https://cdn-icons-png.flaticon.com/512/819/819814.png",
+          scaledSize: new google.maps.Size(38, 31)
+        },
+        title: "Lokasi Tujuan: " + street,
+        animation: google.maps.Animation.DROP
+        // icon: "assets/cars.png"
+
+      });
+
+      marker.addListener("click", () => {
+        infoWindow.close();
+        infoWindow.setContent(marker.getTitle());
+        infoWindow.open(marker.getMap(), marker);
+      });
+
+
+    }
+
+    function viewUserSekitarR() {
+      console.log("View user sekitar")
+      // insert posisi driver sekarang
+      insertPosisiDriverSaatIni()
+
+      // get data semua lokasi user beserta driver
+      setTimeout(function() {
+        getDataSemuaUser();
+      }, 1000);
+
+      setTimeout(function() {
+
+        viewUserSekitar();
+
+      }, 2000);
+
+      setTimeout(function() {
+
+        viewUserSekitar();
+
+
+      }, 3000);
+
+      setTimeout(function() {
+
+        viewUserSekitar();
+
+        arrTemp = []
+        arrTemp1 = []
+        arrDataSemuaUser = []
+      }, 4000);
+
+
+
+    }
+
+    function finishOrder() {
+      // alert anda telah memfinish order telah selesai
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Order Telah Finish',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        timer: 2000
+        // 5000+5000
+      })
+
+      setTimeout(function() {
+        window.location.reload();
+
+      }, 2000);
+
+      // windows reloa
+    }
   </script>
 
   <!-- Link CDN Bootstrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
 
+  <!-- Link CDN sweetalert  -->
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 

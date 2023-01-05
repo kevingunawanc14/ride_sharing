@@ -25,8 +25,10 @@ $arrLokasiTujuan = json_decode($_POST['dataLokasiTujuan'], true);
 
 $arrLokasiBerangkat = $_POST['dataLokasiStart'];
 
+echo "lokasi tujuan user: ";
 print_r($arrLokasiTujuan);
 
+echo "lokasi start driver: ";
 print_r($arrLokasiBerangkat);
 
 

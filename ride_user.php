@@ -634,9 +634,9 @@ $row = $checksql->fetch();
 
           permutasiEnd = permutator(permutasiEnd)
 
-          // console.log("ekspetasi semua kemungkinan lokasi berangkat user",permutasiStart)
+          console.log("ekspetasi semua kemungkinan lokasi berangkat user",permutasiStart)
 
-          // console.log("ekspetasi semua lokasi tujuan user",permutasiEnd)
+          console.log("ekspetasi semua kemungkinan lokasi tujuan user ",permutasiEnd)
 
 
         } else {
@@ -675,13 +675,14 @@ $row = $checksql->fetch();
     function insertDataPermutasi(index) {
 
       hasil = 0
+      console.log(arrJarakTerdekat,arrJarakTerdekatTujuan)
 
-      if (index <= permutasiStart.length - 23) {
+      if (index <= permutasiStart.length) {
 
         // get value hasil total jarak permutasi
         getHasil = document.getElementById("hasilPermutasi").innerText
 
-        if (index == permutasiStart.length - 23) {
+        if (index == permutasiStart.length) {
 
           getArrLokasiTerdekat(permutasiStart[index - 1], getHasil)
 
@@ -711,18 +712,18 @@ $row = $checksql->fetch();
 
         }
 
-      } else if (index_2 <= permutasiEnd.length - 23) {
-
+      } else if (index_2 <= permutasiEnd.length) {
+        
         // console.log("sudah semua kemungkinan lokasi berangkat dicoba")
 
         getHasil = document.getElementById("hasilPermutasi").innerText
 
-        if (index_2 == permutasiEnd.length - 23) {
+        if (index_2 == permutasiEnd.length) {
 
           getArrLokasiTerdekatTujuan(permutasiEnd[index - 1], getHasil)
 
           insertDataUpdateLive()
-
+          console.log(arrJarakTerdekat,arrJarakTerdekatTujuan)
           // console.log("ini sudah berakhir ekspetasi done semua")
 
           index_2 += 1
@@ -752,8 +753,6 @@ $row = $checksql->fetch();
 
 
       }
-
-
 
       // console.log("\n")
     }
@@ -814,7 +813,7 @@ $row = $checksql->fetch();
         .then((response) => {
           directionsRenderer.setDirections(response);
 
-
+          console.log(response)
           hasil += parseInt(response.routes[0].legs[0].distance.value)
 
           document.getElementById("hasilPermutasi").innerText = hasil
@@ -855,6 +854,8 @@ $row = $checksql->fetch();
         })
         .then((response) => {
           directionsRenderer.setDirections(response);
+
+          console.log(response)
 
           hasil += parseInt(response.routes[0].legs[0].distance.value)
 
